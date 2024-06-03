@@ -10,3 +10,4 @@ pub use metaslang_graph_builder::{ExecutionConfig, ExecutionError, NoCancellatio
 use crate::cst::KindTypes;
 
 pub type File = ast::File<KindTypes>;
+pub type Graph = metaslang_graph_builder::graph::Graph<KindTypes>;
