@@ -44,11 +44,11 @@ attribute symbol_reference = symbol  => type = "push_symbol", symbol = symbol, i
 }
 
 ;; Connect the contract to its containing source unit
-@source_unit [SourceUnit [SourceUnitMembers
+@source_unit [SourceUnit ... [SourceUnitMembers
     ...
     [SourceUnitMember @contract [ContractDefinition]]
     ...
-]] {
+] ...] {
   edge @source_unit.lexical_scope -> @contract.defs
   edge @source_unit.defs -> @contract.defs
   edge @contract.lexical_scope -> @source_unit.lexical_scope
