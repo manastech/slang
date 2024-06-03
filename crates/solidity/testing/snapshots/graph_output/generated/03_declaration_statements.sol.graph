@@ -1,0 +1,71 @@
+node 0
+node 1
+node 2
+edge 2 -> 4
+edge 2 -> 6
+node 3
+edge 3 -> 4
+edge 3 -> 6
+node 4
+  is_definition: #true
+  source_node: [syntax node Identifier (1, 9)]
+  symbol: "Foo"
+  type: "pop_symbol"
+node 5
+edge 5 -> 2
+edge 5 -> 7
+node 6
+edge 6 -> 7
+edge 6 -> 9
+node 7
+  is_definition: #true
+  source_node: [syntax node Identifier (2, 12)]
+  symbol: "bar"
+  type: "pop_symbol"
+node 8
+edge 8 -> 5
+node 9
+edge 9 -> 11
+node 10
+edge 10 -> 8
+node 11
+edge 11 -> 13
+edge 11 -> 15
+edge 11 -> 17
+node 12
+edge 12 -> 10
+edge 12 -> 18
+node 13
+edge 13 -> 18
+node 14
+edge 14 -> 10
+edge 14 -> 19
+node 15
+edge 15 -> 19
+node 16
+edge 16 -> 10
+edge 16 -> 20
+edge 16 -> 21
+node 17
+edge 17 -> 20
+edge 17 -> 21
+node 18
+  is_definition: #true
+  source_node: [syntax node Identifier (3, 13)]
+  symbol: "a1"
+  type: "pop_symbol"
+node 19
+  is_definition: #true
+  source_node: [syntax node Identifier (4, 12)]
+  symbol: "x"
+  type: "pop_symbol"
+node 20
+  is_definition: #true
+  source_node: [syntax node Identifier (5, 11)]
+  symbol: "a"
+  type: "pop_symbol"
+node 21
+  is_definition: #true
+  source_node: [syntax node Identifier (5, 19)]
+  symbol: "b"
+  type: "pop_symbol"

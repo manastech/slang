@@ -1,0 +1,20 @@
+node 0
+node 1
+node 2
+edge 2 -> 6
+node 3
+edge 3 -> 6
+node 4
+edge 4 -> 7
+node 5
+edge 5 -> 7
+node 6
+  is_definition: #true
+  source_node: [syntax node Identifier (1, 10)]
+  symbol: "Foo"
+  type: "pop_symbol"
+node 7
+  is_definition: #true
+  source_node: [syntax node Identifier (3, 10)]
+  symbol: "Bar"
+  type: "pop_symbol"

@@ -1,0 +1,129 @@
+node 0
+node 1
+node 2
+edge 2 -> 4
+edge 2 -> 12
+node 3
+edge 3 -> 4
+edge 3 -> 12
+node 4
+  is_definition: #true
+  source_node: [syntax node Identifier (1, 10)]
+  symbol: "Foo"
+  type: "pop_symbol"
+node 5
+edge 5 -> 7
+edge 5 -> 14
+node 6
+edge 6 -> 7
+edge 6 -> 14
+node 7
+  is_definition: #true
+  source_node: [syntax node Identifier (5, 11)]
+  symbol: "Bar"
+  type: "pop_symbol"
+node 8
+edge 8 -> 10
+edge 8 -> 16
+node 9
+edge 9 -> 10
+edge 9 -> 16
+node 10
+  is_definition: #true
+  source_node: [syntax node Identifier (9, 9)]
+  symbol: "Baz"
+  type: "pop_symbol"
+node 11
+edge 11 -> 2
+edge 11 -> 17
+edge 11 -> 21
+node 12
+edge 12 -> 17
+edge 12 -> 21
+edge 12 -> 33
+node 13
+edge 13 -> 5
+edge 13 -> 18
+edge 13 -> 23
+node 14
+edge 14 -> 18
+edge 14 -> 23
+edge 14 -> 35
+node 15
+edge 15 -> 8
+edge 15 -> 19
+edge 15 -> 25
+edge 15 -> 27
+node 16
+edge 16 -> 19
+edge 16 -> 25
+edge 16 -> 27
+edge 16 -> 37
+node 17
+  is_definition: #true
+  source_node: [syntax node Identifier (2, 12)]
+  symbol: "foo_fn"
+  type: "pop_symbol"
+node 18
+  is_definition: #true
+  source_node: [syntax node Identifier (6, 12)]
+  symbol: "bar_fn"
+  type: "pop_symbol"
+node 19
+  is_definition: #true
+  source_node: [syntax node Identifier (10, 12)]
+  symbol: "baz_fn"
+  type: "pop_symbol"
+node 20
+edge 20 -> 28
+node 21
+edge 21 -> 28
+node 22
+edge 22 -> 29
+node 23
+edge 23 -> 29
+node 24
+edge 24 -> 30
+node 25
+edge 25 -> 30
+node 26
+edge 26 -> 31
+node 27
+edge 27 -> 31
+node 28
+  is_definition: #true
+  source_node: [syntax node Identifier (2, 27)]
+  symbol: "a"
+  type: "pop_symbol"
+node 29
+  is_definition: #true
+  source_node: [syntax node Identifier (6, 26)]
+  symbol: "x"
+  type: "pop_symbol"
+node 30
+  is_definition: #true
+  source_node: [syntax node Identifier (10, 27)]
+  symbol: "a"
+  type: "pop_symbol"
+node 31
+  is_definition: #true
+  source_node: [syntax node Identifier (10, 35)]
+  symbol: "b"
+  type: "pop_symbol"
+node 32
+edge 32 -> 11
+node 33
+edge 33 -> 39
+node 34
+edge 34 -> 13
+node 35
+node 36
+edge 36 -> 15
+node 37
+edge 37 -> 41
+node 38
+edge 38 -> 32
+node 39
+node 40
+edge 40 -> 36
+node 41

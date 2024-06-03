@@ -1,0 +1,44 @@
+node 0
+node 1
+node 2
+edge 2 -> 4
+edge 2 -> 9
+node 3
+edge 3 -> 4
+edge 3 -> 9
+node 4
+  is_definition: #true
+  source_node: [syntax node Identifier (1, 10)]
+  symbol: "Foo"
+  type: "pop_symbol"
+node 5
+edge 5 -> 7
+edge 5 -> 11
+node 6
+edge 6 -> 7
+edge 6 -> 11
+node 7
+  is_definition: #true
+  source_node: [syntax node Identifier (5, 9)]
+  symbol: "Bar"
+  type: "pop_symbol"
+node 8
+edge 8 -> 2
+edge 8 -> 12
+node 9
+edge 9 -> 12
+node 10
+edge 10 -> 5
+edge 10 -> 13
+node 11
+edge 11 -> 13
+node 12
+  is_definition: #true
+  source_node: [syntax node Identifier (2, 11)]
+  symbol: "owner"
+  type: "pop_symbol"
+node 13
+  is_definition: #true
+  source_node: [syntax node Identifier (6, 10)]
+  symbol: "x"
+  type: "pop_symbol"
