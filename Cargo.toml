@@ -68,6 +68,7 @@ slang_solidity = { path = "crates/solidity/outputs/cargo/slang_solidity", versio
 slang_solidity_node_addon = { path = "crates/solidity/outputs/cargo/slang_solidity_node_addon", version = "0.15.0" }
 solidity_cargo_tests = { path = "crates/solidity/outputs/cargo/tests", version = "0.15.0" }
 solidity_language = { path = "crates/solidity/inputs/language", version = "0.15.0" }
+solidity_stack_graph = { path = "crates/solidity/inputs/graph" }
 solidity_npm_package = { path = "crates/solidity/outputs/npm/package", version = "0.15.0" }
 solidity_spec = { path = "crates/solidity/outputs/spec", version = "0.15.0" }
 solidity_testing_sanctuary = { path = "crates/solidity/testing/sanctuary", version = "0.15.0" }
