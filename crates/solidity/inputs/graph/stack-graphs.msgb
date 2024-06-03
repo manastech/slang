@@ -266,3 +266,52 @@ attribute symbol_reference = symbol  => type = "push_symbol", symbol = symbol, i
   edge @unit_member.defs -> @state_var.defs
   edge @state_var.lexical_scope -> @unit_member.lexical_scope
 }
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Structure definitions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+@struct [StructDefinition] {
+  node @struct.lexical_scope
+  node @struct.defs
+}
+
+@struct [StructDefinition ... @name name: [Identifier] ...] {
+  node def
+  attr (def) node_definition = @name
+
+  edge @struct.lexical_scope -> def
+  edge @struct.defs -> def
+}
+
+;; Connect the struct to the contract/interface/library they belong to
+[SourceUnitMember @unit_member variant: [_
+    ...
+    members: [_
+        ...
+        item: [_ @struct variant: [StructDefinition]]
+        ...
+    ]
+    ...
+  ]
+] {
+  edge @unit_member.lexical_scope -> @struct.defs
+  edge @unit_member.defs -> @struct.defs
+}
+
+@member [StructMember] {
+  node @member.lexical_scope
+  node @member.defs
+}
+
+@member item: [StructMember ... @name name: [Identifier] ...] {
+  node member
+  attr (member) pop_symbol = "."
+  edge @member.defs -> member
+
+  node def
+  attr (def) node_definition = @name
+  edge member -> def
+}
+
+;; TODO: missing connection between the struct field declarations and the struct
