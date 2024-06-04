@@ -315,3 +315,52 @@ attribute symbol_reference = symbol  => type = "push_symbol", symbol = symbol, i
 }
 
 ;; TODO: missing connection between the struct field declarations and the struct
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Expressions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+@expr [Expression] {
+  node @expr.lexical_scope
+}
+
+@expr [Expression @name variant: [Identifier]] {
+  node ref
+  attr (ref) node_reference = @name
+
+  edge ref -> @expr.lexical_scope
+}
+
+@expr [Expression ... variant: [_ ... @child [Expression] ...] ...] {
+  edge @child.lexical_scope -> @expr.lexical_scope
+}
+
+@stmt [Statement ... variant: [_ ... @expr [Expression] ...] ...] {
+  edge @expr.lexical_scope -> @stmt.lexical_scope
+}
+
+@member [MemberAccess] {
+  node @member.lexical_scope
+}
+
+@member [MemberAccess @name [Identifier]] {
+  node ref
+  attr (ref) node_reference = @name
+
+  edge ref -> @member.lexical_scope
+}
+
+[MemberAccessExpression
+    ...
+    @expr operand: [Expression]
+    ...
+    @member member: [MemberAccess]
+    ...
+] {
+  node member
+  attr (member) push_symbol = "."
+
+  edge @member.lexical_scope -> member
+  edge member -> @expr.lexical_scope
+}

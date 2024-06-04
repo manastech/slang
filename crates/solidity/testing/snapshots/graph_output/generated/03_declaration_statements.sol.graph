@@ -69,3 +69,8 @@ node 21
   source_node: [syntax node Identifier (5, 19)]
   symbol: "b"
   type: "pop_symbol"
+node 22
+node 23
+edge 23 -> 16
+node 24
+node 25
