@@ -1,5 +1,4 @@
 node 0
-edge 0 -> 3
 node 1
 edge 1 -> 3
 node 2
