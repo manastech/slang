@@ -325,7 +325,7 @@ attribute symbol_reference = symbol  => type = "push_symbol", symbol = symbol, i
   node @expr.lexical_scope
 }
 
-@expr [Expression @name variant: [Identifier]] {
+@expr [Expression ... @name variant: [Identifier]] {
   node ref
   attr (ref) node_reference = @name
 

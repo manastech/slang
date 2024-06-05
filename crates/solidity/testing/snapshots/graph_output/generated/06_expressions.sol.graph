@@ -93,14 +93,32 @@ node 35
   type: "push_symbol"
 edge 35 -> 28
 node 36
-edge 36 -> 38
+  is_reference: #true
+  source_node: [syntax node Identifier (6, 27)]
+  symbol: "owner"
+  type: "push_symbol"
+edge 36 -> 29
 node 37
+  is_reference: #true
+  source_node: [syntax node Identifier (7, 13)]
+  symbol: "score"
+  type: "push_symbol"
+edge 37 -> 31
+node 38
+  is_reference: #true
+  source_node: [syntax node Identifier (7, 21)]
+  symbol: "score"
+  type: "push_symbol"
+edge 38 -> 33
+node 39
+edge 39 -> 41
+node 40
   is_reference: #true
   source_node: [syntax node Identifier (6, 17)]
   symbol: "sender"
   type: "push_symbol"
-edge 37 -> 36
-node 38
+edge 40 -> 39
+node 41
   symbol: "."
   type: "push_symbol"
-edge 38 -> 28
+edge 41 -> 28
