@@ -49,7 +49,6 @@ attribute symbol_reference = symbol  => type = "push_symbol", symbol = symbol, i
     [SourceUnitMember @contract [ContractDefinition]]
     ...
 ] ...] {
-  edge @source_unit.lexical_scope -> @contract.defs
   edge @source_unit.defs -> @contract.defs
   edge @contract.lexical_scope -> @source_unit.lexical_scope
 }
@@ -78,7 +77,6 @@ attribute symbol_reference = symbol  => type = "push_symbol", symbol = symbol, i
     [SourceUnitMember @interface [InterfaceDefinition]]
     ...
 ]] {
-  edge @source_unit.lexical_scope -> @interface.defs
   edge @source_unit.defs -> @interface.defs
   edge @interface.lexical_scope -> @source_unit.lexical_scope
 }
@@ -107,7 +105,6 @@ attribute symbol_reference = symbol  => type = "push_symbol", symbol = symbol, i
     [SourceUnitMember @library [LibraryDefinition]]
     ...
 ]] {
-  edge @source_unit.lexical_scope -> @library.defs
   edge @source_unit.defs -> @library.defs
   edge @library.lexical_scope -> @source_unit.lexical_scope
 }
