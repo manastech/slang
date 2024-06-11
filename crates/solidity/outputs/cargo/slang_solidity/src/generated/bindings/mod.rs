@@ -12,7 +12,7 @@ pub mod graph_builder {
     pub type Functions = functions::Functions<KindTypes>;
     pub type Graph = graph::Graph<KindTypes>;
 
-    pub use metaslang_graph_builder::{ExecutionConfig, NoCancellation, Variables};
+    pub use metaslang_graph_builder::{ExecutionConfig, NoCancellation, ParseError, Variables};
 }
 
 use std::collections::{BTreeSet, HashMap};
@@ -55,9 +55,13 @@ pub struct Bindings {
 }
 
 impl Bindings {
+    pub fn get_graph_builder() -> Result<graph_builder::File, graph_builder::ParseError> {
+        graph_builder::File::from_str(binding_rules::BINDING_RULES_SOURCE)
+    }
+
     pub fn create(version: Version) -> Self {
-        let graph_builder_file = graph_builder::File::from_str(binding_rules::BINDING_RULES_SOURCE)
-            .expect("Bindings stack graph builder parse error");
+        let graph_builder_file =
+            Self::get_graph_builder().expect("Bindings stack graph builder parse error");
         let stack_graph = StackGraph::new();
         let functions = stack_graph::default_functions();
         let cursors = HashMap::new();

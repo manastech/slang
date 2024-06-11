@@ -2,8 +2,9 @@ use anyhow::Result;
 use infra_utils::cargo::CargoWorkspace;
 use infra_utils::paths::FileWalker;
 use semver::Version;
+use slang_solidity::bindings::Bindings;
 use slang_solidity::bindings::graph_builder::{
-    ExecutionConfig, File as GraphBuilderFile, Functions, Graph, NoCancellation, Variables,
+    ExecutionConfig, Functions, Graph, NoCancellation, Variables,
 };
 use slang_solidity::language::Language;
 use std::fmt;
@@ -31,10 +32,7 @@ fn run(file_name: &str) -> Result<()> {
     let parse_output = language.parse(Language::ROOT_KIND, &input);
     assert!(parse_output.is_valid());
 
-    let msgb_path =
-        CargoWorkspace::locate_source_crate("solidity_stack_graph")?.join("stack-graphs.msgb");
-    let msgb_source = fs::read_to_string(&msgb_path)?;
-    let graph_builder = GraphBuilderFile::from_str(&msgb_source)?;
+    let graph_builder = Bindings::get_graph_builder()?;
 
     let functions = Functions::stdlib();
     let variables = Variables::new();
