@@ -1,8 +1,8 @@
 #[path = "generated/binding_rules.rs"]
 mod binding_rules;
 
-use metaslang_graph_builder::{ast, ParseError};
 pub use metaslang_graph_builder::functions::Functions;
+use metaslang_graph_builder::{ast, ParseError};
 pub use metaslang_graph_builder::{ExecutionConfig, ExecutionError, NoCancellation, Variables};
 
 use crate::cst::KindTypes;
