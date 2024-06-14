@@ -54,7 +54,7 @@ fn check_assertions(bindings: &Bindings, assertions: &Assertions) -> Result<(), 
         success += 1;
     }
 
-    for assertion in assertions.references.iter() {
+    for assertion in &assertions.references {
         count += 1;
 
         let Assertion::Reference { id, cursor } = assertion else {
@@ -195,18 +195,18 @@ impl fmt::Display for Assertion {
         write!(f, "Assert ")?;
         let cursor = match self {
             Self::Definition { id, cursor } => {
-                write!(f, "Definition {}", id,)?;
+                write!(f, "Definition {id}")?;
                 cursor
             }
             Self::Reference { id: None, cursor } => {
-                write!(f, "Unresolved Reference",)?;
+                write!(f, "Unresolved Reference")?;
                 cursor
             }
             Self::Reference {
                 id: Some(id),
                 cursor,
             } => {
-                write!(f, "Reference {}", id,)?;
+                write!(f, "Reference {id}")?;
                 cursor
             }
         };
@@ -295,7 +295,7 @@ fn search_asserted_node_backwards(mut cursor: Cursor, anchor_column: usize) -> O
         match cursor_column.cmp(&anchor_column) {
             Ordering::Equal => return Some(cursor),
             Ordering::Greater => continue,
-            _ => (),
+            Ordering::Less => (),
         }
 
         // Node is not found, and probably the anchor is invalid

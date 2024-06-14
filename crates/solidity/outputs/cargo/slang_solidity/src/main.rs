@@ -73,13 +73,11 @@ impl FromArgMatches for CliCommand {
 impl Subcommand for CliCommand {
     fn augment_subcommands(cmd: Command) -> Command {
         let cmd = cli::Commands::augment_subcommands(cmd);
-        let cmd = CustomCommands::augment_subcommands(cmd);
-        cmd
+        CustomCommands::augment_subcommands(cmd)
     }
     fn augment_subcommands_for_update(cmd: Command) -> Command {
         let cmd = cli::Commands::augment_subcommands(cmd);
-        let cmd = CustomCommands::augment_subcommands(cmd);
-        cmd
+        CustomCommands::augment_subcommands(cmd)
     }
     fn has_subcommand(name: &str) -> bool {
         cli::Commands::has_subcommand(name) || CustomCommands::has_subcommand(name)

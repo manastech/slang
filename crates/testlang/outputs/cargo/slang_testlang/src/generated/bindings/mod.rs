@@ -143,7 +143,7 @@ impl Bindings {
     }
 
     pub fn cursor_to_handle(&self, cursor: &Cursor) -> Option<Handle<'_>> {
-        for (handle, handle_cursor) in self.cursors.iter() {
+        for (handle, handle_cursor) in &self.cursors {
             if handle_cursor == cursor {
                 return Some(Handle {
                     owner: self,
@@ -151,7 +151,7 @@ impl Bindings {
                 });
             }
         }
-        return None;
+        None
     }
 }
 

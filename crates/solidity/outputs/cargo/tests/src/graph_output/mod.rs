@@ -1,3 +1,6 @@
+use std::fmt;
+use std::fs::{self, create_dir_all};
+
 use anyhow::Result;
 use infra_utils::cargo::CargoWorkspace;
 use infra_utils::paths::FileWalker;
@@ -7,8 +10,6 @@ use slang_solidity::bindings::graph_builder::{
     ExecutionConfig, Functions, Graph, NoCancellation, Variables,
 };
 use slang_solidity::language::Language;
-use std::fmt;
-use std::fs::{self, create_dir_all};
 
 #[test]
 pub fn run_all() -> Result<()> {
@@ -52,28 +53,28 @@ fn run(file_name: &str) -> Result<()> {
     Ok(())
 }
 
-fn print_graph_as_mermaid<'a>(graph: &'a Graph) -> impl fmt::Display + 'a {
+fn print_graph_as_mermaid(graph: &Graph) -> impl fmt::Display + '_ {
     struct DisplayGraph<'a>(&'a Graph);
 
     impl<'a> fmt::Display for DisplayGraph<'a> {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             let graph = self.0;
-            write!(f, "graph TD\n")?;
+            writeln!(f, "graph TD")?;
             for node in graph.iter_nodes() {
                 let gn = &graph[node];
                 let node_label = if let Some(symbol) = gn.attributes.get("symbol") {
                     symbol.to_string()
                 } else {
-                    format!("{}", node.0)
+                    format!("{}", node.index())
                 };
                 let node_type = gn.attributes.get("type").and_then(|x| x.as_str().ok());
                 match node_type {
-                    Some("push_symbol") => write!(f, "\tN{}[/{}\\]\n", node.0, node_label)?,
-                    Some("pop_symbol") => write!(f, "\tN{}[\\{}/]\n", node.0, node_label)?,
-                    _ => write!(f, "\tN{}[{}]\n", node.0, node_label)?,
+                    Some("push_symbol") => writeln!(f, "\tN{}[/{}\\]", node.index(), node_label)?,
+                    Some("pop_symbol") => writeln!(f, "\tN{}[\\{}/]", node.index(), node_label)?,
+                    _ => writeln!(f, "\tN{}[{}]", node.index(), node_label)?,
                 }
                 for (sink, _edge) in gn.iter_edges() {
-                    write!(f, "\tN{} --> N{}\n", node.0, sink.0)?;
+                    writeln!(f, "\tN{} --> N{}", node.index(), sink.index())?;
                 }
             }
             Ok(())
