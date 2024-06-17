@@ -1,5 +1,5 @@
 #[allow(unused_imports)]
-use anyhow::Error;
+use slang_solidity::cli::commands::CommandError;
 use clap::Subcommand;
 use std::process::ExitCode;
 
@@ -24,7 +24,7 @@ impl CustomCommands {
 
     #[cfg(feature = "__experimental_bindings_api")]
     pub fn execute(self) -> ExitCode {
-        let result: Result<(), Error> = match self {
+        let result: Result<(), CommandError> = match self {
             Self::CheckAssertions { file_path, version } => {
                 super::assertions::execute_check_assertions(&file_path, version)
             }

@@ -135,6 +135,18 @@ impl Bindings {
                 handle,
             })
     }
+
+    pub fn cursor_to_handle(&self, cursor: &Cursor) -> Option<Handle<'_>> {
+        for (handle, handle_cursor) in self.cursors.iter() {
+            if handle_cursor == cursor {
+                return Some(Handle {
+                    owner: self,
+                    handle: *handle,
+                });
+            }
+        }
+        return None;
+    }
 }
 
 pub struct Handle<'a> {
