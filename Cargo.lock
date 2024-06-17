@@ -2079,6 +2079,7 @@ dependencies = [
  "infra_utils",
  "metaslang_cst",
  "metaslang_graph_builder",
+ "regex",
  "semver",
  "serde",
  "serde_json",
