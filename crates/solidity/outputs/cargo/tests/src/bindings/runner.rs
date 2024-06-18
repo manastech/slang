@@ -4,17 +4,16 @@ use std::fs::{self, create_dir_all};
 use anyhow::Result;
 use infra_utils::cargo::CargoWorkspace;
 use infra_utils::paths::FileWalker;
-use semver::Version;
-use slang_solidity::bindings::Bindings;
 use slang_solidity::bindings::graph_builder::{
     ExecutionConfig, Functions, Graph, NoCancellation, Variables,
 };
+use slang_solidity::bindings::Bindings;
 use slang_solidity::language::Language;
 
 #[test]
 pub fn run_all() -> Result<()> {
     let data_dir =
-        CargoWorkspace::locate_source_crate("solidity_testing_snapshots")?.join("graph_output");
+        CargoWorkspace::locate_source_crate("solidity_testing_snapshots")?.join("bindings");
 
     for file in FileWalker::from_directory(data_dir).find(["*.sol"])? {
         run(file.file_name().unwrap().to_str().unwrap())?;
@@ -25,11 +24,14 @@ pub fn run_all() -> Result<()> {
 
 fn run(file_name: &str) -> Result<()> {
     let data_dir =
-        CargoWorkspace::locate_source_crate("solidity_testing_snapshots")?.join("graph_output");
+        CargoWorkspace::locate_source_crate("solidity_testing_snapshots")?.join("bindings");
     let input_path = data_dir.join(file_name);
     let input = fs::read_to_string(input_path)?;
+
     // TODO: de-hardcode this and parse with different versions?
-    let language = Language::new(Version::new(0, 8, 22))?;
+    let latest_version = Language::SUPPORTED_VERSIONS.last().unwrap();
+    let language = Language::new(latest_version.clone())?;
+
     let parse_output = language.parse(Language::ROOT_KIND, &input);
     assert!(parse_output.is_valid());
 
@@ -37,15 +39,17 @@ fn run(file_name: &str) -> Result<()> {
 
     let functions = Functions::stdlib();
     let variables = Variables::new();
-    let execution_config = ExecutionConfig::new(&functions, &variables);
+    let execution_config = ExecutionConfig::new(&functions, &variables).debug_attributes(
+        "__location".into(),
+        "__variable".into(),
+        "__match".into(),
+    );
+
     let tree = parse_output.create_tree_cursor();
     let graph = graph_builder.execute(&tree, &execution_config, &NoCancellation)?;
 
     let output_dir = data_dir.join("generated");
     create_dir_all(&output_dir)?;
-
-    let output_path = output_dir.join(format!("{file_name}.graph"));
-    fs::write(output_path, format!("{}", graph.pretty_print()))?;
 
     let output_path = output_dir.join(format!("{file_name}.mmd"));
     fs::write(output_path, format!("{}", print_graph_as_mermaid(&graph)))?;
@@ -67,6 +71,15 @@ fn print_graph_as_mermaid(graph: &Graph) -> impl fmt::Display + '_ {
                 } else {
                     format!("{}", node.index())
                 };
+                let source = gn.attributes.get("__match").unwrap().as_syntax_node_ref().unwrap();
+                let location = gn.attributes.get("__location").unwrap();
+
+                let node_label = format!(
+                    "\"`**{node_label}** @{source}\n{variable}\n{location}`\"",
+                    source = source.location(),
+                    variable = gn.attributes.get("__variable").unwrap(),
+                    location = location,
+                );
                 let node_type = gn.attributes.get("type").and_then(|x| x.as_str().ok());
                 match node_type {
                     Some("push_symbol") => writeln!(f, "\tN{}[/{}\\]", node.index(), node_label)?,
