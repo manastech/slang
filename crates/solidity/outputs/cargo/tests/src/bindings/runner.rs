@@ -71,7 +71,12 @@ fn print_graph_as_mermaid(graph: &Graph) -> impl fmt::Display + '_ {
                 } else {
                     format!("{}", node.index())
                 };
-                let source = gn.attributes.get("__match").unwrap().as_syntax_node_ref().unwrap();
+                let source = gn
+                    .attributes
+                    .get("__match")
+                    .unwrap()
+                    .as_syntax_node_ref()
+                    .unwrap();
                 let location = gn.attributes.get("__location").unwrap();
 
                 let node_label = format!(

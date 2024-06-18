@@ -3,35 +3,28 @@ use std::cmp::Ordering;
 use std::collections::HashMap;
 
 use regex::Regex;
-use semver::Version;
-use thiserror::Error;
-
 use slang_solidity::bindings::Bindings;
 use slang_solidity::cursor::Cursor;
 use slang_solidity::kinds::TerminalKind;
 use slang_solidity::query::Query;
+use thiserror::Error;
 
-use slang_solidity::cli::commands;
-use slang_solidity::cli::commands::CommandError;
+#[derive(Debug, Error)]
+pub enum AssertionError {
+    #[error("Invalid assertion at {0}:{1}")]
+    InvalidAssertion(usize, usize),
 
-pub fn execute_check_assertions(
-    file_path_string: &str,
-    version: Version,
-) -> Result<(), CommandError> {
-    let mut bindings = Bindings::create(version.clone());
-    let parse_output = commands::parse::parse_source_file(file_path_string, version, |_| ())?;
-    let tree_cursor = parse_output.create_tree_cursor();
+    #[error("Duplicate assertion definition {0}")]
+    DuplicateDefinition(String),
 
-    bindings.add_file(file_path_string, tree_cursor.clone())?;
-    let assertions =
-        collect_assertions(tree_cursor).map_err(|e| CommandError::Unknown(e.to_string()))?;
-
-    check_assertions(&bindings, &assertions)?;
-
-    Ok(())
+    #[error("Failed {0} of {1} bindings assertions")]
+    FailedAssertions(usize, usize),
 }
 
-fn check_assertions(bindings: &Bindings, assertions: &Assertions) -> Result<(), CommandError> {
+pub fn check_assertions(
+    bindings: &Bindings,
+    assertions: &Assertions,
+) -> Result<(), AssertionError> {
     let mut count = 0;
     let mut success = 0;
 
@@ -116,26 +109,14 @@ fn check_assertions(bindings: &Bindings, assertions: &Assertions) -> Result<(), 
 
     if count > success {
         eprintln!();
-        Err(CommandError::Unknown(format!(
-            "Failed {failed} of {count} bindings assertions",
-            failed = count - success
-        )))
+        Err(AssertionError::FailedAssertions(count - success, count))
     } else {
         println!("{count} binding assertions OK");
         Ok(())
     }
 }
 
-#[derive(Debug, Error)]
-enum AssertionError {
-    #[error("Invalid assertion at {0}:{1}")]
-    InvalidAssertion(usize, usize),
-
-    #[error("Duplicate assertion definition {0}")]
-    DuplicateDefinition(String),
-}
-
-fn collect_assertions(cursor: Cursor) -> Result<Assertions, AssertionError> {
+pub fn collect_assertions(cursor: Cursor) -> Result<Assertions, AssertionError> {
     let mut assertions = Assertions::new();
 
     let query = Query::parse("@comment [SingleLineComment]").unwrap();
@@ -153,7 +134,7 @@ fn collect_assertions(cursor: Cursor) -> Result<Assertions, AssertionError> {
     Ok(assertions)
 }
 
-struct Assertions {
+pub struct Assertions {
     definitions: HashMap<String, Assertion>,
     references: Vec<Assertion>,
 }

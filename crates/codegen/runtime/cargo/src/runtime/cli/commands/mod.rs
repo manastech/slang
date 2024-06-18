@@ -31,7 +31,4 @@ pub enum CommandError {
     #[cfg(feature = "__experimental_bindings_api")]
     #[error(transparent)]
     BindingsError(#[from] crate::bindings::BindingsError),
-
-    #[error("Unknown error: {0}")]
-    Unknown(String),
 }
