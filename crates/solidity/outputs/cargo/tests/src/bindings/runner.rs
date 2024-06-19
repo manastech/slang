@@ -50,7 +50,10 @@ fn output_graph(parse_output: &ParseOutput, output_path: &PathBuf) -> Result<()>
     let mut graph = Graph::new();
     let root_node = graph.add_graph_node();
     let variable_name = "ROOT_NODE".to_string();
-    graph[root_node].attributes.add("__variable".into(), variable_name).unwrap();
+    graph[root_node]
+        .attributes
+        .add("__variable".into(), variable_name)
+        .unwrap();
 
     let functions = Functions::stdlib();
     let mut variables = Variables::new();

@@ -10,8 +10,8 @@ pub mod graph_builder {
     pub type Functions = functions::Functions<KindTypes>;
     pub type Graph = graph::Graph<KindTypes>;
 
-    pub use metaslang_graph_builder::{ExecutionConfig, NoCancellation, ParseError, Variables};
     pub use graph::Value;
+    pub use metaslang_graph_builder::{ExecutionConfig, NoCancellation, ParseError, Variables};
 }
 
 use std::collections::{BTreeSet, HashMap};
@@ -24,7 +24,9 @@ use metaslang_graph_builder::stack_graph;
 use semver::Version;
 use stack_graphs::graph::StackGraph;
 use stack_graphs::partial::PartialPaths;
-use stack_graphs::stitching::{ForwardPartialPathStitcher, GraphEdgeCandidates, StitcherConfig};
+use stack_graphs::stitching::{
+    Appendable, ForwardPartialPathStitcher, GraphEdgeCandidates, StitcherConfig,
+};
 use thiserror::Error;
 
 use crate::cst::KindTypes;
@@ -179,19 +181,29 @@ impl Handle<'_> {
     }
 
     pub fn jump_to_definition(&self) -> Option<Handle<'_>> {
-        let mut paths = PartialPaths::new();
-        let mut results = BTreeSet::new();
+        let mut partials = PartialPaths::new();
+        let mut reference_paths = Vec::new();
         if self.is_reference() {
             ForwardPartialPathStitcher::find_all_complete_partial_paths(
-                &mut GraphEdgeCandidates::new(&self.owner.stack_graph, &mut paths, None),
+                &mut GraphEdgeCandidates::new(&self.owner.stack_graph, &mut partials, None),
                 once(self.handle),
                 StitcherConfig::default(),
                 &stack_graphs::NoCancellation,
                 |_graph, _paths, path| {
-                    results.insert(path.end_node);
+                    reference_paths.push(path.clone());
                 },
             )
             .expect("should never be cancelled");
+        }
+
+        let mut results = BTreeSet::new();
+        for reference_path in &reference_paths {
+            if reference_paths
+                .iter()
+                .all(|other| !other.shadows(&mut partials, reference_path))
+            {
+                results.insert(reference_path.end_node());
+            }
         }
         if results.len() > 1 {
             println!("WARN: More than one definition found for {self:?}");
