@@ -1,0 +1,197 @@
+graph TD
+	N0["`**0** @(1, 1)
+@source_unit.lexical_scope
+line 25 column 21`"]
+	N1["`**1** @(1, 1)
+@source_unit.defs
+line 26 column 21`"]
+	N1 --> N3
+	N1 --> N5
+	N2["`**2** @(1, 1)
+@contract.lexical_scope
+line 35 column 18`"]
+	N2 --> N0
+	N2 --> N6
+	N2 --> N9
+	N2 --> N11
+	N2 --> N42
+	N3["`**3** @(1, 1)
+@contract.defs
+line 36 column 18`"]
+	N3 --> N6
+	N3 --> N42
+	N4["`**4** @(15, 1)
+@contract.lexical_scope
+line 35 column 18`"]
+	N4 --> N0
+	N4 --> N7
+	N4 --> N13
+	N5["`**5** @(15, 1)
+@contract.defs
+line 36 column 18`"]
+	N5 --> N7
+	N6[\"`**Foo** @(1, 1)
+def
+line 40 column 8`"/]
+	N7[\"`**Bar** @(15, 1)
+def
+line 40 column 8`"/]
+	N8["`**8** @(3, 1)
+@function.lexical_scope
+line 119 column 18`"]
+	N8 --> N2
+	N8 --> N14
+	N9["`**9** @(3, 1)
+@function.defs
+line 120 column 18`"]
+	N9 --> N14
+	N10["`**10** @(9, 1)
+@function.lexical_scope
+line 119 column 18`"]
+	N10 --> N2
+	N10 --> N15
+	N11["`**11** @(9, 1)
+@function.defs
+line 120 column 18`"]
+	N11 --> N15
+	N12["`**12** @(17, 1)
+@function.lexical_scope
+line 119 column 18`"]
+	N12 --> N4
+	N12 --> N16
+	N13["`**13** @(17, 1)
+@function.defs
+line 120 column 18`"]
+	N13 --> N16
+	N14[\"`**bar** @(3, 1)
+def
+line 124 column 8`"/]
+	N15[\"`**baz** @(9, 1)
+def
+line 124 column 8`"/]
+	N16[\"`**quux** @(17, 1)
+def
+line 124 column 8`"/]
+	N17["`**17** @(5, 29)
+@param.lexical_scope
+line 132 column 15`"]
+	N18["`**18** @(5, 29)
+@param.defs
+line 133 column 15`"]
+	N19["`**19** @(10, 29)
+@param.lexical_scope
+line 132 column 15`"]
+	N20["`**20** @(10, 29)
+@param.defs
+line 133 column 15`"]
+	N21["`**21** @(17, 30)
+@param.lexical_scope
+line 132 column 15`"]
+	N22["`**22** @(17, 30)
+@param.defs
+line 133 column 15`"]
+	N23["`**23** @(5, 34)
+@body.lexical_scope
+line 169 column 14`"]
+	N23 --> N8
+	N24["`**24** @(5, 34)
+@body.defs
+line 170 column 14`"]
+	N25["`**25** @(10, 33)
+@body.lexical_scope
+line 169 column 14`"]
+	N25 --> N10
+	N26["`**26** @(10, 33)
+@body.defs
+line 170 column 14`"]
+	N27["`**27** @(17, 35)
+@body.lexical_scope
+line 169 column 14`"]
+	N27 --> N12
+	N28["`**28** @(17, 35)
+@body.defs
+line 170 column 14`"]
+	N29["`**29** @(5, 34)
+@block.lexical_scope
+line 184 column 15`"]
+	N29 --> N23
+	N29 --> N30
+	N30["`**30** @(5, 34)
+@block.defs
+line 185 column 15`"]
+	N30 --> N36
+	N31["`**31** @(10, 33)
+@block.lexical_scope
+line 184 column 15`"]
+	N31 --> N25
+	N31 --> N32
+	N32["`**32** @(10, 33)
+@block.defs
+line 185 column 15`"]
+	N32 --> N38
+	N33["`**33** @(17, 35)
+@block.lexical_scope
+line 184 column 15`"]
+	N33 --> N27
+	N33 --> N34
+	N34["`**34** @(17, 35)
+@block.defs
+line 185 column 15`"]
+	N34 --> N40
+	N35["`**35** @(6, 1)
+@stmt.lexical_scope
+line 190 column 14`"]
+	N35 --> N29
+	N36["`**36** @(6, 1)
+@stmt.defs
+line 191 column 14`"]
+	N37["`**37** @(11, 1)
+@stmt.lexical_scope
+line 190 column 14`"]
+	N37 --> N31
+	N38["`**38** @(11, 1)
+@stmt.defs
+line 191 column 14`"]
+	N39["`**39** @(18, 1)
+@stmt.lexical_scope
+line 190 column 14`"]
+	N39 --> N33
+	N40["`**40** @(18, 1)
+@stmt.defs
+line 191 column 14`"]
+	N41["`**41** @(2, 1)
+@state_var.lexical_scope
+line 238 column 19`"]
+	N41 --> N2
+	N41 --> N43
+	N42["`**42** @(2, 1)
+@state_var.defs
+line 239 column 19`"]
+	N42 --> N43
+	N43[\"`**x** @(2, 1)
+def
+line 243 column 8`"/]
+	N44["`**44** @(6, 15)
+@expr.lexical_scope
+line 320 column 14`"]
+	N44 --> N35
+	N45["`**45** @(11, 15)
+@expr.lexical_scope
+line 320 column 14`"]
+	N45 --> N37
+	N46["`**46** @(18, 15)
+@expr.lexical_scope
+line 320 column 14`"]
+	N46 --> N39
+	N47[/"`**x** @(6, 15)
+ref
+line 324 column 8`"\]
+	N47 --> N44
+	N48[/"`**y** @(11, 15)
+ref
+line 324 column 8`"\]
+	N48 --> N45
+	N49[/"`**x** @(18, 15)
+ref
+line 324 column 8`"\]
+	N49 --> N46
