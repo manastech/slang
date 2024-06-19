@@ -12,6 +12,7 @@ pub mod graph_builder {
     pub type Functions = functions::Functions<KindTypes>;
     pub type Graph = graph::Graph<KindTypes>;
 
+    pub use graph::Value;
     pub use metaslang_graph_builder::{ExecutionConfig, NoCancellation, ParseError, Variables};
 }
 

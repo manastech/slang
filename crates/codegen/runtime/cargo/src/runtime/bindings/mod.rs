@@ -11,6 +11,7 @@ pub mod graph_builder {
     pub type Graph = graph::Graph<KindTypes>;
 
     pub use metaslang_graph_builder::{ExecutionConfig, NoCancellation, ParseError, Variables};
+    pub use graph::Value;
 }
 
 use std::collections::{BTreeSet, HashMap};
