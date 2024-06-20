@@ -4,149 +4,138 @@ ROOT_NODE
 #null`"]
 	N1["`**1** @(1, 1)
 @source_unit.lexical_scope
-line 18 column 21`"]
+line 19 column 21`"]
 	N1 --> N4
 	N2["`**2** @(1, 1)
 @source_unit.defs
-line 19 column 21`"]
+line 22 column 21`"]
 	N2 --> N4
 	N3["`**3** @(1, 1)
 @definition.lexical_scope
-line 35 column 20`"]
+line 38 column 20`"]
 	N3 --> N1
+	N3 --> N6
+	N3 --> N8
 	N4["`**4** @(1, 1)
 @definition.defs
-line 36 column 20`"]
+line 39 column 20`"]
 	N4 --> N9
 	N5["`**5** @(2, 1)
 @definition.lexical_scope
-line 35 column 20`"]
+line 38 column 20`"]
 	N5 --> N3
 	N6["`**6** @(2, 1)
 @definition.defs
-line 36 column 20`"]
+line 39 column 20`"]
 	N6 --> N10
 	N7["`**7** @(9, 1)
 @definition.lexical_scope
-line 35 column 20`"]
+line 38 column 20`"]
 	N7 --> N3
 	N8["`**8** @(9, 1)
 @definition.defs
-line 36 column 20`"]
+line 39 column 20`"]
 	N8 --> N11
 	N9[\"`**Foo** @(1, 1)
 def
-line 71 column 8`"/]
+line 74 column 8`"/]
 	N10[\"`**bar** @(2, 1)
 def
-line 92 column 8`"/]
+line 95 column 8`"/]
 	N11[\"`**baz** @(9, 1)
 def
-line 92 column 8`"/]
+line 95 column 8`"/]
 	N12["`**12** @(2, 29)
 @param.lexical_scope
-line 103 column 15`"]
+line 107 column 15`"]
 	N13["`**13** @(2, 29)
 @param.defs
-line 104 column 15`"]
+line 108 column 15`"]
 	N14["`**14** @(10, 29)
 @param.lexical_scope
-line 103 column 15`"]
+line 107 column 15`"]
 	N15["`**15** @(10, 29)
 @param.defs
-line 104 column 15`"]
+line 108 column 15`"]
 	N16["`**16** @(2, 34)
-@body.lexical_scope
-line 140 column 14`"]
+@block.lexical_scope
+line 182 column 15`"]
 	N16 --> N5
-	N17["`**17** @(10, 33)
-@body.lexical_scope
-line 140 column 14`"]
-	N17 --> N7
-	N18["`**18** @(2, 34)
-@block.lexical_scope
-line 154 column 15`"]
-	N18 --> N16
-	N18 --> N19
-	N19["`**19** @(2, 34)
+	N16 --> N21
+	N16 --> N23
+	N17["`**17** @(2, 34)
 @block.defs
-line 155 column 15`"]
-	N19 --> N23
-	N19 --> N25
-	N20["`**20** @(10, 33)
+line 183 column 15`"]
+	N18["`**18** @(10, 33)
 @block.lexical_scope
-line 154 column 15`"]
-	N20 --> N17
-	N20 --> N21
-	N21["`**21** @(10, 33)
+line 182 column 15`"]
+	N18 --> N7
+	N18 --> N25
+	N19["`**19** @(10, 33)
 @block.defs
-line 155 column 15`"]
-	N21 --> N27
-	N22["`**22** @(3, 1)
+line 183 column 15`"]
+	N20["`**20** @(3, 1)
 @stmt.lexical_scope
-line 160 column 14`"]
-	N22 --> N18
-	N22 --> N23
-	N23["`**23** @(3, 1)
+line 187 column 14`"]
+	N20 --> N16
+	N21["`**21** @(3, 1)
 @stmt.defs
-line 161 column 14`"]
-	N23 --> N28
-	N24["`**24** @(4, 1)
+line 188 column 14`"]
+	N21 --> N26
+	N22["`**22** @(4, 1)
 @stmt.lexical_scope
-line 160 column 14`"]
+line 187 column 14`"]
+	N22 --> N16
+	N23["`**23** @(4, 1)
+@stmt.defs
+line 188 column 14`"]
+	N24["`**24** @(11, 1)
+@stmt.lexical_scope
+line 187 column 14`"]
 	N24 --> N18
-	N24 --> N25
-	N25["`**25** @(4, 1)
+	N25["`**25** @(11, 1)
 @stmt.defs
-line 161 column 14`"]
-	N26["`**26** @(11, 1)
-@stmt.lexical_scope
-line 160 column 14`"]
-	N26 --> N20
-	N26 --> N27
-	N27["`**27** @(11, 1)
-@stmt.defs
-line 161 column 14`"]
-	N28[\"`**x** @(3, 1)
+line 188 column 14`"]
+	N26[\"`**x** @(3, 1)
 def
-line 180 column 8`"/]
-	N29["`**29** @(3, 17)
+line 212 column 8`"/]
+	N27["`**27** @(3, 17)
 @expr.lexical_scope
-line 287 column 14`"]
-	N29 --> N22
-	N30["`**30** @(6, 15)
+line 300 column 14`"]
+	N27 --> N20
+	N28["`**28** @(6, 15)
 @expr.lexical_scope
-line 287 column 14`"]
-	N30 --> N24
-	N31["`**31** @(6, 15)
+line 300 column 14`"]
+	N28 --> N22
+	N29["`**29** @(6, 15)
 @expr.lexical_scope
-line 287 column 14`"]
-	N31 --> N30
-	N32["`**32** @(6, 19)
+line 300 column 14`"]
+	N29 --> N28
+	N30["`**30** @(6, 19)
 @expr.lexical_scope
-line 287 column 14`"]
-	N32 --> N30
-	N33["`**33** @(11, 15)
+line 300 column 14`"]
+	N30 --> N28
+	N31["`**31** @(11, 15)
 @expr.lexical_scope
-line 287 column 14`"]
-	N33 --> N26
-	N34["`**34** @(11, 15)
+line 300 column 14`"]
+	N31 --> N24
+	N32["`**32** @(11, 15)
 @expr.lexical_scope
-line 287 column 14`"]
-	N34 --> N33
-	N35["`**35** @(11, 19)
+line 300 column 14`"]
+	N32 --> N31
+	N33["`**33** @(11, 19)
 @expr.lexical_scope
-line 287 column 14`"]
-	N35 --> N33
-	N36[/"`**x** @(6, 15)
+line 300 column 14`"]
+	N33 --> N31
+	N34[/"`**x** @(6, 15)
 ref
-line 291 column 8`"\]
-	N36 --> N31
-	N37[/"`**w** @(11, 15)
+line 304 column 8`"\]
+	N34 --> N29
+	N35[/"`**w** @(11, 15)
 ref
-line 291 column 8`"\]
-	N37 --> N34
-	N38[/"`**x** @(11, 19)
+line 304 column 8`"\]
+	N35 --> N32
+	N36[/"`**x** @(11, 19)
 ref
-line 291 column 8`"\]
-	N38 --> N35
+line 304 column 8`"\]
+	N36 --> N33
