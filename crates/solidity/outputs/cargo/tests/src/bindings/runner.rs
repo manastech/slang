@@ -1,12 +1,14 @@
+use anyhow::Result;
+use semver::Version;
 use std::fmt;
 use std::fs::{self, create_dir_all};
 use std::path::PathBuf;
 
-use anyhow::Result;
 use infra_utils::cargo::CargoWorkspace;
+use metaslang_graph_builder::stack_graph;
 use slang_solidity::assertions::{check_assertions, collect_assertions};
 use slang_solidity::bindings::graph_builder::{
-    ExecutionConfig, Functions, Graph, NoCancellation, Value, Variables,
+    ExecutionConfig, Graph, NoCancellation, Value, Variables,
 };
 use slang_solidity::bindings::Bindings;
 use slang_solidity::language::Language;
@@ -29,7 +31,7 @@ pub fn run(group_name: &str, file_name: &str) -> Result<()> {
     let output_dir = data_dir.join("generated");
     let output_path = output_dir.join(format!("{file_name}.mmd"));
     create_dir_all(&output_dir)?;
-    output_graph(&parse_output, &output_path)?;
+    output_graph(&version, &parse_output, &output_path)?;
 
     let mut bindings = Bindings::create(version.clone());
     bindings.add_file(
@@ -44,11 +46,17 @@ pub fn run(group_name: &str, file_name: &str) -> Result<()> {
 }
 
 const ROOT_NODE_VAR: &str = "ROOT_NODE";
+const VERSION_VAR: &str = "VERSION";
+
 const VARIABLE_DEBUG_ATTR: &str = "__variable";
 const LOCATION_DEBUG_ATTR: &str = "__location";
 const MATCH_DEBUG_ATTR: &str = "__match";
 
-fn output_graph(parse_output: &ParseOutput, output_path: &PathBuf) -> Result<()> {
+fn output_graph(
+    version: &Version,
+    parse_output: &ParseOutput,
+    output_path: &PathBuf,
+) -> Result<()> {
     let graph_builder = Bindings::get_graph_builder()?;
 
     let tree = parse_output.create_tree_cursor();
@@ -59,9 +67,10 @@ fn output_graph(parse_output: &ParseOutput, output_path: &PathBuf) -> Result<()>
         .add(VARIABLE_DEBUG_ATTR.into(), ROOT_NODE_VAR.to_string())
         .unwrap();
 
-    let functions = Functions::stdlib();
+    let functions = stack_graph::default_functions();
     let mut variables = Variables::new();
     variables.add(ROOT_NODE_VAR.into(), root_node.into())?;
+    variables.add(VERSION_VAR.into(), version.to_string().into())?;
     let execution_config = ExecutionConfig::new(&functions, &variables).debug_attributes(
         LOCATION_DEBUG_ATTR.into(),
         VARIABLE_DEBUG_ATTR.into(),
@@ -98,7 +107,10 @@ fn print_graph_as_mermaid(graph: &Graph) -> impl fmt::Display + '_ {
                 let node_label = format!(
                     "\"`**{node_label}** @{source}\n{variable}\n{location}`\"",
                     source = source.map(|s| s.location()).unwrap_or_default(),
-                    variable = gn.attributes.get(VARIABLE_DEBUG_ATTR).unwrap_or(&Value::Null),
+                    variable = gn
+                        .attributes
+                        .get(VARIABLE_DEBUG_ATTR)
+                        .unwrap_or(&Value::Null),
                     location = location.unwrap_or(&Value::Null),
                 );
                 let node_type = gn.attributes.get("type").and_then(|x| x.as_str().ok());
