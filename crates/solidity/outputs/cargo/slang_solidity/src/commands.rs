@@ -25,7 +25,7 @@ impl LocalCommands {
     pub fn execute(self) -> ExitCode {
         let result: anyhow::Result<()> = match self {
             Self::CheckAssertions { file_path, version } => {
-                check_assertions_command::execute(&file_path, version)
+                check_assertions_command::execute(&file_path, &version)
             }
         };
         match result {
@@ -46,15 +46,16 @@ mod check_assertions_command {
     use slang_solidity::bindings::Bindings;
     use slang_solidity::cli::commands;
 
-    pub fn execute(file_path_string: &str, version: Version) -> Result<()> {
+    pub fn execute(file_path_string: &str, version: &Version) -> Result<()> {
         let mut bindings = Bindings::create(version.clone());
-        let parse_output = commands::parse::parse_source_file(file_path_string, version, |_| ())?;
+        let parse_output =
+            commands::parse::parse_source_file(file_path_string, version.clone(), |_| ())?;
         let tree_cursor = parse_output.create_tree_cursor();
 
         bindings.add_file(file_path_string, tree_cursor.clone())?;
         let assertions = assertions::collect_assertions(tree_cursor)?;
 
-        assertions::check_assertions(&bindings, &assertions)?;
+        assertions::check_assertions(&bindings, &assertions, version)?;
 
         Ok(())
     }
