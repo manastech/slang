@@ -220,3 +220,11 @@ impl Debug for Handle<'_> {
         f.debug_tuple("BindingsHandle").field(&self.handle).finish()
     }
 }
+
+impl PartialEq for Handle<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        let our_owner: *const Bindings = self.owner;
+        let other_owner: *const Bindings = other.owner;
+        our_owner == other_owner && self.handle == other.handle
+    }
+}

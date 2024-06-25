@@ -2172,6 +2172,7 @@ version = "0.15.0"
 dependencies = [
  "Inflector",
  "anyhow",
+ "ariadne",
  "codegen_language_definition",
  "codegen_testing",
  "infra_utils",

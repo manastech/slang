@@ -1,15 +1,17 @@
 use std::fmt;
-use std::fs::{self, create_dir_all};
-use std::path::PathBuf;
+use std::fs::{self, create_dir_all, File};
+use std::ops::Range;
+use std::path::{Path, PathBuf};
 
 use anyhow::Result;
+use ariadne::{Color, Config, Label, Report, ReportBuilder, ReportKind, Source};
 use infra_utils::cargo::CargoWorkspace;
 use metaslang_graph_builder::stack_graph;
 use semver::Version;
 use slang_solidity::bindings::graph_builder::{
     ExecutionConfig, Graph, NoCancellation, Value, Variables,
 };
-use slang_solidity::bindings::Bindings;
+use slang_solidity::bindings::{Bindings, Handle};
 use slang_solidity::language::Language;
 use slang_solidity::parse_output::ParseOutput;
 
@@ -18,7 +20,7 @@ pub fn run(group_name: &str, file_name: &str) -> Result<()> {
         .join("bindings_output")
         .join(group_name);
     let input_path = data_dir.join(file_name);
-    let input = fs::read_to_string(input_path)?;
+    let input = fs::read_to_string(&input_path)?;
 
     // TODO: de-hardcode this and parse with different versions?
     let version = Language::SUPPORTED_VERSIONS.last().unwrap();
@@ -28,9 +30,19 @@ pub fn run(group_name: &str, file_name: &str) -> Result<()> {
     assert!(parse_output.is_valid());
 
     let output_dir = data_dir.join("generated");
-    let output_path = output_dir.join(format!("{file_name}.mmd"));
     create_dir_all(&output_dir)?;
-    output_graph(version, &parse_output, &output_path)?;
+
+    let graph_output_path = output_dir.join(format!("{file_name}.mmd"));
+    output_graph(version, &parse_output, graph_output_path)?;
+
+    let bindings_output_path = output_dir.join(format!("{file_name}.txt"));
+    output_bindings(
+        version,
+        &parse_output,
+        &input,
+        &input_path,
+        bindings_output_path,
+    )?;
 
     Ok(())
 }
@@ -42,11 +54,7 @@ const VARIABLE_DEBUG_ATTR: &str = "__variable";
 const LOCATION_DEBUG_ATTR: &str = "__location";
 const MATCH_DEBUG_ATTR: &str = "__match";
 
-fn output_graph(
-    version: &Version,
-    parse_output: &ParseOutput,
-    output_path: &PathBuf,
-) -> Result<()> {
+fn output_graph(version: &Version, parse_output: &ParseOutput, output_path: PathBuf) -> Result<()> {
     let graph_builder = Bindings::get_graph_builder()?;
 
     let tree = parse_output.create_tree_cursor();
@@ -118,4 +126,75 @@ fn print_graph_as_mermaid(graph: &Graph) -> impl fmt::Display + '_ {
     }
 
     DisplayGraph(graph)
+}
+
+fn output_bindings(
+    version: &Version,
+    parse_output: &ParseOutput,
+    input: &str,
+    input_path: &Path,
+    output_path: PathBuf,
+) -> Result<()> {
+    let mut bindings = Bindings::create(version.clone());
+    bindings.add_file(
+        input_path.to_str().unwrap(),
+        parse_output.create_tree_cursor(),
+    )?;
+
+    let file_id = input_path.file_name().unwrap().to_str().unwrap();
+    let mut builder: ReportBuilder<'_, (&str, Range<usize>)> = Report::build(
+        ReportKind::Custom("References and definitions", Color::Unset),
+        file_id,
+        0,
+    )
+    .with_config(Config::default().with_color(false));
+
+    let mut definitions: Vec<Handle<'_>> = Vec::new();
+
+    for definition in bindings.all_definitions() {
+        let Some(cursor) = definition.get_cursor() else {
+            continue;
+        };
+
+        let range = {
+            let range = cursor.text_range();
+            let start = input[..range.start.utf8].chars().count();
+            let end = input[..range.end.utf8].chars().count();
+            start..end
+        };
+
+        definitions.push(definition);
+        let message = format!("def: {}", definitions.len());
+        builder = builder.with_label(Label::new((file_id, range)).with_message(message));
+    }
+
+    for reference in bindings.all_references() {
+        let Some(cursor) = reference.get_cursor() else {
+            continue;
+        };
+
+        let range = {
+            let range = cursor.text_range();
+            let start = input[..range.start.utf8].chars().count();
+            let end = input[..range.end.utf8].chars().count();
+            start..end
+        };
+
+        let definition = reference.jump_to_definition();
+        let message = match definition {
+            None => "unresolved".to_string(),
+            Some(definition) => {
+                let def_id = definitions.iter().position(|d| *d == definition).unwrap();
+                format!("ref: {}", def_id + 1)
+            }
+        };
+
+        builder = builder.with_label(Label::new((file_id, range)).with_message(message));
+    }
+
+    let report = builder.finish();
+    let output_file = File::create(output_path)?;
+    report.write((file_id, Source::from(input)), output_file)?;
+
+    Ok(())
 }
