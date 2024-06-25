@@ -1,7 +1,8 @@
 use std::fmt;
-use std::fs::{self, create_dir_all, File};
+use std::fs::{self, create_dir_all};
+use std::io::BufWriter;
 use std::ops::Range;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use anyhow::Result;
 use ariadne::{Color, Config, Label, Report, ReportBuilder, ReportKind, Source};
@@ -15,6 +16,8 @@ use slang_solidity::bindings::{Bindings, Handle};
 use slang_solidity::language::Language;
 use slang_solidity::parse_output::ParseOutput;
 
+use super::generated::VERSION_BREAKS;
+
 pub fn run(group_name: &str, file_name: &str) -> Result<()> {
     let data_dir = CargoWorkspace::locate_source_crate("solidity_testing_snapshots")?
         .join("bindings_output")
@@ -22,27 +25,38 @@ pub fn run(group_name: &str, file_name: &str) -> Result<()> {
     let input_path = data_dir.join(file_name);
     let input = fs::read_to_string(&input_path)?;
 
-    // TODO: de-hardcode this and parse with different versions?
-    let version = Language::SUPPORTED_VERSIONS.last().unwrap();
-    let language = Language::new(version.clone())?;
+    let mut last_graph_output = None;
+    let mut last_bindings_output = None;
 
-    let parse_output = language.parse(Language::ROOT_KIND, &input);
-    assert!(parse_output.is_valid());
+    for version in &VERSION_BREAKS {
+        let language = Language::new(version.clone())?;
 
-    let output_dir = data_dir.join("generated");
-    create_dir_all(&output_dir)?;
+        let parse_output = language.parse(Language::ROOT_KIND, &input);
+        assert!(parse_output.is_valid());
 
-    let graph_output_path = output_dir.join(format!("{file_name}.mmd"));
-    output_graph(version, &parse_output, graph_output_path)?;
+        let output_dir = data_dir.join("generated");
+        create_dir_all(&output_dir)?;
 
-    let bindings_output_path = output_dir.join(format!("{file_name}.txt"));
-    output_bindings(
-        version,
-        &parse_output,
-        &input,
-        &input_path,
-        bindings_output_path,
-    )?;
+        let graph_output = output_graph(version, &parse_output)?;
+        match last_graph_output {
+            Some(ref last) if last == &graph_output => (),
+            _ => {
+                let graph_output_path = output_dir.join(format!("{file_name}-{version}.mmd"));
+                fs::write(graph_output_path, &graph_output)?;
+                last_graph_output = Some(graph_output);
+            }
+        };
+
+        let bindings_output = output_bindings(version, &parse_output, &input, &input_path)?;
+        match last_bindings_output {
+            Some(ref last) if last == &bindings_output => (),
+            _ => {
+                let bindings_output_path = output_dir.join(format!("{file_name}-{version}.txt"));
+                fs::write(bindings_output_path, &bindings_output)?;
+                last_bindings_output = Some(bindings_output);
+            }
+        }
+    }
 
     Ok(())
 }
@@ -54,7 +68,7 @@ const VARIABLE_DEBUG_ATTR: &str = "__variable";
 const LOCATION_DEBUG_ATTR: &str = "__location";
 const MATCH_DEBUG_ATTR: &str = "__match";
 
-fn output_graph(version: &Version, parse_output: &ParseOutput, output_path: PathBuf) -> Result<()> {
+fn output_graph(version: &Version, parse_output: &ParseOutput) -> Result<String> {
     let graph_builder = Bindings::get_graph_builder()?;
 
     let tree = parse_output.create_tree_cursor();
@@ -77,9 +91,7 @@ fn output_graph(version: &Version, parse_output: &ParseOutput, output_path: Path
 
     graph_builder.execute_into(&mut graph, &tree, &execution_config, &NoCancellation)?;
 
-    fs::write(output_path, format!("{}", print_graph_as_mermaid(&graph)))?;
-
-    Ok(())
+    Ok(format!("{}", print_graph_as_mermaid(&graph)))
 }
 
 fn print_graph_as_mermaid(graph: &Graph) -> impl fmt::Display + '_ {
@@ -133,8 +145,7 @@ fn output_bindings(
     parse_output: &ParseOutput,
     input: &str,
     input_path: &Path,
-    output_path: PathBuf,
-) -> Result<()> {
+) -> Result<String> {
     let mut bindings = Bindings::create(version.clone());
     bindings.add_file(
         input_path.to_str().unwrap(),
@@ -193,8 +204,9 @@ fn output_bindings(
     }
 
     let report = builder.finish();
-    let output_file = File::create(output_path)?;
-    report.write((file_id, Source::from(input)), output_file)?;
+    let mut buffer = BufWriter::new(Vec::new());
+    report.write((file_id, Source::from(input)), &mut buffer)?;
 
-    Ok(())
+    let result = String::from_utf8(buffer.buffer().to_vec())?;
+    Ok(result)
 }
