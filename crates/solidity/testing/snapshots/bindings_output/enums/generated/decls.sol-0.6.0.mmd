@@ -1,0 +1,175 @@
+graph TD
+	N0["`**0** @(1, 1)
+ROOT_NODE
+#null`"]
+	N1["`**1** @(1, 1)
+@source_unit.lexical_scope
+line 20 column 21`"]
+	N1 --> N4
+	N1 --> N6
+	N1 --> N8
+	N1 --> N16
+	N2["`**2** @(1, 1)
+@source_unit.defs
+line 23 column 21`"]
+	N2 --> N4
+	N2 --> N6
+	N2 --> N8
+	N2 --> N16
+	N3["`**3** @(1, 1)
+@contract.lexical_scope
+line 30 column 18`"]
+	N3 --> N1
+	N3 --> N10
+	N4["`**4** @(1, 1)
+@contract.defs
+line 31 column 18`"]
+	N4 --> N17
+	N5["`**5** @(8, 1)
+@interface.lexical_scope
+line 35 column 19`"]
+	N5 --> N1
+	N5 --> N14
+	N6["`**6** @(8, 1)
+@interface.defs
+line 36 column 19`"]
+	N6 --> N18
+	N7["`**7** @(4, 1)
+@library.lexical_scope
+line 40 column 17`"]
+	N7 --> N1
+	N7 --> N12
+	N8["`**8** @(4, 1)
+@library.defs
+line 41 column 17`"]
+	N8 --> N19
+	N9["`**9** @(2, 1)
+@enum.lexical_scope
+line 50 column 14`"]
+	N10["`**10** @(2, 1)
+@enum.defs
+line 51 column 14`"]
+	N10 --> N20
+	N11["`**11** @(6, 1)
+@enum.lexical_scope
+line 50 column 14`"]
+	N12["`**12** @(6, 1)
+@enum.defs
+line 51 column 14`"]
+	N12 --> N21
+	N13["`**13** @(10, 1)
+@enum.lexical_scope
+line 50 column 14`"]
+	N14["`**14** @(10, 1)
+@enum.defs
+line 51 column 14`"]
+	N14 --> N22
+	N15["`**15** @(12, 1)
+@enum.lexical_scope
+line 50 column 14`"]
+	N15 --> N1
+	N16["`**16** @(12, 1)
+@enum.defs
+line 51 column 14`"]
+	N16 --> N23
+	N17[\"`**Test** @(1, 1)
+def
+line 111 column 8`"/]
+	N18[\"`**Iface** @(8, 1)
+def
+line 118 column 8`"/]
+	N19[\"`**LibTest** @(4, 1)
+def
+line 125 column 8`"/]
+	N20[\"`**Answer** @(2, 1)
+@name.def
+line 387 column 14`"/]
+	N20 --> N24
+	N20 --> N26
+	N21[\"`**Respuesta** @(6, 1)
+@name.def
+line 387 column 14`"/]
+	N21 --> N28
+	N21 --> N30
+	N22[\"`**Repondre** @(10, 1)
+@name.def
+line 387 column 14`"/]
+	N22 --> N32
+	N22 --> N34
+	N23[\"`**ActionChoices** @(12, 1)
+@name.def
+line 387 column 14`"/]
+	N23 --> N36
+	N23 --> N38
+	N23 --> N40
+	N23 --> N42
+	N24[\"`**.** @(2, 1)
+member
+line 400 column 8`"/]
+	N24 --> N25
+	N25[\"`**Yes** @(2, 1)
+def
+line 404 column 8`"/]
+	N26[\"`**.** @(2, 1)
+member
+line 400 column 8`"/]
+	N26 --> N27
+	N27[\"`**No** @(2, 1)
+def
+line 404 column 8`"/]
+	N28[\"`**.** @(6, 1)
+member
+line 400 column 8`"/]
+	N28 --> N29
+	N29[\"`**Si** @(6, 1)
+def
+line 404 column 8`"/]
+	N30[\"`**.** @(6, 1)
+member
+line 400 column 8`"/]
+	N30 --> N31
+	N31[\"`**No** @(6, 1)
+def
+line 404 column 8`"/]
+	N32[\"`**.** @(10, 1)
+member
+line 400 column 8`"/]
+	N32 --> N33
+	N33[\"`**Oui** @(10, 1)
+def
+line 404 column 8`"/]
+	N34[\"`**.** @(10, 1)
+member
+line 400 column 8`"/]
+	N34 --> N35
+	N35[\"`**Non** @(10, 1)
+def
+line 404 column 8`"/]
+	N36[\"`**.** @(12, 1)
+member
+line 400 column 8`"/]
+	N36 --> N37
+	N37[\"`**GoLeft** @(12, 1)
+def
+line 404 column 8`"/]
+	N38[\"`**.** @(12, 1)
+member
+line 400 column 8`"/]
+	N38 --> N39
+	N39[\"`**GoRight** @(12, 1)
+def
+line 404 column 8`"/]
+	N40[\"`**.** @(12, 1)
+member
+line 400 column 8`"/]
+	N40 --> N41
+	N41[\"`**GoStraight** @(12, 1)
+def
+line 404 column 8`"/]
+	N42[\"`**.** @(12, 1)
+member
+line 400 column 8`"/]
+	N42 --> N43
+	N43[\"`**SitStill** @(12, 1)
+def
+line 404 column 8`"/]

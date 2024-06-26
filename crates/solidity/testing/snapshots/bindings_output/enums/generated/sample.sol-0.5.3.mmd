@@ -1,0 +1,519 @@
+graph TD
+	N0["`**0** @(1, 1)
+ROOT_NODE
+#null`"]
+	N1["`**1** @(1, 1)
+@source_unit.lexical_scope
+line 20 column 21`"]
+	N1 --> N4
+	N2["`**2** @(1, 1)
+@source_unit.defs
+line 23 column 21`"]
+	N2 --> N4
+	N3["`**3** @(3, 1)
+@contract.lexical_scope
+line 30 column 18`"]
+	N3 --> N1
+	N3 --> N6
+	N3 --> N8
+	N3 --> N10
+	N3 --> N12
+	N3 --> N14
+	N3 --> N16
+	N3 --> N74
+	N3 --> N76
+	N4["`**4** @(3, 1)
+@contract.defs
+line 31 column 18`"]
+	N4 --> N17
+	N5["`**5** @(5, 1)
+@enum.lexical_scope
+line 50 column 14`"]
+	N6["`**6** @(5, 1)
+@enum.defs
+line 51 column 14`"]
+	N6 --> N81
+	N7["`**7** @(9, 1)
+@function.lexical_scope
+line 55 column 18`"]
+	N7 --> N3
+	N8["`**8** @(9, 1)
+@function.defs
+line 56 column 18`"]
+	N8 --> N18
+	N9["`**9** @(13, 1)
+@function.lexical_scope
+line 55 column 18`"]
+	N9 --> N3
+	N9 --> N24
+	N10["`**10** @(13, 1)
+@function.defs
+line 56 column 18`"]
+	N10 --> N19
+	N11["`**11** @(20, 1)
+@function.lexical_scope
+line 55 column 18`"]
+	N11 --> N3
+	N11 --> N26
+	N12["`**12** @(20, 1)
+@function.defs
+line 56 column 18`"]
+	N12 --> N20
+	N13["`**13** @(24, 1)
+@function.lexical_scope
+line 55 column 18`"]
+	N13 --> N3
+	N13 --> N28
+	N14["`**14** @(24, 1)
+@function.defs
+line 56 column 18`"]
+	N14 --> N21
+	N15["`**15** @(28, 1)
+@function.lexical_scope
+line 55 column 18`"]
+	N15 --> N3
+	N15 --> N30
+	N16["`**16** @(28, 1)
+@function.defs
+line 56 column 18`"]
+	N16 --> N22
+	N17[\"`**Test** @(3, 1)
+def
+line 111 column 8`"/]
+	N18[\"`**setGoStraight** @(9, 1)
+def
+line 132 column 8`"/]
+	N19[\"`**getChoice** @(13, 1)
+def
+line 132 column 8`"/]
+	N20[\"`**getDefaultChoice** @(20, 1)
+def
+line 132 column 8`"/]
+	N21[\"`**getLargestValue** @(24, 1)
+def
+line 132 column 8`"/]
+	N22[\"`**getSmallestValue** @(28, 1)
+def
+line 132 column 8`"/]
+	N23["`**23** @(17, 47)
+@param.lexical_scope
+line 144 column 15`"]
+	N23 --> N9
+	N24["`**24** @(17, 47)
+@param.defs
+line 145 column 15`"]
+	N25["`**25** @(21, 54)
+@param.lexical_scope
+line 144 column 15`"]
+	N25 --> N11
+	N26["`**26** @(21, 54)
+@param.defs
+line 145 column 15`"]
+	N27["`**27** @(25, 53)
+@param.lexical_scope
+line 144 column 15`"]
+	N27 --> N13
+	N28["`**28** @(25, 53)
+@param.defs
+line 145 column 15`"]
+	N29["`**29** @(29, 54)
+@param.lexical_scope
+line 144 column 15`"]
+	N29 --> N15
+	N30["`**30** @(29, 54)
+@param.defs
+line 145 column 15`"]
+	N31["`**31** @(10, 36)
+@block.lexical_scope
+line 219 column 15`"]
+	N31 --> N7
+	N32["`**32** @(10, 36)
+@block.defs
+line 220 column 15`"]
+	N33["`**33** @(17, 61)
+@block.lexical_scope
+line 219 column 15`"]
+	N33 --> N9
+	N34["`**34** @(17, 61)
+@block.defs
+line 220 column 15`"]
+	N35["`**35** @(21, 59)
+@block.lexical_scope
+line 219 column 15`"]
+	N35 --> N11
+	N36["`**36** @(21, 59)
+@block.defs
+line 220 column 15`"]
+	N37["`**37** @(25, 67)
+@block.lexical_scope
+line 219 column 15`"]
+	N37 --> N13
+	N38["`**38** @(25, 67)
+@block.defs
+line 220 column 15`"]
+	N39["`**39** @(29, 68)
+@block.lexical_scope
+line 219 column 15`"]
+	N39 --> N15
+	N40["`**40** @(29, 68)
+@block.defs
+line 220 column 15`"]
+	N41["`**41** @(11, 1)
+@stmt.lexical_scope
+line 224 column 14`"]
+	N41 --> N31
+	N41 --> N42
+	N42["`**42** @(11, 1)
+@stmt.defs
+line 225 column 14`"]
+	N43["`**43** @(18, 1)
+@stmt.lexical_scope
+line 224 column 14`"]
+	N43 --> N33
+	N43 --> N44
+	N44["`**44** @(18, 1)
+@stmt.defs
+line 225 column 14`"]
+	N45["`**45** @(22, 1)
+@stmt.lexical_scope
+line 224 column 14`"]
+	N45 --> N35
+	N45 --> N46
+	N46["`**46** @(22, 1)
+@stmt.defs
+line 225 column 14`"]
+	N47["`**47** @(26, 1)
+@stmt.lexical_scope
+line 224 column 14`"]
+	N47 --> N37
+	N47 --> N48
+	N48["`**48** @(26, 1)
+@stmt.defs
+line 225 column 14`"]
+	N49["`**49** @(30, 1)
+@stmt.lexical_scope
+line 224 column 14`"]
+	N49 --> N39
+	N49 --> N50
+	N50["`**50** @(30, 1)
+@stmt.defs
+line 225 column 14`"]
+	N51["`**51** @(6, 1)
+@type_name.type
+line 309 column 19`"]
+	N51 --> N73
+	N52["`**52** @(8, 1)
+@type_name.type
+line 309 column 19`"]
+	N52 --> N75
+	N53["`**53** @(17, 47)
+@type_name.type
+line 309 column 19`"]
+	N54["`**54** @(21, 54)
+@type_name.type
+line 309 column 19`"]
+	N55["`**55** @(25, 53)
+@type_name.type
+line 309 column 19`"]
+	N56["`**56** @(26, 21)
+@type_name.type
+line 309 column 19`"]
+	N57["`**57** @(29, 54)
+@type_name.type
+line 309 column 19`"]
+	N58["`**58** @(30, 21)
+@type_name.type
+line 309 column 19`"]
+	N59["`**59** @(6, 1)
+@id_path.ref
+line 313 column 17`"]
+	N59 --> N51
+	N60["`**60** @(8, 1)
+@id_path.ref
+line 313 column 17`"]
+	N60 --> N52
+	N61["`**61** @(17, 47)
+@id_path.ref
+line 313 column 17`"]
+	N61 --> N53
+	N62["`**62** @(25, 53)
+@id_path.ref
+line 313 column 17`"]
+	N62 --> N55
+	N63["`**63** @(26, 21)
+@id_path.ref
+line 313 column 17`"]
+	N63 --> N56
+	N64["`**64** @(29, 54)
+@id_path.ref
+line 313 column 17`"]
+	N64 --> N57
+	N65["`**65** @(30, 21)
+@id_path.ref
+line 313 column 17`"]
+	N65 --> N58
+	N66[/"`**ActionChoices** @(6, 1)
+@name.ref
+line 321 column 14`"\]
+	N66 --> N59
+	N67[/"`**ActionChoices** @(8, 1)
+@name.ref
+line 321 column 14`"\]
+	N67 --> N60
+	N68[/"`**ActionChoices** @(17, 47)
+@name.ref
+line 321 column 14`"\]
+	N68 --> N61
+	N69[/"`**ActionChoices** @(25, 53)
+@name.ref
+line 321 column 14`"\]
+	N69 --> N62
+	N70[/"`**ActionChoices** @(26, 21)
+@name.ref
+line 321 column 14`"\]
+	N70 --> N63
+	N71[/"`**ActionChoices** @(29, 54)
+@name.ref
+line 321 column 14`"\]
+	N71 --> N64
+	N72[/"`**ActionChoices** @(30, 21)
+@name.ref
+line 321 column 14`"\]
+	N72 --> N65
+	N73["`**73** @(6, 1)
+@state_var.lexical_scope
+line 343 column 19`"]
+	N73 --> N3
+	N74["`**74** @(6, 1)
+@state_var.defs
+line 344 column 19`"]
+	N74 --> N77
+	N75["`**75** @(8, 1)
+@state_var.lexical_scope
+line 343 column 19`"]
+	N75 --> N3
+	N76["`**76** @(8, 1)
+@state_var.defs
+line 344 column 19`"]
+	N76 --> N79
+	N77[\"`**choice** @(6, 1)
+def
+line 354 column 8`"/]
+	N77 --> N78
+	N78[\"`**@typeof** @(6, 1)
+typeof
+line 362 column 8`"/]
+	N78 --> N51
+	N79[\"`**defaultChoice** @(8, 1)
+def
+line 354 column 8`"/]
+	N79 --> N80
+	N80[\"`**@typeof** @(8, 1)
+typeof
+line 362 column 8`"/]
+	N80 --> N52
+	N81[\"`**ActionChoices** @(5, 1)
+@name.def
+line 387 column 14`"/]
+	N81 --> N82
+	N81 --> N84
+	N81 --> N86
+	N81 --> N88
+	N82[\"`**.** @(5, 1)
+member
+line 400 column 8`"/]
+	N82 --> N83
+	N83[\"`**GoLeft** @(5, 1)
+def
+line 404 column 8`"/]
+	N84[\"`**.** @(5, 1)
+member
+line 400 column 8`"/]
+	N84 --> N85
+	N85[\"`**GoRight** @(5, 1)
+def
+line 404 column 8`"/]
+	N86[\"`**.** @(5, 1)
+member
+line 400 column 8`"/]
+	N86 --> N87
+	N87[\"`**GoStraight** @(5, 1)
+def
+line 404 column 8`"/]
+	N88[\"`**.** @(5, 1)
+member
+line 400 column 8`"/]
+	N88 --> N89
+	N89[\"`**SitStill** @(5, 1)
+def
+line 404 column 8`"/]
+	N90["`**90** @(8, 43)
+@expr.lexical_scope
+line 474 column 14`"]
+	N90 --> N75
+	N91["`**91** @(8, 43)
+@expr.type
+line 476 column 14`"]
+	N92["`**92** @(8, 43)
+@expr.lexical_scope
+line 474 column 14`"]
+	N92 --> N90
+	N93["`**93** @(8, 43)
+@expr.type
+line 476 column 14`"]
+	N93 --> N118
+	N94["`**94** @(11, 1)
+@expr.lexical_scope
+line 474 column 14`"]
+	N94 --> N41
+	N95["`**95** @(11, 1)
+@expr.type
+line 476 column 14`"]
+	N96["`**96** @(11, 1)
+@expr.lexical_scope
+line 474 column 14`"]
+	N96 --> N94
+	N97["`**97** @(11, 1)
+@expr.type
+line 476 column 14`"]
+	N97 --> N119
+	N98["`**98** @(11, 17)
+@expr.lexical_scope
+line 474 column 14`"]
+	N98 --> N94
+	N99["`**99** @(11, 17)
+@expr.type
+line 476 column 14`"]
+	N100["`**100** @(11, 17)
+@expr.lexical_scope
+line 474 column 14`"]
+	N100 --> N98
+	N101["`**101** @(11, 17)
+@expr.type
+line 476 column 14`"]
+	N101 --> N120
+	N102["`**102** @(18, 15)
+@expr.lexical_scope
+line 474 column 14`"]
+	N102 --> N43
+	N103["`**103** @(18, 15)
+@expr.type
+line 476 column 14`"]
+	N103 --> N121
+	N104["`**104** @(22, 15)
+@expr.lexical_scope
+line 474 column 14`"]
+	N104 --> N45
+	N105["`**105** @(22, 15)
+@expr.type
+line 476 column 14`"]
+	N106["`**106** @(22, 15)
+@expr.lexical_scope
+line 474 column 14`"]
+	N106 --> N104
+	N107["`**107** @(22, 15)
+@expr.type
+line 476 column 14`"]
+	N108["`**108** @(22, 21)
+@expr.lexical_scope
+line 474 column 14`"]
+	N109["`**109** @(22, 21)
+@expr.type
+line 476 column 14`"]
+	N109 --> N122
+	N110["`**110** @(26, 15)
+@expr.lexical_scope
+line 474 column 14`"]
+	N110 --> N47
+	N111["`**111** @(26, 15)
+@expr.type
+line 476 column 14`"]
+	N112["`**112** @(26, 15)
+@expr.lexical_scope
+line 474 column 14`"]
+	N112 --> N110
+	N113["`**113** @(26, 15)
+@expr.type
+line 476 column 14`"]
+	N114["`**114** @(30, 15)
+@expr.lexical_scope
+line 474 column 14`"]
+	N114 --> N49
+	N115["`**115** @(30, 15)
+@expr.type
+line 476 column 14`"]
+	N116["`**116** @(30, 15)
+@expr.lexical_scope
+line 474 column 14`"]
+	N116 --> N114
+	N117["`**117** @(30, 15)
+@expr.type
+line 476 column 14`"]
+	N118[/"`**ActionChoices** @(8, 43)
+@name.ref
+line 480 column 14`"\]
+	N118 --> N92
+	N119[/"`**choice** @(11, 1)
+@name.ref
+line 480 column 14`"\]
+	N119 --> N96
+	N120[/"`**ActionChoices** @(11, 17)
+@name.ref
+line 480 column 14`"\]
+	N120 --> N100
+	N121[/"`**choice** @(18, 15)
+@name.ref
+line 480 column 14`"\]
+	N121 --> N102
+	N122[/"`**defaultChoice** @(22, 21)
+@name.ref
+line 480 column 14`"\]
+	N122 --> N108
+	N123["`**123** @(8, 58)
+@member.lexical_scope
+line 517 column 16`"]
+	N123 --> N131
+	N124["`**124** @(11, 32)
+@member.lexical_scope
+line 517 column 16`"]
+	N124 --> N132
+	N125["`**125** @(26, 36)
+@member.lexical_scope
+line 517 column 16`"]
+	N125 --> N133
+	N126["`**126** @(30, 36)
+@member.lexical_scope
+line 517 column 16`"]
+	N126 --> N134
+	N127[/"`**GoStraight** @(8, 58)
+ref
+line 521 column 8`"\]
+	N127 --> N123
+	N128[/"`**GoStraight** @(11, 32)
+ref
+line 521 column 8`"\]
+	N128 --> N124
+	N129[/"`**max** @(26, 36)
+ref
+line 521 column 8`"\]
+	N129 --> N125
+	N130[/"`**min** @(30, 36)
+ref
+line 521 column 8`"\]
+	N130 --> N126
+	N131[/"`**.** @(8, 43)
+member
+line 536 column 8`"\]
+	N131 --> N93
+	N132[/"`**.** @(11, 17)
+member
+line 536 column 8`"\]
+	N132 --> N101
+	N133[/"`**.** @(26, 15)
+member
+line 536 column 8`"\]
+	N133 --> N113
+	N134[/"`**.** @(30, 15)
+member
+line 536 column 8`"\]
+	N134 --> N117
