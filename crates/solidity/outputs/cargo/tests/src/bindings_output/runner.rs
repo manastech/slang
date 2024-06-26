@@ -1,5 +1,4 @@
 use std::fmt;
-use std::io::BufWriter;
 use std::ops::Range;
 use std::path::Path;
 
@@ -220,9 +219,9 @@ fn output_bindings(
     }
 
     let report = builder.finish();
-    let mut buffer = BufWriter::new(Vec::new());
+    let mut buffer = Vec::new();
     report.write((source_id, Source::from(source)), &mut buffer)?;
 
-    let result = String::from_utf8(buffer.buffer().to_vec())?;
+    let result = String::from_utf8(buffer)?;
     Ok(result)
 }
