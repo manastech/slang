@@ -35,11 +35,11 @@ References and definitions:
     │                       │   
     │                       ╰─── ref: 3
     │ 
- 11 │     function getAnswer2() returns (Answer) {
-    │              ─────┬────            ───┬──  
-    │                   ╰──────────────────────── def: 9
-    │                                       │    
-    │                                       ╰──── ref: 2
+ 11 │     function getOtherAnswer() returns (Answer) {
+    │              ───────┬──────            ───┬──  
+    │                     ╰────────────────────────── def: 9
+    │                                           │    
+    │                                           ╰──── ref: 2
  12 │         return Answer.No;
     │                ───┬── ─┬  
     │                   ╰─────── ref: 2
