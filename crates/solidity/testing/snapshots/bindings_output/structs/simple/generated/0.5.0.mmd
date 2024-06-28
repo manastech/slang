@@ -1,0 +1,312 @@
+%% This file is generated automatically by infrastructure scripts. Please don't edit by hand.
+
+graph TD
+	N0["`**0** @(1, 1)
+ROOT_NODE
+#null`"]
+	N1["`**1** @(1, 1)
+@source_unit.lexical_scope
+line 20 column 21`"]
+	N1 --> N4
+	N2["`**2** @(1, 1)
+@source_unit.defs
+line 23 column 21`"]
+	N2 --> N4
+	N3["`**3** @(1, 1)
+@contract.lexical_scope
+line 34 column 18`"]
+	N3 --> N1
+	N3 --> N5
+	N4["`**4** @(1, 1)
+@contract.def
+line 35 column 18`"]
+	N4 --> N11
+	N5["`**5** @(1, 1)
+@contract.members
+line 36 column 18`"]
+	N5 --> N7
+	N5 --> N10
+	N6["`**6** @(2, 1)
+@struct.lexical_scope
+line 58 column 16`"]
+	N6 --> N3
+	N7["`**7** @(2, 1)
+@struct.def
+line 59 column 16`"]
+	N7 --> N45
+	N8["`**8** @(2, 1)
+@struct.members
+line 60 column 16`"]
+	N8 --> N50
+	N8 --> N52
+	N9["`**9** @(6, 1)
+@function.lexical_scope
+line 70 column 18`"]
+	N9 --> N3
+	N9 --> N28
+	N9 --> N30
+	N10["`**10** @(6, 1)
+@function.def
+line 71 column 18`"]
+	N10 --> N13
+	N11[\"`**CrowdFunding** @(1, 1)
+def
+line 126 column 8`"/]
+	N11 --> N12
+	N12[\"`**.** @(1, 1)
+member
+line 133 column 8`"/]
+	N12 --> N5
+	N13[\"`**newCampaign** @(6, 1)
+def
+line 167 column 8`"/]
+	N14["`**14** @(3, 1)
+@type_name.type_ref
+line 180 column 19`"]
+	N14 --> N48
+	N15["`**15** @(3, 1)
+@type_name.output
+line 184 column 19`"]
+	N16["`**16** @(4, 1)
+@type_name.type_ref
+line 180 column 19`"]
+	N16 --> N49
+	N17["`**17** @(4, 1)
+@type_name.output
+line 184 column 19`"]
+	N18["`**18** @(7, 26)
+@type_name.type_ref
+line 180 column 19`"]
+	N18 --> N27
+	N19["`**19** @(7, 26)
+@type_name.output
+line 184 column 19`"]
+	N20["`**20** @(7, 54)
+@type_name.type_ref
+line 180 column 19`"]
+	N20 --> N29
+	N21["`**21** @(7, 54)
+@type_name.output
+line 184 column 19`"]
+	N22["`**22** @(8, 1)
+@type_name.type_ref
+line 180 column 19`"]
+	N22 --> N37
+	N23["`**23** @(8, 1)
+@type_name.output
+line 184 column 19`"]
+	N23 --> N25
+	N24["`**24** @(8, 1)
+@id_path.left
+line 188 column 17`"]
+	N24 --> N22
+	N25["`**25** @(8, 1)
+@id_path.right
+line 189 column 17`"]
+	N25 --> N26
+	N26[/"`**Campaign** @(8, 1)
+@name.ref
+line 205 column 14`"\]
+	N26 --> N24
+	N27["`**27** @(7, 26)
+@param.lexical_scope
+line 231 column 15`"]
+	N27 --> N9
+	N28["`**28** @(7, 26)
+@param.def
+line 232 column 15`"]
+	N28 --> N31
+	N29["`**29** @(7, 54)
+@param.lexical_scope
+line 231 column 15`"]
+	N29 --> N9
+	N30["`**30** @(7, 54)
+@param.def
+line 232 column 15`"]
+	N30 --> N33
+	N31[\"`**beneficiary** @(7, 26)
+def
+line 240 column 8`"/]
+	N31 --> N32
+	N32[/"`**@typeof** @(7, 26)
+typeof
+line 245 column 8`"\]
+	N32 --> N19
+	N33[\"`**goal** @(7, 54)
+def
+line 240 column 8`"/]
+	N33 --> N34
+	N34[/"`**@typeof** @(7, 54)
+typeof
+line 245 column 8`"\]
+	N34 --> N21
+	N35["`**35** @(7, 72)
+@block.lexical_scope
+line 316 column 15`"]
+	N35 --> N9
+	N36["`**36** @(7, 72)
+@block.defs
+line 317 column 15`"]
+	N37["`**37** @(8, 1)
+@stmt.lexical_scope
+line 321 column 14`"]
+	N37 --> N35
+	N37 --> N38
+	N38["`**38** @(8, 1)
+@stmt.defs
+line 322 column 14`"]
+	N38 --> N43
+	N39["`**39** @(9, 1)
+@stmt.lexical_scope
+line 321 column 14`"]
+	N39 --> N37
+	N39 --> N40
+	N40["`**40** @(9, 1)
+@stmt.defs
+line 322 column 14`"]
+	N41["`**41** @(10, 1)
+@stmt.lexical_scope
+line 321 column 14`"]
+	N41 --> N39
+	N41 --> N42
+	N42["`**42** @(10, 1)
+@stmt.defs
+line 322 column 14`"]
+	N43[\"`**c** @(8, 1)
+def
+line 389 column 8`"/]
+	N43 --> N44
+	N44[/"`**@typeof** @(8, 1)
+typeof
+line 395 column 8`"\]
+	N44 --> N23
+	N45[\"`**Campaign** @(2, 1)
+def
+line 540 column 8`"/]
+	N45 --> N46
+	N46[\"`**@typeof** @(2, 1)
+type_def
+line 545 column 8`"/]
+	N46 --> N47
+	N47[\"`**.** @(2, 1)
+member
+line 548 column 8`"/]
+	N47 --> N8
+	N48["`**48** @(2, 1)
+@member.lexical_scope
+line 557 column 16`"]
+	N48 --> N6
+	N49["`**49** @(2, 1)
+@member.lexical_scope
+line 557 column 16`"]
+	N49 --> N6
+	N50[\"`**beneficiary** @(2, 1)
+def
+line 566 column 8`"/]
+	N50 --> N51
+	N51[/"`**@typeof** @(2, 1)
+typeof
+line 573 column 8`"\]
+	N51 --> N15
+	N52[\"`**fundingGoal** @(2, 1)
+def
+line 566 column 8`"/]
+	N52 --> N53
+	N53[/"`**@typeof** @(2, 1)
+typeof
+line 573 column 8`"\]
+	N53 --> N17
+	N54["`**54** @(9, 1)
+@expr.lexical_scope
+line 617 column 14`"]
+	N54 --> N39
+	N55["`**55** @(9, 1)
+@expr.output
+line 619 column 14`"]
+	N56["`**56** @(9, 1)
+@expr.lexical_scope
+line 617 column 14`"]
+	N56 --> N54
+	N57["`**57** @(9, 1)
+@expr.output
+line 619 column 14`"]
+	N57 --> N74
+	N58["`**58** @(9, 1)
+@expr.lexical_scope
+line 617 column 14`"]
+	N58 --> N56
+	N59["`**59** @(9, 1)
+@expr.output
+line 619 column 14`"]
+	N59 --> N70
+	N60["`**60** @(9, 24)
+@expr.lexical_scope
+line 617 column 14`"]
+	N60 --> N54
+	N61["`**61** @(9, 24)
+@expr.output
+line 619 column 14`"]
+	N61 --> N71
+	N62["`**62** @(10, 1)
+@expr.lexical_scope
+line 617 column 14`"]
+	N62 --> N41
+	N63["`**63** @(10, 1)
+@expr.output
+line 619 column 14`"]
+	N64["`**64** @(10, 1)
+@expr.lexical_scope
+line 617 column 14`"]
+	N64 --> N62
+	N65["`**65** @(10, 1)
+@expr.output
+line 619 column 14`"]
+	N65 --> N76
+	N66["`**66** @(10, 1)
+@expr.lexical_scope
+line 617 column 14`"]
+	N66 --> N64
+	N67["`**67** @(10, 1)
+@expr.output
+line 619 column 14`"]
+	N67 --> N72
+	N68["`**68** @(10, 24)
+@expr.lexical_scope
+line 617 column 14`"]
+	N68 --> N62
+	N69["`**69** @(10, 24)
+@expr.output
+line 619 column 14`"]
+	N69 --> N73
+	N70[/"`**c** @(9, 1)
+ref
+line 655 column 8`"\]
+	N70 --> N58
+	N71[/"`**beneficiary** @(9, 24)
+ref
+line 655 column 8`"\]
+	N71 --> N60
+	N72[/"`**c** @(10, 1)
+ref
+line 655 column 8`"\]
+	N72 --> N66
+	N73[/"`**goal** @(10, 24)
+ref
+line 655 column 8`"\]
+	N73 --> N68
+	N74[/"`**beneficiary** @(9, 1)
+ref
+line 673 column 8`"\]
+	N74 --> N75
+	N75[/"`**.** @(9, 1)
+member
+line 676 column 8`"\]
+	N75 --> N59
+	N76[/"`**fundingGoal** @(10, 1)
+ref
+line 673 column 8`"\]
+	N76 --> N77
+	N77[/"`**.** @(10, 1)
+member
+line 676 column 8`"\]
+	N77 --> N67

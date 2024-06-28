@@ -1,0 +1,263 @@
+%% This file is generated automatically by infrastructure scripts. Please don't edit by hand.
+
+graph TD
+	N0["`**0** @(1, 1)
+ROOT_NODE
+#null`"]
+	N1["`**1** @(1, 1)
+@source_unit.lexical_scope
+line 20 column 21`"]
+	N1 --> N4
+	N1 --> N7
+	N1 --> N10
+	N2["`**2** @(1, 1)
+@source_unit.defs
+line 23 column 21`"]
+	N2 --> N4
+	N2 --> N7
+	N2 --> N10
+	N3["`**3** @(11, 1)
+@contract.lexical_scope
+line 34 column 18`"]
+	N3 --> N1
+	N3 --> N5
+	N4["`**4** @(11, 1)
+@contract.def
+line 35 column 18`"]
+	N4 --> N18
+	N5["`**5** @(11, 1)
+@contract.members
+line 36 column 18`"]
+	N5 --> N16
+	N6["`**6** @(4, 1)
+@library.lexical_scope
+line 50 column 17`"]
+	N6 --> N1
+	N6 --> N8
+	N7["`**7** @(4, 1)
+@library.def
+line 51 column 17`"]
+	N7 --> N20
+	N8["`**8** @(4, 1)
+@library.members
+line 52 column 17`"]
+	N8 --> N13
+	N9["`**9** @(1, 1)
+@struct.lexical_scope
+line 58 column 16`"]
+	N9 --> N1
+	N10["`**10** @(1, 1)
+@struct.def
+line 59 column 16`"]
+	N10 --> N40
+	N11["`**11** @(1, 1)
+@struct.members
+line 60 column 16`"]
+	N11 --> N54
+	N12["`**12** @(6, 1)
+@struct.lexical_scope
+line 58 column 16`"]
+	N12 --> N6
+	N13["`**13** @(6, 1)
+@struct.def
+line 59 column 16`"]
+	N13 --> N43
+	N14["`**14** @(6, 1)
+@struct.members
+line 60 column 16`"]
+	N14 --> N56
+	N14 --> N58
+	N15["`**15** @(13, 1)
+@struct.lexical_scope
+line 58 column 16`"]
+	N15 --> N3
+	N16["`**16** @(13, 1)
+@struct.def
+line 59 column 16`"]
+	N16 --> N46
+	N17["`**17** @(13, 1)
+@struct.members
+line 60 column 16`"]
+	N17 --> N60
+	N17 --> N62
+	N18[\"`**MyContract** @(11, 1)
+def
+line 126 column 8`"/]
+	N18 --> N19
+	N19[\"`**.** @(11, 1)
+member
+line 133 column 8`"/]
+	N19 --> N5
+	N20[\"`**SomeLib** @(4, 1)
+def
+line 154 column 8`"/]
+	N20 --> N21
+	N21[\"`**.** @(4, 1)
+member
+line 159 column 8`"/]
+	N21 --> N8
+	N22["`**22** @(2, 1)
+@type_name.type_ref
+line 180 column 19`"]
+	N22 --> N49
+	N23["`**23** @(2, 1)
+@type_name.output
+line 184 column 19`"]
+	N24["`**24** @(7, 1)
+@type_name.type_ref
+line 180 column 19`"]
+	N24 --> N50
+	N25["`**25** @(7, 1)
+@type_name.output
+line 184 column 19`"]
+	N26["`**26** @(8, 1)
+@type_name.type_ref
+line 180 column 19`"]
+	N26 --> N51
+	N27["`**27** @(8, 1)
+@type_name.output
+line 184 column 19`"]
+	N27 --> N33
+	N28["`**28** @(14, 1)
+@type_name.type_ref
+line 180 column 19`"]
+	N28 --> N52
+	N29["`**29** @(14, 1)
+@type_name.output
+line 184 column 19`"]
+	N30["`**30** @(15, 1)
+@type_name.type_ref
+line 180 column 19`"]
+	N30 --> N53
+	N31["`**31** @(15, 1)
+@type_name.output
+line 184 column 19`"]
+	N31 --> N35
+	N32["`**32** @(8, 1)
+@id_path.left
+line 188 column 17`"]
+	N32 --> N26
+	N33["`**33** @(8, 1)
+@id_path.right
+line 189 column 17`"]
+	N33 --> N36
+	N34["`**34** @(15, 1)
+@id_path.left
+line 188 column 17`"]
+	N34 --> N30
+	N35["`**35** @(15, 1)
+@id_path.right
+line 189 column 17`"]
+	N35 --> N38
+	N36[/"`**TopLevelStruct** @(8, 1)
+@name.ref
+line 205 column 14`"\]
+	N36 --> N32
+	N37[/"`**SomeLib** @(15, 1)
+@name.ref
+line 205 column 14`"\]
+	N37 --> N34
+	N38[/"`**LibStruct** @(15, 1)
+@name.ref
+line 205 column 14`"\]
+	N38 --> N39
+	N39[/"`**.** @(15, 1)
+member
+line 214 column 8`"\]
+	N39 --> N37
+	N40[\"`**TopLevelStruct** @(1, 1)
+def
+line 540 column 8`"/]
+	N40 --> N41
+	N41[\"`**@typeof** @(1, 1)
+type_def
+line 545 column 8`"/]
+	N41 --> N42
+	N42[\"`**.** @(1, 1)
+member
+line 548 column 8`"/]
+	N42 --> N11
+	N43[\"`**LibStruct** @(6, 1)
+def
+line 540 column 8`"/]
+	N43 --> N44
+	N44[\"`**@typeof** @(6, 1)
+type_def
+line 545 column 8`"/]
+	N44 --> N45
+	N45[\"`**.** @(6, 1)
+member
+line 548 column 8`"/]
+	N45 --> N14
+	N46[\"`**ContractStruct** @(13, 1)
+def
+line 540 column 8`"/]
+	N46 --> N47
+	N47[\"`**@typeof** @(13, 1)
+type_def
+line 545 column 8`"/]
+	N47 --> N48
+	N48[\"`**.** @(13, 1)
+member
+line 548 column 8`"/]
+	N48 --> N17
+	N49["`**49** @(1, 1)
+@member.lexical_scope
+line 557 column 16`"]
+	N49 --> N9
+	N50["`**50** @(6, 1)
+@member.lexical_scope
+line 557 column 16`"]
+	N50 --> N12
+	N51["`**51** @(6, 1)
+@member.lexical_scope
+line 557 column 16`"]
+	N51 --> N12
+	N52["`**52** @(13, 1)
+@member.lexical_scope
+line 557 column 16`"]
+	N52 --> N15
+	N53["`**53** @(13, 1)
+@member.lexical_scope
+line 557 column 16`"]
+	N53 --> N15
+	N54[\"`**x** @(1, 1)
+def
+line 566 column 8`"/]
+	N54 --> N55
+	N55[/"`**@typeof** @(1, 1)
+typeof
+line 573 column 8`"\]
+	N55 --> N23
+	N56[\"`**y** @(6, 1)
+def
+line 566 column 8`"/]
+	N56 --> N57
+	N57[/"`**@typeof** @(6, 1)
+typeof
+line 573 column 8`"\]
+	N57 --> N25
+	N58[\"`**top_level_struct** @(6, 1)
+def
+line 566 column 8`"/]
+	N58 --> N59
+	N59[/"`**@typeof** @(6, 1)
+typeof
+line 573 column 8`"\]
+	N59 --> N27
+	N60[\"`**z** @(13, 1)
+def
+line 566 column 8`"/]
+	N60 --> N61
+	N61[/"`**@typeof** @(13, 1)
+typeof
+line 573 column 8`"\]
+	N61 --> N29
+	N62[\"`**lib_struct** @(13, 1)
+def
+line 566 column 8`"/]
+	N62 --> N63
+	N63[/"`**@typeof** @(13, 1)
+typeof
+line 573 column 8`"\]
+	N63 --> N31

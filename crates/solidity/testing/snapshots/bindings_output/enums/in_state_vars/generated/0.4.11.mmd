@@ -14,99 +14,113 @@ line 23 column 21`"]
 	N2 --> N4
 	N3["`**3** @(1, 1)
 @contract.lexical_scope
-line 30 column 18`"]
+line 34 column 18`"]
 	N3 --> N1
-	N3 --> N6
-	N3 --> N12
+	N3 --> N5
+	N3 --> N17
 	N4["`**4** @(1, 1)
-@contract.defs
-line 31 column 18`"]
-	N4 --> N7
-	N5["`**5** @(2, 1)
-@enum.lexical_scope
-line 50 column 14`"]
+@contract.def
+line 35 column 18`"]
+	N4 --> N9
+	N5["`**5** @(1, 1)
+@contract.members
+line 36 column 18`"]
+	N5 --> N7
 	N6["`**6** @(2, 1)
-@enum.defs
-line 51 column 14`"]
-	N6 --> N15
-	N7[\"`**Foo** @(1, 1)
+@enum.lexical_scope
+line 64 column 14`"]
+	N7["`**7** @(2, 1)
+@enum.def
+line 65 column 14`"]
+	N7 --> N20
+	N8["`**8** @(2, 1)
+@enum.members
+line 66 column 14`"]
+	N8 --> N22
+	N8 --> N23
+	N9[\"`**Foo** @(1, 1)
 def
-line 111 column 8`"/]
-	N8["`**8** @(3, 1)
-@type_name.type
-line 144 column 19`"]
-	N8 --> N11
-	N9["`**9** @(3, 1)
-@id_path.ref
-line 148 column 17`"]
-	N9 --> N8
-	N10[/"`**Answer** @(3, 1)
-@name.ref
-line 156 column 14`"\]
-	N10 --> N9
+line 126 column 8`"/]
+	N9 --> N10
+	N10[\"`**.** @(1, 1)
+member
+line 133 column 8`"/]
+	N10 --> N5
 	N11["`**11** @(3, 1)
-@state_var.lexical_scope
-line 370 column 19`"]
-	N11 --> N3
+@type_name.type_ref
+line 180 column 19`"]
+	N11 --> N16
 	N12["`**12** @(3, 1)
-@state_var.defs
-line 371 column 19`"]
-	N12 --> N13
-	N13[\"`**choice** @(3, 1)
-def
-line 381 column 8`"/]
-	N13 --> N14
-	N14[\"`**@typeof** @(3, 1)
-typeof
-line 389 column 8`"/]
-	N14 --> N8
-	N15[\"`**Answer** @(2, 1)
-@name.def
-line 414 column 14`"/]
-	N15 --> N16
-	N15 --> N18
-	N16[\"`**.** @(2, 1)
-member
-line 427 column 8`"/]
-	N16 --> N17
-	N17[\"`**Yes** @(2, 1)
-def
-line 431 column 8`"/]
-	N18[\"`**.** @(2, 1)
-member
-line 427 column 8`"/]
-	N18 --> N19
-	N19[\"`**No** @(2, 1)
-def
-line 431 column 8`"/]
-	N20["`**20** @(4, 20)
-@expr.lexical_scope
-line 501 column 14`"]
-	N20 --> N11
-	N21["`**21** @(4, 20)
-@expr.type
-line 503 column 14`"]
-	N22["`**22** @(4, 20)
-@expr.lexical_scope
-line 501 column 14`"]
-	N22 --> N20
-	N23["`**23** @(4, 20)
-@expr.type
-line 503 column 14`"]
-	N23 --> N24
-	N24[/"`**Answer** @(4, 20)
+@type_name.output
+line 184 column 19`"]
+	N12 --> N14
+	N13["`**13** @(3, 1)
+@id_path.left
+line 188 column 17`"]
+	N13 --> N11
+	N14["`**14** @(3, 1)
+@id_path.right
+line 189 column 17`"]
+	N14 --> N15
+	N15[/"`**Answer** @(3, 1)
 @name.ref
-line 507 column 14`"\]
-	N24 --> N22
-	N25["`**25** @(4, 28)
-@member.lexical_scope
-line 545 column 16`"]
-	N25 --> N27
-	N26[/"`**Yes** @(4, 28)
-ref
-line 549 column 8`"\]
-	N26 --> N25
-	N27[/"`**.** @(4, 20)
+line 205 column 14`"\]
+	N15 --> N13
+	N16["`**16** @(3, 1)
+@state_var.lexical_scope
+line 441 column 19`"]
+	N16 --> N3
+	N17["`**17** @(3, 1)
+@state_var.def
+line 442 column 19`"]
+	N17 --> N18
+	N18[\"`**choice** @(3, 1)
+def
+line 452 column 8`"/]
+	N18 --> N19
+	N19[/"`**@typeof** @(3, 1)
+typeof
+line 458 column 8`"\]
+	N19 --> N12
+	N20[\"`**Answer** @(2, 1)
+def
+line 483 column 8`"/]
+	N20 --> N21
+	N21[\"`**.** @(2, 1)
 member
-line 564 column 8`"\]
-	N27 --> N23
+line 488 column 8`"/]
+	N21 --> N8
+	N22[\"`**Yes** @(2, 1)
+def
+line 500 column 8`"/]
+	N23[\"`**No** @(2, 1)
+def
+line 500 column 8`"/]
+	N24["`**24** @(4, 20)
+@expr.lexical_scope
+line 617 column 14`"]
+	N24 --> N16
+	N25["`**25** @(4, 20)
+@expr.output
+line 619 column 14`"]
+	N25 --> N29
+	N26["`**26** @(4, 20)
+@expr.lexical_scope
+line 617 column 14`"]
+	N26 --> N24
+	N27["`**27** @(4, 20)
+@expr.output
+line 619 column 14`"]
+	N27 --> N28
+	N28[/"`**Answer** @(4, 20)
+ref
+line 655 column 8`"\]
+	N28 --> N26
+	N29[/"`**Yes** @(4, 20)
+ref
+line 673 column 8`"\]
+	N29 --> N30
+	N30[/"`**.** @(4, 20)
+member
+line 676 column 8`"\]
+	N30 --> N27

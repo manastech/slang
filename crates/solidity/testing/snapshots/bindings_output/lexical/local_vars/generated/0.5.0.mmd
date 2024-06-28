@@ -14,175 +14,193 @@ line 23 column 21`"]
 	N2 --> N4
 	N3["`**3** @(1, 1)
 @contract.lexical_scope
-line 30 column 18`"]
+line 34 column 18`"]
 	N3 --> N1
-	N3 --> N6
-	N3 --> N8
+	N3 --> N5
 	N4["`**4** @(1, 1)
-@contract.defs
-line 31 column 18`"]
-	N4 --> N9
-	N5["`**5** @(2, 1)
-@function.lexical_scope
-line 55 column 18`"]
-	N5 --> N3
-	N5 --> N16
+@contract.def
+line 35 column 18`"]
+	N4 --> N10
+	N5["`**5** @(1, 1)
+@contract.members
+line 36 column 18`"]
+	N5 --> N7
+	N5 --> N9
 	N6["`**6** @(2, 1)
-@function.defs
-line 56 column 18`"]
-	N6 --> N10
-	N7["`**7** @(6, 1)
 @function.lexical_scope
-line 55 column 18`"]
-	N7 --> N3
-	N7 --> N18
+line 70 column 18`"]
+	N6 --> N3
+	N6 --> N21
+	N7["`**7** @(2, 1)
+@function.def
+line 71 column 18`"]
+	N7 --> N12
 	N8["`**8** @(6, 1)
-@function.defs
-line 56 column 18`"]
-	N8 --> N11
-	N9[\"`**Foo** @(1, 1)
+@function.lexical_scope
+line 70 column 18`"]
+	N8 --> N3
+	N8 --> N23
+	N9["`**9** @(6, 1)
+@function.def
+line 71 column 18`"]
+	N9 --> N13
+	N10[\"`**Foo** @(1, 1)
 def
-line 111 column 8`"/]
-	N10[\"`**bar** @(2, 1)
+line 126 column 8`"/]
+	N10 --> N11
+	N11[\"`**.** @(1, 1)
+member
+line 133 column 8`"/]
+	N11 --> N5
+	N12[\"`**bar** @(2, 1)
 def
-line 132 column 8`"/]
-	N11[\"`**baz** @(6, 1)
+line 167 column 8`"/]
+	N13[\"`**baz** @(6, 1)
 def
-line 132 column 8`"/]
-	N12["`**12** @(2, 29)
-@type_name.type
-line 144 column 19`"]
-	N12 --> N15
-	N13["`**13** @(3, 1)
-@type_name.type
-line 144 column 19`"]
-	N13 --> N23
-	N14["`**14** @(7, 29)
-@type_name.type
-line 144 column 19`"]
-	N14 --> N17
+line 167 column 8`"/]
+	N14["`**14** @(2, 29)
+@type_name.type_ref
+line 180 column 19`"]
+	N14 --> N20
 	N15["`**15** @(2, 29)
-@param.lexical_scope
-line 178 column 15`"]
-	N15 --> N5
-	N16["`**16** @(2, 29)
-@param.defs
-line 179 column 15`"]
-	N17["`**17** @(7, 29)
-@param.lexical_scope
-line 178 column 15`"]
-	N17 --> N7
+@type_name.output
+line 184 column 19`"]
+	N16["`**16** @(3, 1)
+@type_name.type_ref
+line 180 column 19`"]
+	N16 --> N28
+	N17["`**17** @(3, 1)
+@type_name.output
+line 184 column 19`"]
 	N18["`**18** @(7, 29)
-@param.defs
-line 179 column 15`"]
-	N19["`**19** @(2, 34)
+@type_name.type_ref
+line 180 column 19`"]
+	N18 --> N22
+	N19["`**19** @(7, 29)
+@type_name.output
+line 184 column 19`"]
+	N20["`**20** @(2, 29)
+@param.lexical_scope
+line 231 column 15`"]
+	N20 --> N6
+	N21["`**21** @(2, 29)
+@param.def
+line 232 column 15`"]
+	N22["`**22** @(7, 29)
+@param.lexical_scope
+line 231 column 15`"]
+	N22 --> N8
+	N23["`**23** @(7, 29)
+@param.def
+line 232 column 15`"]
+	N24["`**24** @(2, 34)
 @block.lexical_scope
-line 265 column 15`"]
-	N19 --> N5
-	N20["`**20** @(2, 34)
+line 316 column 15`"]
+	N24 --> N6
+	N25["`**25** @(2, 34)
 @block.defs
-line 266 column 15`"]
-	N21["`**21** @(7, 33)
+line 317 column 15`"]
+	N26["`**26** @(7, 33)
 @block.lexical_scope
-line 265 column 15`"]
-	N21 --> N7
-	N22["`**22** @(7, 33)
+line 316 column 15`"]
+	N26 --> N8
+	N27["`**27** @(7, 33)
 @block.defs
-line 266 column 15`"]
-	N23["`**23** @(3, 1)
+line 317 column 15`"]
+	N28["`**28** @(3, 1)
 @stmt.lexical_scope
-line 270 column 14`"]
-	N23 --> N19
-	N23 --> N24
-	N24["`**24** @(3, 1)
+line 321 column 14`"]
+	N28 --> N24
+	N28 --> N29
+	N29["`**29** @(3, 1)
 @stmt.defs
-line 271 column 14`"]
-	N24 --> N29
-	N25["`**25** @(4, 1)
+line 322 column 14`"]
+	N29 --> N34
+	N30["`**30** @(4, 1)
 @stmt.lexical_scope
-line 270 column 14`"]
-	N25 --> N23
-	N25 --> N26
-	N26["`**26** @(4, 1)
+line 321 column 14`"]
+	N30 --> N28
+	N30 --> N31
+	N31["`**31** @(4, 1)
 @stmt.defs
-line 271 column 14`"]
-	N27["`**27** @(8, 1)
+line 322 column 14`"]
+	N32["`**32** @(8, 1)
 @stmt.lexical_scope
-line 270 column 14`"]
-	N27 --> N21
-	N27 --> N28
-	N28["`**28** @(8, 1)
+line 321 column 14`"]
+	N32 --> N26
+	N32 --> N33
+	N33["`**33** @(8, 1)
 @stmt.defs
-line 271 column 14`"]
-	N29[\"`**x** @(3, 1)
+line 322 column 14`"]
+	N34[\"`**x** @(3, 1)
 def
-line 338 column 8`"/]
-	N29 --> N30
-	N30[\"`**@typeof** @(3, 1)
+line 389 column 8`"/]
+	N34 --> N35
+	N35[/"`**@typeof** @(3, 1)
 typeof
-line 346 column 8`"/]
-	N30 --> N13
-	N31["`**31** @(3, 17)
+line 395 column 8`"\]
+	N35 --> N17
+	N36["`**36** @(3, 17)
 @expr.lexical_scope
-line 501 column 14`"]
-	N31 --> N23
-	N32["`**32** @(3, 17)
-@expr.type
-line 503 column 14`"]
-	N33["`**33** @(4, 15)
+line 617 column 14`"]
+	N36 --> N28
+	N37["`**37** @(3, 17)
+@expr.output
+line 619 column 14`"]
+	N38["`**38** @(4, 15)
 @expr.lexical_scope
-line 501 column 14`"]
-	N33 --> N25
-	N34["`**34** @(4, 15)
-@expr.type
-line 503 column 14`"]
-	N35["`**35** @(4, 15)
+line 617 column 14`"]
+	N38 --> N30
+	N39["`**39** @(4, 15)
+@expr.output
+line 619 column 14`"]
+	N40["`**40** @(4, 15)
 @expr.lexical_scope
-line 501 column 14`"]
-	N35 --> N33
-	N36["`**36** @(4, 15)
-@expr.type
-line 503 column 14`"]
-	N36 --> N45
-	N37["`**37** @(4, 19)
+line 617 column 14`"]
+	N40 --> N38
+	N41["`**41** @(4, 15)
+@expr.output
+line 619 column 14`"]
+	N41 --> N50
+	N42["`**42** @(4, 19)
 @expr.lexical_scope
-line 501 column 14`"]
-	N37 --> N33
-	N38["`**38** @(4, 19)
-@expr.type
-line 503 column 14`"]
-	N39["`**39** @(8, 15)
+line 617 column 14`"]
+	N42 --> N38
+	N43["`**43** @(4, 19)
+@expr.output
+line 619 column 14`"]
+	N44["`**44** @(8, 15)
 @expr.lexical_scope
-line 501 column 14`"]
-	N39 --> N27
-	N40["`**40** @(8, 15)
-@expr.type
-line 503 column 14`"]
-	N41["`**41** @(8, 15)
+line 617 column 14`"]
+	N44 --> N32
+	N45["`**45** @(8, 15)
+@expr.output
+line 619 column 14`"]
+	N46["`**46** @(8, 15)
 @expr.lexical_scope
-line 501 column 14`"]
-	N41 --> N39
-	N42["`**42** @(8, 15)
-@expr.type
-line 503 column 14`"]
-	N42 --> N46
-	N43["`**43** @(8, 19)
+line 617 column 14`"]
+	N46 --> N44
+	N47["`**47** @(8, 15)
+@expr.output
+line 619 column 14`"]
+	N47 --> N51
+	N48["`**48** @(8, 19)
 @expr.lexical_scope
-line 501 column 14`"]
-	N43 --> N39
-	N44["`**44** @(8, 19)
-@expr.type
-line 503 column 14`"]
-	N44 --> N47
-	N45[/"`**x** @(4, 15)
-@name.ref
-line 507 column 14`"\]
-	N45 --> N35
-	N46[/"`**w** @(8, 15)
-@name.ref
-line 507 column 14`"\]
-	N46 --> N41
-	N47[/"`**x** @(8, 19)
-@name.ref
-line 507 column 14`"\]
-	N47 --> N43
+line 617 column 14`"]
+	N48 --> N44
+	N49["`**49** @(8, 19)
+@expr.output
+line 619 column 14`"]
+	N49 --> N52
+	N50[/"`**x** @(4, 15)
+ref
+line 655 column 8`"\]
+	N50 --> N40
+	N51[/"`**w** @(8, 15)
+ref
+line 655 column 8`"\]
+	N51 --> N46
+	N52[/"`**x** @(8, 19)
+ref
+line 655 column 8`"\]
+	N52 --> N48
