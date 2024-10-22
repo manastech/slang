@@ -88,7 +88,7 @@ mod resolver {
             parameters.finish()?;
 
             let context_file_descriptor = FileDescriptor::from_string(&context_path);
-            let Ok(FileDescriptor::User(context_user_path)) = context_file_descriptor else {
+            let Some(FileDescriptor::User(context_user_path)) = context_file_descriptor else {
                 // Since the path resolver should only map to user paths from
                 // user paths, it is an error to attempt to resolve a path in
                 // the context of a system file
@@ -127,7 +127,7 @@ mod resolver {
             let file_path = parameters.param()?.into_string()?;
             parameters.finish()?;
 
-            let Ok(file_descriptor) = FileDescriptor::from_string(&file_path) else {
+            let Some(file_descriptor) = FileDescriptor::from_string(&file_path) else {
                 return Err(ExecutionError::FunctionFailed(
                     "is-system-file".into(),
                     "Parameter is not a valid file path".into(),
