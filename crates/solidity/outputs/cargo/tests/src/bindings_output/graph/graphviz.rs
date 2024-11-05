@@ -63,6 +63,36 @@ impl<'a> DotSubGraph<'a> {
             format!("{graph_id}N{index}", graph_id = self.graph_id,)
         }
     }
+
+    fn node_label(&self, node: GraphNodeRef, node_type: Option<&str>) -> String {
+        let graph_node = &self.graph[node];
+        let mut node_label = if let Some(symbol) = graph_node.attributes.get("symbol") {
+            symbol.to_string()
+        } else if let Some(variable) = graph_node.attributes.get(VARIABLE_DEBUG_ATTR) {
+            variable.to_string()
+        } else {
+            format!("{}", node.index())
+        };
+        match node_type {
+            Some("push_scoped_symbol") => {
+                node_label += " \u{25ef}";
+            }
+            Some("pop_scoped_symbol") => {
+                node_label += " \u{2b24}";
+            }
+            _ => {
+                if graph_node.attributes.get("is_exported").is_some() {
+                    // shorten the label to fit in a circle
+                    if let Some(dot_index) = node_label.find('.') {
+                        node_label = String::from(&node_label[dot_index + 1..dot_index + 4]);
+                    } else {
+                        node_label = String::from(&node_label[..3]);
+                    }
+                }
+            }
+        }
+        node_label
+    }
 }
 
 impl<'a> fmt::Display for DotSubGraph<'a> {
@@ -82,10 +112,10 @@ impl<'a> fmt::Display for DotSubGraph<'a> {
         writeln!(f)?;
         writeln!(
             f,
-            "subgraph cluster_{graph_id} {{\nlabel = \"{title}\"",
-            graph_id = self.graph_id,
-            title = self.title
+            "subgraph cluster_{graph_id} {{",
+            graph_id = self.graph_id
         )?;
+        writeln!(f, "label = \"{title}\"", title = self.title)?;
 
         for node in self.graph.iter_nodes() {
             if special_node(node) {
@@ -94,18 +124,11 @@ impl<'a> fmt::Display for DotSubGraph<'a> {
             }
 
             let graph_node = &self.graph[node];
-            let mut node_label = if let Some(symbol) = graph_node.attributes.get("symbol") {
-                symbol.to_string()
-            } else if let Some(variable) = graph_node.attributes.get(VARIABLE_DEBUG_ATTR) {
-                variable.to_string()
-            } else {
-                format!("{}", node.index())
-            };
-
             let node_type = graph_node
                 .attributes
                 .get("type")
                 .and_then(|x| x.as_str().ok());
+            let node_label = self.node_label(node, node_type);
             let node_id = self.node_id(node);
 
             match node_type {
@@ -115,9 +138,6 @@ impl<'a> fmt::Display for DotSubGraph<'a> {
                     } else {
                         ", color = lightgreen, fontcolor = lightgreen, style = dashed"
                     };
-                    if node_type == Some("push_scoped_symbol") {
-                        node_label += " \u{25ef}";
-                    }
                     writeln!(
                         f,
                         "\t{node_id} [label = \"{node_label}\", shape = invhouse{extra_attrs}]"
@@ -140,9 +160,6 @@ impl<'a> fmt::Display for DotSubGraph<'a> {
                     } else {
                         ", color = coral, fontcolor = coral, style = dashed"
                     };
-                    if node_type == Some("pop_scoped_symbol") {
-                        node_label += " \u{2b24}";
-                    }
                     writeln!(
                         f,
                         "\t{node_id} [label = \"{node_label}\", shape = house{extra_attrs}]"
@@ -153,7 +170,7 @@ impl<'a> fmt::Display for DotSubGraph<'a> {
                 }
                 _ => {
                     let extra_attrs = if graph_node.attributes.get("is_exported").is_some() {
-                        ", shape = circle, width = 1, penwidth = 2, fixedsize = true, color = purple"
+                        ", shape = circle, width = 0.5, penwidth = 2, fixedsize = true, color = purple"
                     } else {
                         ""
                     };
