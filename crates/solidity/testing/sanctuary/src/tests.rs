@@ -9,7 +9,7 @@ use metaslang_bindings::PathResolver;
 use semver::Version;
 use slang_solidity::cst::{NonterminalKind, TextIndex};
 use slang_solidity::parser::Parser;
-use slang_solidity::{bindings, transform_built_ins_node};
+use slang_solidity::{bindings, bindings::Resolver, transform_built_ins_node};
 
 use crate::datasets::{DataSet, SourceFile};
 use crate::events::{Events, TestOutcome};
@@ -123,12 +123,14 @@ pub fn run_test(file: &SourceFile, events: &Events) -> Result<()> {
 
         bindings.add_system_file("built_ins.sol", built_ins_cursor);
         bindings.add_user_file(source_id, output.create_tree_cursor());
+        let mut resolver = Resolver::build(&bindings);
+
         let mut outcome = TestOutcome::Passed;
         for reference in bindings.all_references() {
             if reference.get_file().is_system() {
                 continue;
             }
-            if reference.definitions().is_empty() {
+            if resolver.resolve_reference(&reference).is_empty() {
                 outcome = TestOutcome::Failed;
                 let cursor = reference.get_cursor().unwrap();
                 let report = format!(

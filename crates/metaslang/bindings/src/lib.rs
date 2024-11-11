@@ -4,6 +4,7 @@ mod resolver;
 use std::collections::{HashMap, HashSet};
 use std::fmt::{self, Debug, Display};
 use std::hash::Hash;
+use std::iter::once;
 use std::sync::Arc;
 
 use builder::BuildResult;
@@ -14,6 +15,9 @@ use metaslang_graph_builder::functions::Functions;
 use resolver::Resolver;
 use semver::Version;
 use stack_graphs::graph::StackGraph;
+use stack_graphs::partial::PartialPaths;
+use stack_graphs::stitching::{Database, DatabaseCandidates, ForwardPartialPathStitcher, StitcherConfig};
+use stack_graphs::NoCancellation;
 
 type Builder<'a, KT> = builder::Builder<'a, KT>;
 type GraphHandle = stack_graphs::arena::Handle<stack_graphs::graph::Node>;
@@ -334,6 +338,74 @@ impl<KT: KindTypes + 'static> Bindings<KT> {
                     resolve_queue.push(parent.handle);
                 }
                 results.insert(parent.handle);
+            }
+        }
+        results
+    }
+}
+
+pub struct DatabaseResolver {
+    database: Database,
+    partials: PartialPaths,
+}
+
+impl DatabaseResolver {
+    pub fn build<KT: KindTypes + 'static>(bindings: &Bindings<KT>) -> Self {
+        let mut partials = PartialPaths::new();
+        let mut database = Database::new();
+        for file in bindings.stack_graph.iter_files() {
+            ForwardPartialPathStitcher::find_minimal_partial_path_set_in_file(
+                &bindings.stack_graph,
+                &mut partials,
+                file,
+                StitcherConfig::default(),
+                &NoCancellation,
+                |graph, partials, path| {
+                    database.add_partial_path(graph, partials, path.clone());
+                },
+            )
+            .expect("should never be cancelled");
+        }
+        Self { database, partials }
+    }
+
+    pub fn resolve_reference<'a, KT: KindTypes + 'static>(
+        &mut self,
+        reference: &Reference<'a, KT>,
+    ) -> Vec<Definition<'a, KT>> {
+        let mut reference_paths = Vec::new();
+        let owner = &reference.owner;
+        let stack_graph = &reference.owner.stack_graph;
+        ForwardPartialPathStitcher::find_all_complete_partial_paths(
+            &mut DatabaseCandidates::new(stack_graph, &mut self.partials, &mut self.database),
+            once(reference.handle),
+            StitcherConfig::default(),
+            &stack_graphs::NoCancellation,
+            |_graph, _paths, path| {
+                reference_paths.push(path.clone());
+            },
+        )
+        .expect("should never be cancelled");
+
+        let mut results = Vec::new();
+        let mut added_nodes = HashSet::new();
+        for reference_path in &reference_paths {
+            let end_node = reference_path.end_node;
+
+            // Because of how we're using the scope stack to propagate dynamic
+            // scopes, we may get multiple results with different scope stack
+            // postconditions but reaching the exact same definition. We only
+            // care about the definition, so we check for uniqueness.
+            if !added_nodes.contains(&end_node)
+                && reference_paths
+                    .iter()
+                    .all(|other| !other.shadows(&mut self.partials, reference_path))
+            {
+                results.push(owner
+                        .to_definition(end_node)
+                        .expect("path to end in a definition node"),
+                );
+                added_nodes.insert(end_node);
             }
         }
         results

@@ -14,6 +14,7 @@ use crate::cst::KindTypes;
 pub type Bindings = metaslang_bindings::Bindings<KindTypes>;
 pub type Definition<'a> = metaslang_bindings::Definition<'a, KindTypes>;
 pub type Reference<'a> = metaslang_bindings::Reference<'a, KindTypes>;
+pub type Resolver = metaslang_bindings::DatabaseResolver;
 
 pub fn create_with_resolver(
     version: Version,
