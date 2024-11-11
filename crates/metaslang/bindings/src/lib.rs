@@ -16,7 +16,9 @@ use resolver::Resolver;
 use semver::Version;
 use stack_graphs::graph::StackGraph;
 use stack_graphs::partial::PartialPaths;
-use stack_graphs::stitching::{Database, DatabaseCandidates, ForwardPartialPathStitcher, StitcherConfig};
+use stack_graphs::stitching::{
+    Database, DatabaseCandidates, ForwardPartialPathStitcher, StitcherConfig,
+};
 use stack_graphs::NoCancellation;
 
 type Builder<'a, KT> = builder::Builder<'a, KT>;
@@ -369,6 +371,42 @@ impl DatabaseResolver {
         Self { database, partials }
     }
 
+    pub fn resolve_all<KT: KindTypes + 'static>(
+        &mut self,
+        bindings: &Bindings<KT>,
+    ) -> HashMap<GraphHandle, Vec<GraphHandle>> {
+        let mut reference_paths = Vec::new();
+        let stack_graph = &bindings.stack_graph;
+
+        let references = bindings
+            .all_references()
+            .filter(|reference| reference.get_file().is_user())
+            .map(|reference| reference.handle);
+        ForwardPartialPathStitcher::find_all_complete_partial_paths(
+            &mut DatabaseCandidates::new(stack_graph, &mut self.partials, &mut self.database),
+            references,
+            StitcherConfig::default(),
+            &stack_graphs::NoCancellation,
+            |_graph, _paths, path| {
+                reference_paths.push(path.clone());
+            },
+        )
+        .expect("should never be cancelled");
+
+        let mut results: HashMap<GraphHandle, Vec<GraphHandle>> = HashMap::new();
+        for reference_path in &reference_paths {
+            let start_node = reference_path.start_node;
+            let end_node = reference_path.end_node;
+
+            if let Some(definitions) = results.get_mut(&start_node) {
+                definitions.push(end_node);
+            } else {
+                results.insert(start_node, vec![end_node]);
+            }
+        }
+        results
+    }
+
     pub fn resolve_reference<'a, KT: KindTypes + 'static>(
         &mut self,
         reference: &Reference<'a, KT>,
@@ -376,6 +414,7 @@ impl DatabaseResolver {
         let mut reference_paths = Vec::new();
         let owner = &reference.owner;
         let stack_graph = &reference.owner.stack_graph;
+
         ForwardPartialPathStitcher::find_all_complete_partial_paths(
             &mut DatabaseCandidates::new(stack_graph, &mut self.partials, &mut self.database),
             once(reference.handle),
@@ -401,7 +440,8 @@ impl DatabaseResolver {
                     .iter()
                     .all(|other| !other.shadows(&mut self.partials, reference_path))
             {
-                results.push(owner
+                results.push(
+                    owner
                         .to_definition(end_node)
                         .expect("path to end in a definition node"),
                 );
@@ -523,7 +563,7 @@ impl<KT: KindTypes + 'static> Hash for Definition<'_, KT> {
 #[derive(Clone)]
 pub struct Reference<'a, KT: KindTypes + 'static> {
     owner: &'a Bindings<KT>,
-    handle: GraphHandle,
+    pub handle: GraphHandle,
 }
 
 pub enum ResolutionError<'a, KT: KindTypes + 'static> {
