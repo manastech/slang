@@ -85,7 +85,7 @@ impl<'a> DotSubGraph<'a> {
                     // shorten the label to fit in a circle
                     if let Some(dot_index) = node_label.find('.') {
                         node_label = String::from(&node_label[dot_index + 1..dot_index + 4]);
-                    } else {
+                    } else if node_label.len() > 3 {
                         node_label = String::from(&node_label[..3]);
                     }
                 }
