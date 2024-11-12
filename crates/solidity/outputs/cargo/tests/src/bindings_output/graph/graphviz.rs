@@ -6,6 +6,7 @@ use slang_solidity::cst::KindTypes;
 use super::super::runner::ParsedPart;
 
 const VARIABLE_DEBUG_ATTR: &str = "debug_msgb_variable";
+const LOCATION_DEBUG_ATTR: &str = "debug_msgb_location";
 
 pub(crate) fn render(parsed_parts: &[ParsedPart<'_>]) -> String {
     let mut result = Vec::new();
@@ -67,9 +68,9 @@ impl<'a> DotSubGraph<'a> {
     fn node_label(&self, node: GraphNodeRef, node_type: Option<&str>) -> String {
         let graph_node = &self.graph[node];
         let mut node_label = if let Some(symbol) = graph_node.attributes.get("symbol") {
-            symbol.to_string()
+            format!("{symbol} [{index}]", index = node.index())
         } else if let Some(variable) = graph_node.attributes.get(VARIABLE_DEBUG_ATTR) {
-            variable.to_string()
+            format!("{variable} [{index}]", index = node.index())
         } else {
             format!("{}", node.index())
         };
@@ -131,6 +132,9 @@ impl<'a> fmt::Display for DotSubGraph<'a> {
             let node_label = self.node_label(node, node_type);
             let node_id = self.node_id(node);
 
+            if let Some(location) = graph_node.attributes.get(LOCATION_DEBUG_ATTR) {
+                writeln!(f, "\t// {location}")?;
+            }
             match node_type {
                 Some("push_symbol" | "push_scoped_symbol") => {
                     let extra_attrs = if graph_node.attributes.get("is_reference").is_some() {
@@ -178,10 +182,14 @@ impl<'a> fmt::Display for DotSubGraph<'a> {
                 }
             }
 
-            for (sink, _edge) in graph_node.iter_edges() {
+            for (sink, edge) in graph_node.iter_edges() {
                 if special_node(sink) {
                     // we already rendered the edges going to special nodes
                     continue;
+                }
+
+                if let Some(location) = edge.attributes.get(LOCATION_DEBUG_ATTR) {
+                    writeln!(f, "\t// {location}")?;
                 }
                 writeln!(f, "\t{node_id} -> {sink_id}", sink_id = self.node_id(sink))?;
             }
