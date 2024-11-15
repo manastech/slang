@@ -8,6 +8,7 @@ pub fn slang_solidity::bindings::get_built_ins(version: &semver::Version) -> &'s
 pub type slang_solidity::bindings::Bindings = metaslang_bindings::Bindings<slang_solidity::cst::KindTypes>
 pub type slang_solidity::bindings::Definition<'a> = metaslang_bindings::Definition<'a, slang_solidity::cst::KindTypes>
 pub type slang_solidity::bindings::Reference<'a> = metaslang_bindings::Reference<'a, slang_solidity::cst::KindTypes>
+pub type slang_solidity::bindings::Resolver = metaslang_bindings::DatabaseResolver
 pub mod slang_solidity::cst
 pub use slang_solidity::cst::EdgeLabelExtensions
 pub use slang_solidity::cst::NonterminalKindExtensions
