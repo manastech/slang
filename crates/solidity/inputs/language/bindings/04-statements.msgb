@@ -344,4 +344,9 @@
 ;;; Assembly
 @stmt [Statement [AssemblyStatement @body body: [YulBlock]]] {
   edge @body.lexical_scope -> @stmt.lexical_scope
+
+  node yul
+  attr (yul) push_symbol = "@yul"
+  edge @body.lexical_scope -> yul
+  edge yul -> @stmt.lexical_scope
 }
