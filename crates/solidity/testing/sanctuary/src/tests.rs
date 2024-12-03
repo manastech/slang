@@ -7,11 +7,10 @@ use infra_utils::paths::PathExtensions;
 use itertools::Itertools;
 use metaslang_bindings::PathResolver;
 use semver::Version;
-use slang_solidity::bindings::Bindings;
+use slang_solidity::bindings::{self, transform_built_ins_node, Bindings};
 use slang_solidity::cst::{Cursor, NonterminalKind, TextIndex, TextRange};
 use slang_solidity::diagnostic::{Diagnostic, Severity};
 use slang_solidity::parser::{ParseOutput, Parser};
-use slang_solidity::{bindings, transform_built_ins_node};
 
 use crate::datasets::{DataSet, SourceFile};
 use crate::events::{Events, TestOutcome};
