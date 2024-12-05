@@ -1,5 +1,6 @@
 mod builder;
 mod resolver;
+mod database;
 
 use std::collections::{HashMap, HashSet};
 use std::fmt::{self, Debug, Display};
@@ -192,6 +193,10 @@ impl<KT: KindTypes + 'static> Bindings<KT> {
         self.extension_hooks.extend(result.extension_hooks.drain());
 
         result
+    }
+
+    pub fn build_database(&self) -> database::DatabaseResolver<'_, KT> {
+        database::DatabaseResolver::new(self)
     }
 
     fn to_definition(&self, handle: GraphHandle) -> Option<Definition<'_, KT>> {
