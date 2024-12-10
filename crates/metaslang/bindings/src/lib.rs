@@ -237,8 +237,7 @@ impl<KT: KindTypes + 'static> Bindings<KT> {
     fn inherits_extensions(&self, handle: GraphHandle) -> bool {
         self.definitions_info
             .get(&handle)
-            .map(|info| info.inherit_extensions)
-            .unwrap_or_default()
+            .is_some_and(|info| info.inherit_extensions)
     }
 
     pub fn all_definitions(&self) -> impl Iterator<Item = Definition<'_, KT>> + '_ {
