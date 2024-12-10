@@ -14,7 +14,7 @@ pub enum AssertionError {
     #[error("Invalid assertion at {0}:{1}")]
     InvalidAssertion(usize, usize),
 
-    #[error("Invalid version requierement at line {0}: `{1}`")]
+    #[error("Invalid version requirement at line {0}: `{1}`")]
     InvalidVersionReq(usize, String),
 
     #[error("Duplicate assertion definition {0}")]
@@ -140,7 +140,7 @@ impl<'a> fmt::Display for DisplayCursor<'a> {
 ///   //     ^ref:1
 ///
 /// asserts that the CST identifier node `x` should be a binding reference which
-/// should be declared as a correspoding definition assertion with identifier
+/// should be declared as a corresponding definition assertion with identifier
 /// '1'; and that the CST identifier node `y` should be a binding reference that
 /// is unresolved for version at or above 0.5.0.
 ///
@@ -475,7 +475,7 @@ fn find_and_resolve_reference<'a>(
 
     // For the purpose of binding assertions, any failure to resolve to a single
     // definition will be treated as if it was unresolved
-    Ok(reference.jump_to_definition().ok())
+    Ok(reference.resolve_definition().ok())
 }
 
 fn lookup_referenced_definition<'a>(
