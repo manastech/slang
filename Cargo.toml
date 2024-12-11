@@ -170,6 +170,7 @@ all = "warn"
 # Cargo
 cargo = "warn"                                              # Warn about Cargo.toml issues, except...
 multiple_crate_versions = { level = "allow", priority = 1 } # Not possible to deduplicate, should be done periodically ourselves
+cargo_common_metadata = { level = "allow", priority = 1 }
 # Restriction (optional, neutral lints)
 clone_on_ref_ptr = "warn"                # Prefer using 'Arc::clone(x)' instead of 'x.clone()' to make it clear when we are doing an expensive clone
 exit = "warn"                            # Prefer not `process::exit`ing directly
