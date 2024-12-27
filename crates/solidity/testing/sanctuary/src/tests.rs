@@ -7,7 +7,7 @@ use infra_utils::paths::PathExtensions;
 use itertools::Itertools;
 use metaslang_bindings::PathResolver;
 use semver::Version;
-use slang_solidity::bindings::{self, BindingGraphBuilder};
+use slang_solidity::bindings::{self, BindingGraph};
 use slang_solidity::cst::{Cursor, KindTypes, NonterminalKind, Query, TextRange};
 use slang_solidity::diagnostic::{Diagnostic, Severity};
 use slang_solidity::parser::{ParseOutput, Parser};
@@ -186,7 +186,7 @@ fn run_bindings_check(
     output: &ParseOutput,
 ) -> Result<Vec<BindingError>> {
     let mut errors = Vec::new();
-    let binding_graph = create_bindings(version, source_id, output)?.resolve();
+    let binding_graph = create_bindings(version, source_id, output)?;
 
     for reference in binding_graph.all_references() {
         if reference.get_file().is_system() {
@@ -229,7 +229,7 @@ fn create_bindings(
     version: &Version,
     source_id: &str,
     output: &ParseOutput,
-) -> Result<BindingGraphBuilder> {
+) -> Result<Rc<BindingGraph>> {
     let mut binding_graph_builder = bindings::create_with_resolver(
         version.clone(),
         Rc::new(SingleFileResolver {
@@ -239,7 +239,7 @@ fn create_bindings(
 
     binding_graph_builder.add_user_file(source_id, output.create_tree_cursor());
 
-    Ok(binding_graph_builder)
+    Ok(binding_graph_builder.build())
 }
 
 /// The `PathResolver` that always resolves to the given `source_id`.

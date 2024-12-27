@@ -94,7 +94,7 @@ impl ParsedPart<'_> {
 
 fn check_bindings_coverage<'a>(
     part: &'a ParsedPart<'a>,
-    binding_graph: &'a BindingGraph,
+    binding_graph: &Rc<BindingGraph>,
 ) -> (Report<'a, ReportSpan<'a>>, bool) {
     let mut all_identifiers_bound = true;
     let mut builder: ReportBuilder<'_, ReportSpan<'_>> = Report::build(
@@ -219,7 +219,7 @@ fn build_report_for_part<'a>(
 
 fn build_definiens_report<'a>(
     part: &'a ParsedPart<'a>,
-    all_definitions: &'a [Definition<'a>],
+    all_definitions: &'a [Definition],
 ) -> Report<'a, ReportSpan<'a>> {
     let mut builder: ReportBuilder<'_, ReportSpan<'_>> =
         Report::build(ReportKind::Custom("Definiens", Color::Unset), part.path, 0)
