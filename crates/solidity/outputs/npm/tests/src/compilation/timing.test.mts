@@ -1,6 +1,7 @@
 import { TerminalKind } from "@nomicfoundation/slang/cst";
 import { createBuilder } from "./common.mjs";
 import { max, mean, round, std } from "mathjs";
+import assert from "node:assert";
 
 // test("DoodledBears sanctuary", async () => {
 //   await testFile("015E220901014BAE4f7e168925CD74e725e23692_DoodledBears.sol");
@@ -33,19 +34,25 @@ test("YaxisVotePower individual file", async () => {
 
 async function testFile(file: string) {
   let gotoDefTimes: number[] = Array();
-  const start = performance.now();
+  const startTime = performance.now();
   const builder = await createBuilder();
 
   await builder.addFile(file);
 
   const unit = builder.build();
   const cursor = unit.file(file)!.createTreeCursor();
+  const setupTime = round(performance.now() - startTime);
+
 
   let neitherDefNorRef = 0;
   let defs = 0;
   let refs = 0;
   let ambiguousRefs = 0;
   let emptyRef = 0;
+
+  // first access
+  assert(typeof unit.bindingGraph.definitionAt == "function");
+  const buildGraphTime = round(performance.now() - startTime - setupTime);
 
   while (cursor.goToNextTerminalWithKind(TerminalKind.Identifier)) {
     const startDefRef = performance.now();
@@ -77,15 +84,12 @@ async function testFile(file: string) {
       neitherDefNorRef += 1;
     }
 
-    if (defs + refs + emptyRef + neitherDefNorRef > 1) {
-      // don't push the first one, as that one might trigger the build of the graph
-      gotoDefTimes.push(gotoDefTime);
-    }
+    gotoDefTimes.push(gotoDefTime);
   }
 
-  const measure = round(performance.now() - start);
+  const totalTime = round(performance.now() - startTime);
   const maxGoto = round(max(gotoDefTimes));
   const meanGoto = round(mean(gotoDefTimes));
   const stdGoto = round(std(gotoDefTimes));
-  console.log(`file: ${file}\n\trefs: ${refs}\tdefs: ${defs}\tneither: ${neitherDefNorRef}\tambiguous: ${ambiguousRefs}\tempty refs: ${emptyRef}\n\ttotal time: ${measure}ms\tmax: ${maxGoto}ms\tmean: ${meanGoto}ms\tstd: ${stdGoto}ms`);
+  console.log(`file: ${file}\n\trefs: ${refs}\tdefs: ${defs}\tneither: ${neitherDefNorRef}\tambiguous: ${ambiguousRefs}\tempty refs: ${emptyRef}\n\ttotal time: ${totalTime}ms\tsetup: ${setupTime}ms\tbuild: ${buildGraphTime}ms\tmax: ${maxGoto}ms\tmean: ${meanGoto}ms\tstd: ${stdGoto}ms`);
 }
