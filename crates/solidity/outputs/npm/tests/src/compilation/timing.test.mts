@@ -88,8 +88,9 @@ async function testFile(file: string) {
   }
 
   const totalTime = round(performance.now() - startTime);
+  const resolutionTime = totalTime - buildGraphTime - setupTime;
   const maxGoto = round(max(gotoDefTimes));
   const meanGoto = round(mean(gotoDefTimes));
   const stdGoto = round(std(gotoDefTimes));
-  console.log(`file: ${file}\n\trefs: ${refs}\tdefs: ${defs}\tneither: ${neitherDefNorRef}\tambiguous: ${ambiguousRefs}\tempty refs: ${emptyRef}\n\ttotal time: ${totalTime}ms\tsetup: ${setupTime}ms\tbuild: ${buildGraphTime}ms\tmax: ${maxGoto}ms\tmean: ${meanGoto}ms\tstd: ${stdGoto}ms`);
+  console.log(`file: ${file}\n\trefs: ${refs}\tdefs: ${defs}\tneither: ${neitherDefNorRef}\tambiguous: ${ambiguousRefs}\tempty refs: ${emptyRef}\n\ttotal time: ${totalTime}ms\tsetup: ${setupTime}ms\tbuild: ${buildGraphTime}ms\tresolution: ${resolutionTime}ms\tmax: ${maxGoto}ms\tmean: ${meanGoto}ms\tstd: ${stdGoto}ms`);
 }
