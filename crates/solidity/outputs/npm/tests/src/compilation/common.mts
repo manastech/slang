@@ -18,6 +18,10 @@ export async function createBuilder(): Promise<CompilationBuilder> {
       assert(importLiteral.endsWith('"') || importLiteral.endsWith('\''));
 
       const importString = importLiteral.slice(1, -1);
+
+      // HACK: The source file might be buried in some structure a/b/c/d/file.sol
+      // in order to resolve its imports we allow ourselves to walk up the hierarchy
+      // until we find the proper root of the import.
       let i = 0;
       while (i < 5) {
         let splat = Array(i + 1).fill("..");
