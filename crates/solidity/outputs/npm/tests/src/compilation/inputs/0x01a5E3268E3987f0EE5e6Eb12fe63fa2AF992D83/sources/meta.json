@@ -1,0 +1,19 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/Darts.sol": {
+      "urls": [
+        "contracts/Darts.sol"
+      ]
+    }
+  },
+  "settings": {
+    "outputSelection": {
+      "*": {
+        "": [
+          "ast"
+        ]
+      }
+    }
+  }
+}

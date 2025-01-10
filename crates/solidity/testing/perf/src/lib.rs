@@ -38,4 +38,5 @@ mod unit_tests {
     define_test!(init_bindings);
     define_payload_test!(definitions);
     define_payload_test!(references);
+    define_payload_test!(slow);
 }

@@ -1,0 +1,19 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "DoodledBears.sol": {
+      "urls": [
+        "DoodledBears.sol"
+      ]
+    }
+  },
+  "settings": {
+    "outputSelection": {
+      "*": {
+        "": [
+          "ast"
+        ]
+      }
+    }
+  }
+}

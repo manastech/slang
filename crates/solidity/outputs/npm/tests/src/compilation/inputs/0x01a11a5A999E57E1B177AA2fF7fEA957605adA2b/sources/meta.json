@@ -1,0 +1,19 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "Users/k06a/Projects/mooniswap-v2/contracts/Mooniswap.sol": {
+      "urls": [
+        "Users/k06a/Projects/mooniswap-v2/contracts/Mooniswap.sol"
+      ]
+    }
+  },
+  "settings": {
+    "outputSelection": {
+      "*": {
+        "": [
+          "ast"
+        ]
+      }
+    }
+  }
+}

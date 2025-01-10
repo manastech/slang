@@ -3,10 +3,13 @@
 
   "include": ["./**/*"],
 
+  "noImplicitAny": false,
+
   "compilerOptions": {
     /* Projects */
     "composite": true,
     "incremental": true,
-    "tsBuildInfoFile": "target/tsc/.tsbuildinfo"
+    "tsBuildInfoFile": "target/tsc/.tsbuildinfo",
+    "allowJs": true
   }
 }

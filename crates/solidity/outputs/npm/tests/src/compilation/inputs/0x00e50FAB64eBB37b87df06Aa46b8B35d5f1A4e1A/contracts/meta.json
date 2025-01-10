@@ -1,0 +1,19 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "./misc/UiPoolDataProviderV2V3.sol": {
+      "urls": [
+        "./misc/UiPoolDataProviderV2V3.sol"
+      ]
+    }
+  },
+  "settings": {
+    "outputSelection": {
+      "*": {
+        "": [
+          "ast"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "project:/contracts/ERC721AContract.sol": {
+      "urls": [
+        "project:/contracts/ERC721AContract.sol"
+      ]
+    }
+  },
+  "settings": {
+    "outputSelection": {
+      "*": {
+        "": [
+          "ast"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "./pools/weighted/WeightedPool.sol": {
+      "urls": [
+        "./pools/weighted/WeightedPool.sol"
+      ]
+    }
+  },
+  "settings": {
+    "outputSelection": {
+      "*": {
+        "": [
+          "ast"
+        ]
+      }
+    }
+  }
+}

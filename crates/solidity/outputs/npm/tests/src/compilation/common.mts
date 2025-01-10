@@ -23,7 +23,7 @@ export async function createBuilder(): Promise<CompilationBuilder> {
       // in order to resolve its imports we allow ourselves to walk up the hierarchy
       // until we find the proper root of the import.
       let i = 0;
-      while (i < 5) {
+      while (i < 7) {
         let splat = Array(i + 1).fill("..");
         let file = path.join(sourceFileId, ...splat, importString);
         let real_file = path.join("crates/solidity/outputs/npm/tests/src/compilation/inputs", file);
