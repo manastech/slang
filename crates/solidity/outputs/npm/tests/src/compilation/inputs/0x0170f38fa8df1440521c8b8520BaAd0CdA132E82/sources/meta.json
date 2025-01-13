@@ -2,17 +2,13 @@
   "language": "Solidity",
   "sources": {
     "contracts/SeniorBond.sol": {
-      "urls": [
-        "contracts/SeniorBond.sol"
-      ]
+      "urls": ["contracts/SeniorBond.sol"]
     }
   },
   "settings": {
     "outputSelection": {
       "*": {
-        "": [
-          "ast"
-        ]
+        "": ["ast"]
       }
     }
   }

@@ -14,8 +14,8 @@ export async function createBuilder(): Promise<CompilationBuilder> {
 
     resolveImport: async (sourceFileId, importPath) => {
       const importLiteral = importPath.node.unparse();
-      assert(importLiteral.startsWith('"') || importLiteral.startsWith('\''));
-      assert(importLiteral.endsWith('"') || importLiteral.endsWith('\''));
+      assert(importLiteral.startsWith('"') || importLiteral.startsWith("'"));
+      assert(importLiteral.endsWith('"') || importLiteral.endsWith("'"));
 
       const importString = importLiteral.slice(1, -1);
 
@@ -32,7 +32,7 @@ export async function createBuilder(): Promise<CompilationBuilder> {
         }
         i++;
       }
-      throw `Can't resolve import ${importPath}`
+      throw `Can't resolve import ${importPath}`;
     },
   });
 
