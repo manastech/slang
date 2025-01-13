@@ -10,6 +10,7 @@ use iai_callgrind::{
 use solidity_testing_perf::dataset::SourceFile;
 use solidity_testing_perf::tests::bindings_resolve::BuiltBindingGraph;
 use solidity_testing_perf::tests::parser::ParsedFile;
+use solidity_testing_perf::tests::slow::SlowPayload;
 
 mod __dependencies_used_in_lib__ {
     use {infra_utils as _, metaslang_bindings as _, semver as _, slang_solidity as _};
@@ -36,12 +37,13 @@ define_payload_benchmark!(cursor, Vec<ParsedFile>);
 define_payload_benchmark!(query, Vec<ParsedFile>);
 define_payload_benchmark!(bindings_build, Vec<ParsedFile>);
 define_payload_benchmark!(bindings_resolve, BuiltBindingGraph);
+define_payload_benchmark!(slow, SlowPayload);
 
 library_benchmark_group!(
     name = benchmarks;
 
     // __SLANG_INFRA_BENCHMARKS_LIST__ (keep in sync)
-    benchmarks = parser, cursor, query, bindings_build, bindings_resolve,
+    benchmarks = parser, cursor, query, bindings_build, bindings_resolve, slow,
 );
 
 main!(

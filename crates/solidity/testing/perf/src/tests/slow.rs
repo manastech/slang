@@ -9,6 +9,8 @@ use slang_solidity::cst::{Cursor, TerminalKind};
 
 pub const SOLC_VERSION: Version = Version::new(0, 7, 1);
 
+pub type SlowPayload = (Cursor, Rc<BindingGraph>);
+
 const SOURCE: &str = "pools/weighted/WeightedPool.sol";
 
 const BASE_PATH: &str = "crates/solidity/outputs/npm/tests/src/compilation/inputs/0x01abc00E86C7e258823b9a055Fd62cA6CF61a163/sources/contracts";
@@ -49,7 +51,7 @@ fn add_file(seen_files: &mut Vec<String>, builder: &mut InternalCompilationBuild
     }
 }
 
-pub fn setup() -> (Cursor, Rc<BindingGraph>) {
+pub fn setup() -> SlowPayload {
     let mut builder =
         InternalCompilationBuilder::create(SOLC_VERSION).expect("Can't create CompilationBuilder");
 
@@ -72,7 +74,7 @@ pub fn setup() -> (Cursor, Rc<BindingGraph>) {
     }
 }
 
-pub fn run(data: (Cursor, Rc<BindingGraph>)) {
+pub fn run(data: SlowPayload) {
     let (mut cursor, binding_graph) = data;
 
     let mut ambiguous_refs = 0;
