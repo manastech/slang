@@ -11,6 +11,7 @@ semver = { workspace = true }
 metaslang_bindings = { workspace = true }
 slang_solidity = { workspace = true, features = [
   "__experimental_bindings_api",
+  "__private_compilation_api",
 ] }
 
 [dev-dependencies]

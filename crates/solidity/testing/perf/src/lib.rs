@@ -29,4 +29,5 @@ mod unit_tests {
     define_payload_test!(query);
     define_payload_test!(bindings_build);
     define_payload_test!(bindings_resolve);
+    define_payload_test!(slow);
 }
