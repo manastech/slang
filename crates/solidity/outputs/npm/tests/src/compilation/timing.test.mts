@@ -6,84 +6,92 @@ import * as solc from "solc";
 import path from "node:path";
 import fs from "node:fs";
 
-// test("DoodledBears sanctuary", async () => {
-//   await testFile("015E220901014BAE4f7e168925CD74e725e23692_DoodledBears.sol");
-// });
+describe("Sanctuary", () => {
+  test("DoodledBears sanctuary", async () => {
+    await testFile("015E220901014BAE4f7e168925CD74e725e23692_DoodledBears.sol");
+  });
 
-test("DoodledBears sourcify", async () => {
-  const file = `0x015E220901014BAE4f7e168925CD74e725e23692/sources/DoodledBears.sol`;
-  await testFile(file);
-});
+  test("WeightedPool sanctuary", async () => {
+    await testFile("01abc00E86C7e258823b9a055Fd62cA6CF61a163_WeightedPool.sol");
+  });
 
-test("DoodledBears solc", async () => {
-  await testFileSolC("0.8.11", ["0x015E220901014BAE4f7e168925CD74e725e23692", "sources"]);
-});
+  test("YaxisVotePower sanctuary", async () => {
+    await testFile("01fef0d5d6fd6b5701ae913cafb11ddaee982c9a_YaxisVotePower.sol");
+  })
+})
 
-// test("WeightedPool sanctuary", async () => {
-//   await testFile("01abc00E86C7e258823b9a055Fd62cA6CF61a163_WeightedPool.sol");
-// });
+describe("Sourcify", () => {
+  test("DoodledBears sourcify", async () => {
+    const file = `0x015E220901014BAE4f7e168925CD74e725e23692/sources/DoodledBears.sol`;
+    await testFile(file);
+  });
 
-test("WeightedPool sourcify", async () => {
-  await testFile("0x01abc00E86C7e258823b9a055Fd62cA6CF61a163/sources/contracts/pools/weighted/WeightedPool.sol");
-});
+  test("WeightedPool sourcify", async () => {
+    await testFile("0x01abc00E86C7e258823b9a055Fd62cA6CF61a163/sources/contracts/pools/weighted/WeightedPool.sol");
+  });
 
-test("WeightedPool solc", async () => {
-  await testFileSolC("0.7.0", ["0x01abc00E86C7e258823b9a055Fd62cA6CF61a163", "sources", "contracts"]);
-});
+  test("UiPoolDataProviderV2V3 sourcify", async () => {
+    await testFile("0x00e50FAB64eBB37b87df06Aa46b8B35d5f1A4e1A/contracts/misc/UiPoolDataProviderV2V3.sol");
+  });
 
-test("UiPoolDataProviderV2V3 sourcify", async () => {
-  await testFile("0x00e50FAB64eBB37b87df06Aa46b8B35d5f1A4e1A/contracts/misc/UiPoolDataProviderV2V3.sol");
-});
+  test("YaxisVotePower sourcify", async () => {
+    await testFile("0x01fef0d5d6fd6b5701ae913cafb11ddaee982c9a/YaxisVotePower/contracts/governance/YaxisVotePower.sol");
+  });
 
-test("UiPoolDataProviderV2V3 solc", async () => {
-  await testFileSolC("0.6.12", ["0x00e50FAB64eBB37b87df06Aa46b8B35d5f1A4e1A", "contracts"]);
-});
+  test("Mooniswap sourcify", async () => {
+    await testFile(
+      "0x01a11a5A999E57E1B177AA2fF7fEA957605adA2b/sources/Users/k06a/Projects/mooniswap-v2/contracts/Mooniswap.sol",
+    );
+  });
 
-// test("YaxisVotePower sanctuary", async () => {
-//   await testFile("01fef0d5d6fd6b5701ae913cafb11ddaee982c9a_YaxisVotePower.sol");
-// });
+  test("Darts sourcify", async () => {
+    await testFile("0x01a5E3268E3987f0EE5e6Eb12fe63fa2AF992D83/sources/contracts/Darts.sol");
+  });
 
-test("YaxisVotePower sourcify", async () => {
-  await testFile("0x01fef0d5d6fd6b5701ae913cafb11ddaee982c9a/YaxisVotePower/contracts/governance/YaxisVotePower.sol");
-});
+  test("ERC721AContract sourcify", async () => {
+    await testFile("0x01665987bC6725070e56d160d75AA19d8B73273e/sources/project:/contracts/ERC721AContract.sol");
+  });
 
-test("YaxisVotePower solc", async () => {
-  await testFileSolC("0.6.12", ["0x01fef0d5d6fd6b5701ae913cafb11ddaee982c9a", "YaxisVotePower"]);
-});
+  test("SeniorBond sourcify", async () => {
+    await testFile("0x0170f38fa8df1440521c8b8520BaAd0CdA132E82/sources/contracts/SeniorBond.sol");
+  });
+})
 
-test("Mooniswap sourcify", async () => {
-  await testFile(
-    "0x01a11a5A999E57E1B177AA2fF7fEA957605adA2b/sources/Users/k06a/Projects/mooniswap-v2/contracts/Mooniswap.sol",
-  );
-});
 
-test("Mooniswap solc", async () => {
-  await testFileSolC("0.6.0", ["0x01a11a5A999E57E1B177AA2fF7fEA957605adA2b", "sources"]);
-});
+describe("solc", () => {
 
-test("Darts sourcify", async () => {
-  await testFile("0x01a5E3268E3987f0EE5e6Eb12fe63fa2AF992D83/sources/contracts/Darts.sol");
-});
+  test("DoodledBears solc", async () => {
+    await testFileSolC("0.8.11", ["0x015E220901014BAE4f7e168925CD74e725e23692", "sources"]);
+  });
 
-test("Darts solc", async () => {
-  await testFileSolC("0.8.0", ["0x01a5E3268E3987f0EE5e6Eb12fe63fa2AF992D83", "sources"]);
-});
+  test("WeightedPool solc", async () => {
+    await testFileSolC("0.7.0", ["0x01abc00E86C7e258823b9a055Fd62cA6CF61a163", "sources", "contracts"]);
+  });
 
-test("ERC721AContract sourcify", async () => {
-  await testFile("0x01665987bC6725070e56d160d75AA19d8B73273e/sources/project:/contracts/ERC721AContract.sol");
-});
+  test("UiPoolDataProviderV2V3 solc", async () => {
+    await testFileSolC("0.6.12", ["0x00e50FAB64eBB37b87df06Aa46b8B35d5f1A4e1A", "contracts"]);
+  });
 
-test("ERC721AContract solc", async () => {
-  await testFileSolC("0.8.9", ["0x01665987bC6725070e56d160d75AA19d8B73273e", "sources"]);
-});
+  test("YaxisVotePower solc", async () => {
+    await testFileSolC("0.6.12", ["0x01fef0d5d6fd6b5701ae913cafb11ddaee982c9a", "YaxisVotePower"]);
+  });
 
-test("SeniorBond sourcify", async () => {
-  await testFile("0x0170f38fa8df1440521c8b8520BaAd0CdA132E82/sources/contracts/SeniorBond.sol");
-});
+  test("Mooniswap solc", async () => {
+    await testFileSolC("0.6.0", ["0x01a11a5A999E57E1B177AA2fF7fEA957605adA2b", "sources"]);
+  });
 
-test("SeniorBond solc", async () => {
-  await testFileSolC("0.7.6", ["0x0170f38fa8df1440521c8b8520BaAd0CdA132E82", "sources"]);
-});
+  test("Darts solc", async () => {
+    await testFileSolC("0.8.0", ["0x01a5E3268E3987f0EE5e6Eb12fe63fa2AF992D83", "sources"]);
+  });
+
+  test("ERC721AContract solc", async () => {
+    await testFileSolC("0.8.9", ["0x01665987bC6725070e56d160d75AA19d8B73273e", "sources"]);
+  });
+
+  test("SeniorBond solc", async () => {
+    await testFileSolC("0.7.6", ["0x0170f38fa8df1440521c8b8520BaAd0CdA132E82", "sources"]);
+  });
+})
 
 function findImports(folder: string[]): (file: string) => { contents: string } {
   const repoRoot = process.env["REPO_ROOT"];
