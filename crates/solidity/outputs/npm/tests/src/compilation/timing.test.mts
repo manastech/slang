@@ -1,5 +1,5 @@
 import { TerminalKind } from "@nomicfoundation/slang/cst";
-import { createBuilder } from "./common.mjs";
+import { createBuilder, SimpleGraph } from "./common.mjs";
 import { max, mean, round, std } from "mathjs";
 import assert from "node:assert";
 import * as solc from "solc";
@@ -137,7 +137,8 @@ async function testFileSolC(version: string, folder: string[]) {
 async function testFile(file: string) {
   let gotoDefTimes: number[] = Array();
   const startTime = performance.now();
-  const builder = await createBuilder();
+  var graph = new SimpleGraph();
+  const builder = await createBuilder(graph);
 
   await builder.addFile(file);
 
@@ -191,6 +192,12 @@ async function testFile(file: string) {
   const maxGoto = round(max(gotoDefTimes));
   const meanGoto = round(mean(gotoDefTimes));
   const stdGoto = round(std(gotoDefTimes));
+
+  const hash = file.split("/")[0];
+  graph.saveToDot(`crates/solidity/outputs/npm/tests/src/compilation/inputs/${hash}.dot`);
+  if (graph.isCyclic()) {
+    console.log("Cycle detected!");
+  }
   console.log(
     `file: ${file}\n\trefs: ${refs}\tdefs: ${defs}\tneither: ${neitherDefNorRef}\tambiguous: ${ambiguousRefs}\tempty refs: ${emptyRef}\n\ttotal time: ${totalTime}ms\tsetup: ${setupTime}ms\tbuild: ${buildGraphTime}ms\tresolution: ${resolutionTime}ms\tmax: ${maxGoto}ms\tmean: ${meanGoto}ms\tstd: ${stdGoto}ms`,
   );

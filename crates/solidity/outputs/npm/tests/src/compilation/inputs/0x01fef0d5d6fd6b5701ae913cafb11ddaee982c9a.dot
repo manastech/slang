@@ -1,0 +1,9 @@
+digraph {
+  "0x01fef0d5d6fd6b5701ae913cafb11ddaee982c9a/YaxisVotePower/contracts/governance/YaxisVotePower.sol" -> "0x01fef0d5d6fd6b5701ae913cafb11ddaee982c9a/YaxisVotePower/@openzeppelin/contracts/math/SafeMath.sol"
+  "0x01fef0d5d6fd6b5701ae913cafb11ddaee982c9a/YaxisVotePower/contracts/governance/YaxisVotePower.sol" -> "0x01fef0d5d6fd6b5701ae913cafb11ddaee982c9a/YaxisVotePower/contracts/governance/interfaces/IMasterChef.sol"
+  "0x01fef0d5d6fd6b5701ae913cafb11ddaee982c9a/YaxisVotePower/contracts/governance/YaxisVotePower.sol" -> "0x01fef0d5d6fd6b5701ae913cafb11ddaee982c9a/YaxisVotePower/contracts/governance/interfaces/IUniswapV2Pair.sol"
+  "0x01fef0d5d6fd6b5701ae913cafb11ddaee982c9a/YaxisVotePower/contracts/governance/YaxisVotePower.sol" -> "0x01fef0d5d6fd6b5701ae913cafb11ddaee982c9a/YaxisVotePower/contracts/governance/interfaces/IVoteProxy.sol"
+  "0x01fef0d5d6fd6b5701ae913cafb11ddaee982c9a/YaxisVotePower/contracts/governance/YaxisVotePower.sol" -> "0x01fef0d5d6fd6b5701ae913cafb11ddaee982c9a/YaxisVotePower/contracts/governance/interfaces/IYaxisBar.sol"
+  "0x01fef0d5d6fd6b5701ae913cafb11ddaee982c9a/YaxisVotePower/contracts/governance/interfaces/IUniswapV2Pair.sol" -> "0x01fef0d5d6fd6b5701ae913cafb11ddaee982c9a/YaxisVotePower/@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  "0x01fef0d5d6fd6b5701ae913cafb11ddaee982c9a/YaxisVotePower/contracts/governance/interfaces/IYaxisBar.sol" -> "0x01fef0d5d6fd6b5701ae913cafb11ddaee982c9a/YaxisVotePower/@openzeppelin/contracts/token/ERC20/IERC20.sol"
+}
