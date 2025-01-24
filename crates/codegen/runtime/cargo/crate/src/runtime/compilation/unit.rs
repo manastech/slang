@@ -43,14 +43,14 @@ impl CompilationUnit {
                 files: self.files.clone(),
             };
 
-            let mut binding_graph_builder =
+            let mut builder =
                 create_with_resolver(self.language_version.clone(), Rc::new(resolver))?;
 
             for (id, file) in &self.files {
-                binding_graph_builder.add_user_file(id, file.create_tree_cursor());
+                builder.add_user_file(id, file.create_tree_cursor());
             }
 
-            Ok(binding_graph_builder.build())
+            Ok(builder.build())
         })
     }
 }

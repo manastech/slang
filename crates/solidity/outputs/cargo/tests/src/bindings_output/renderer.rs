@@ -5,7 +5,7 @@ use std::rc::Rc;
 use anyhow::Result;
 use ariadne::{Color, Config, FnCache, Label, Report, ReportBuilder, ReportKind, Source};
 use slang_solidity::bindings::{BindingGraph, Definition, Reference};
-use slang_solidity::cst::{NonterminalKind, Query};
+use slang_solidity::cst::{NonterminalKind, TerminalKind};
 use slang_solidity::diagnostic;
 
 use super::runner::ParsedPart;
@@ -104,24 +104,27 @@ fn check_bindings_coverage<'a>(
     )
     .with_config(Config::default().with_color(false));
 
-    let query = Query::parse("@identifier ([Identifier] | [YulIdentifier])").unwrap();
-    let tree_cursor = part.parse_output.create_tree_cursor();
-    for result in tree_cursor.query(vec![query]) {
-        let identifier_cursor = result.captures.get("identifier").unwrap().first().unwrap();
-        let parent = {
-            let mut parent_cursor = identifier_cursor.spawn();
-            parent_cursor.go_to_parent();
-            parent_cursor.node()
-        };
-        if parent.is_nonterminal_with_kind(NonterminalKind::ExperimentalFeature) {
-            // ignore identifiers in `pragma experimental` directives
+    let mut cursor = part.parse_output.create_tree_cursor();
+
+    while cursor
+        .go_to_next_terminal_with_kinds(&[TerminalKind::Identifier, TerminalKind::YulIdentifier])
+    {
+        if matches!(
+            cursor.ancestors().next(),
+            Some(ancestor)
+            // ignore identifiers in `pragma experimental` directives, as they are unbound feature names:
+            if ancestor.kind == NonterminalKind::ExperimentalFeature ||
+            // TODO(#1213): unbound named parameters in mapping types
+            ancestor.kind == NonterminalKind::MappingKey
+        ) {
             continue;
         }
-        if binding_graph.definition_at(identifier_cursor).is_none()
-            && binding_graph.reference_at(identifier_cursor).is_none()
+
+        if binding_graph.definition_at(&cursor).is_none()
+            && binding_graph.reference_at(&cursor).is_none()
         {
             let range = {
-                let range = identifier_cursor.text_range();
+                let range = cursor.text_range();
                 let start = part.contents[..range.start.utf8].chars().count();
                 let end = part.contents[..range.end.utf8].chars().count();
                 start..end
