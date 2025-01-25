@@ -155,7 +155,7 @@ afterAll(() => {
   var timeTable = "| File |	Total (ms) |	Setup (ms) |	Build (ms) |	Resolution Total (ms) |	Resolution Max (ms) |	Resolution mean (ms) |	Resolution std (ms) |\n";
   timeTable += "|:-----|------:|------:|------:|------:|------:|------:|------:|\n";
   records.forEach((record) => {
-    timeTable += `${record.file.split("/").pop()} | ${record.totalTime} | ${record.setupTime} | ${record.buildGraphTime} | ${record.resolutionTime} | ${record.maxGoto} | ${record.meanGoto} | ${record.stdGoto} |\n`;
+    timeTable += `| ${record.file.split("/").pop()} | ${record.totalTime} | ${record.setupTime} | ${record.buildGraphTime} | ${record.resolutionTime} | ${record.maxGoto} | ${record.meanGoto} | ${record.stdGoto} |\n`;
   });
   console.log(timeTable);
 });
