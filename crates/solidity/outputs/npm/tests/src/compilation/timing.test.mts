@@ -1,6 +1,6 @@
 import { TerminalKind } from "@nomicfoundation/slang/cst";
 import { createBuilder, SimpleGraph } from "./common.mjs";
-import { max, mean, round, std } from "mathjs";
+import { MathNumericType, max, mean, round, std } from "mathjs";
 import assert from "node:assert";
 import * as solc from "solc";
 import path from "node:path";
@@ -134,17 +134,45 @@ async function testFileSolC(version: string, folder: string[]) {
   }
 }
 
+class Record {
+  file: string;
+  totalTime: number = 0;
+  buildGraphTime: number = 0;
+  setupTime: number = 0;
+  resolutionTime: number = 0;
+  maxGoto: number = 0;
+  meanGoto: number = 0;
+  stdGoto: MathNumericType = 0;
+
+  public constructor(file: string) {
+    this.file = file
+  }
+}
+
+const records: Record[] = []
+
+afterAll(() => {
+  var timeTable = "| File |	Total (ms) |	Setup (ms) |	Build (ms) |	Resolution Total (ms) |	Resolution Max (ms) |	Resolution mean (ms) |	Resolution std (ms) |\n";
+  timeTable += "|:-----|------:|------:|------:|------:|------:|------:|------:|\n";
+  records.forEach((record) => {
+    timeTable += `${record.file.split("/").pop()} | ${record.totalTime} | ${record.setupTime} | ${record.buildGraphTime} | ${record.resolutionTime} | ${record.maxGoto} | ${record.meanGoto} | ${record.stdGoto} |\n`;
+  });
+  console.log(timeTable);
+});
+
 async function testFile(file: string) {
   let gotoDefTimes: number[] = Array();
   const startTime = performance.now();
   var graph = new SimpleGraph();
   const builder = await createBuilder(graph);
 
+  const record = new Record(file);
+
   await builder.addFile(file);
 
   const unit = builder.build();
   const cursor = unit.file(file)!.createTreeCursor();
-  const setupTime = round(performance.now() - startTime);
+  record.setupTime = round(performance.now() - startTime);
 
   let neitherDefNorRef = 0;
   let defs = 0;
@@ -154,7 +182,7 @@ async function testFile(file: string) {
 
   // first access
   assert(typeof unit.bindingGraph.definitionAt == "function");
-  const buildGraphTime = round(performance.now() - startTime - setupTime);
+  record.buildGraphTime = round(performance.now() - startTime - record.setupTime);
 
   while (cursor.goToNextTerminalWithKind(TerminalKind.Identifier)) {
     const startDefRef = performance.now();
@@ -187,11 +215,13 @@ async function testFile(file: string) {
     gotoDefTimes.push(gotoDefTime);
   }
 
-  const totalTime = round(performance.now() - startTime);
-  const resolutionTime = totalTime - buildGraphTime - setupTime;
-  const maxGoto = round(max(gotoDefTimes));
-  const meanGoto = round(mean(gotoDefTimes));
-  const stdGoto = round(std(gotoDefTimes));
+  record.totalTime = round(performance.now() - startTime);
+  record.resolutionTime = record.totalTime - record.buildGraphTime - record.setupTime;
+  record.maxGoto = round(max(gotoDefTimes));
+  record.meanGoto = round(mean(gotoDefTimes));
+  record.stdGoto = round(std(gotoDefTimes)[0] || 0);
+
+  records.push(record);
 
   const hash = file.split("/")[0];
   graph.saveToDot(`crates/solidity/outputs/npm/tests/src/compilation/inputs/${hash}.dot`);
@@ -199,6 +229,6 @@ async function testFile(file: string) {
     console.log("Cycle detected!");
   }
   console.log(
-    `file: ${file}\n\trefs: ${refs}\tdefs: ${defs}\tneither: ${neitherDefNorRef}\tambiguous: ${ambiguousRefs}\tempty refs: ${emptyRef}\n\ttotal time: ${totalTime}ms\tsetup: ${setupTime}ms\tbuild: ${buildGraphTime}ms\tresolution: ${resolutionTime}ms\tmax: ${maxGoto}ms\tmean: ${meanGoto}ms\tstd: ${stdGoto}ms`,
+    `file: ${file}\n\trefs: ${refs}\tdefs: ${defs}\tneither: ${neitherDefNorRef}\tambiguous: ${ambiguousRefs}\tempty refs: ${emptyRef}\n`,
   );
 }
