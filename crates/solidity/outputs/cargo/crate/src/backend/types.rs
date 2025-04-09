@@ -98,6 +98,7 @@ pub struct ContractType {
     pub node_id: usize,
     pub name: String,
     pub state_variables: Vec<StateVariable>,
+    pub base_types: Vec<usize>,
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -111,6 +112,7 @@ pub struct StateVariable {
 pub struct InterfaceType {
     pub node_id: usize,
     pub name: String,
+    pub base_types: Vec<usize>,
 }
 
 #[derive(Debug, Eq, PartialEq)]

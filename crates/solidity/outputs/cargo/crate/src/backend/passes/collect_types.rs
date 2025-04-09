@@ -9,7 +9,7 @@ use crate::backend::types::{
     StructField, StructType, Type, TypeDefinition, TypeId, TypeRegistry, UserDefinedValueType,
 };
 use crate::bindings::{BindingGraph, BindingLocation};
-use crate::cst::NonterminalKind;
+use crate::cst::{NonterminalKind, NonterminalNode};
 
 pub struct Pass {
     pub types: TypeRegistry,
@@ -161,11 +161,7 @@ impl Pass {
         })
     }
 
-    fn find_or_register_identifier_path(
-        &mut self,
-        identifier_path: &IdentifierPath,
-        location: Option<DataLocation>,
-    ) -> TypeId {
+    fn resolve_identifier_path(&self, identifier_path: &IdentifierPath) -> Rc<NonterminalNode> {
         let type_identifier = identifier_path.last().unwrap();
         let type_reference = self
             .binding_graph
@@ -187,6 +183,15 @@ impl Pass {
         let Some(target_node) = target_node.as_nonterminal() else {
             panic!("Definiens node of definition referenced by {identifier_path:?} is not a non-terminal");
         };
+        Rc::clone(target_node)
+    }
+
+    fn find_or_register_identifier_path(
+        &mut self,
+        identifier_path: &IdentifierPath,
+        location: Option<DataLocation>,
+    ) -> TypeId {
+        let target_node = self.resolve_identifier_path(identifier_path);
         let node_id = target_node.id();
         match target_node.kind {
             NonterminalKind::ContractDefinition => {
@@ -234,19 +239,54 @@ impl ast::visitor::Visitor for Pass {
                 }
             })
             .collect();
+        let base_types = target
+            .specifiers
+            .iter()
+            .flat_map(|specifier| {
+                if let ast::ContractSpecifier::InheritanceSpecifier(inheritance_specifier) =
+                    specifier
+                {
+                    inheritance_specifier
+                        .types
+                        .iter()
+                        .map(|inheritance_type| {
+                            self.resolve_identifier_path(&inheritance_type.type_name)
+                                .id()
+                        })
+                        .collect()
+                } else {
+                    Vec::new()
+                }
+            })
+            .collect();
         self.types
             .register_definition(TypeDefinition::Contract(ContractType {
                 node_id: target.node_id,
                 name: target.name.unparse(),
                 state_variables,
+                base_types,
             }));
     }
 
     fn leave_interface_definition(&mut self, target: &ast::InterfaceDefinition) {
+        let base_types = target
+            .inheritance
+            .as_ref()
+            .map_or(Vec::new(), |inheritance_specifier| {
+                inheritance_specifier
+                    .types
+                    .iter()
+                    .map(|inheritance_type| {
+                        self.resolve_identifier_path(&inheritance_type.type_name)
+                            .id()
+                    })
+                    .collect()
+            });
         self.types
             .register_definition(TypeDefinition::Interface(InterfaceType {
                 node_id: target.node_id,
                 name: target.name.unparse(),
+                base_types,
             }));
     }
 
