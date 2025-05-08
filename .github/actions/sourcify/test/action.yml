@@ -1,22 +1,22 @@
 name: "run_sourcify"
 inputs:
-  chain_id:
+  chain-id:
     description: "The chain to run against."
     required: true
-  shard_count:
+  shard-count:
     description: "The number of shards that this chain is being divided into."
     required: true
-  shard_index:
+  shard-index:
     description: "The index of the shard to be tested."
     required: true
-  check_bindings:
+  check-bindings:
     description: "Whether to run the bindings tests."
     required: true
-  check_infer_version:
+  check-infer_version:
     description: "Whether to run the version inferrence tests."
     required: true
 outputs:
-  shard_results:
+  shard-results:
     description: "A JSON file with a summary of the test results for this shard."
     value: "${{ steps.output-shard-results.outputs.shard_results }}"
 runs:

@@ -119,11 +119,11 @@ jobs:
         uses: "./.github/actions/sourcify/test"
         id: "run-test"
         with:
-          chain_id: "${{ matrix.chain_id }}"
-          shard_count: 32
-          shard_index: "${{ matrix.shard_index }}"
-          check_bindings: "${{ inputs.check_bindings }}"
-          check_infer_version: "${{ inputs.check_infer_version }}"
+          chain-id: "${{ matrix.chain_id }}"
+          shard-count: 32
+          shard-index: "${{ matrix.shard_index }}"
+          check-bindings: "${{ inputs.check_bindings }}"
+          check-infer_version: "${{ inputs.check_infer_version }}"
       - name: "Write shard results to output"
         if: "!cancelled()"
         id: "output-shard-results"
