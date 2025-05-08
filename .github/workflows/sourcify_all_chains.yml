@@ -3,18 +3,19 @@ name: "sourcify_all_chains"
 on:
   workflow_dispatch:
     inputs:
-      check_bindings:
+      check-bindings:
         description: "Check name bindings on contracts, failing if there's any unresolved symbol."
         type: "boolean"
         required: false
         default: false
-      check_infer_version:
+      check-infer-version:
         description: "Check that we can infer the correct language version based on the available version pragmas."
         type: "boolean"
         required: false
         default: false
 jobs:
-  buildSlang:
+  build-slang:
+    name: "Build Sourcify Tests"
     runs-on: "ubuntu-22.04" # _SLANG_DEV_CONTAINER_BASE_IMAGE_ (keep in sync)
     strategy:
       fail-fast: true
@@ -33,18 +34,19 @@ jobs:
           overwrite: true
           retention-days: 1
           include-hidden-files: true
-  run_tests:
+  run-tests:
+    name: "Run Sourcify Tests"
     runs-on: "ubuntu-22.04" # _SLANG_DEV_CONTAINER_BASE_IMAGE_ (keep in sync)
-    needs: "buildSlang"
+    needs: "build-slang"
     strategy:
       fail-fast: false
       matrix:
-        chain_id:
+        chain-id:
           - 1 # Ethereum Mainnet
           - 42161 # Arbitrum One
           - 8453 # Base
           - 137 # Polygon Mainnet
-        shard_index:
+        shard-index:
           - 0
           - 1
           - 2
@@ -119,20 +121,20 @@ jobs:
         uses: "./.github/actions/sourcify/test"
         id: "run-test"
         with:
-          chain-id: "${{ matrix.chain_id }}"
+          chain-id: "${{ matrix.chain-id }}"
           shard-count: 32
-          shard-index: "${{ matrix.shard_index }}"
-          check-bindings: "${{ inputs.check_bindings }}"
-          check-infer_version: "${{ inputs.check_infer_version }}"
+          shard-index: "${{ matrix.shard-index }}"
+          check-bindings: "${{ inputs.check-bindings }}"
+          check-infer-version: "${{ inputs.check-infer-version }}"
       - name: "Write shard results to output"
         if: "!cancelled()"
         id: "output-shard-results"
-        run: 'echo "__SLANG_SOURCIFY_SHARD_RESULTS__${{ matrix.shard_index }}=${{ steps.run-test.outputs.shard-results }}" >> "$GITHUB_OUTPUT"'
+        run: 'echo "__SLANG_SOURCIFY_SHARD_RESULTS__${{ matrix.shard-index }}=${{ steps.run-test.outputs.shard-results }}" >> "$GITHUB_OUTPUT"'
   combinedResults:
     runs-on: "ubuntu-22.04" # _SLANG_DEV_CONTAINER_BASE_IMAGE_ (keep in sync)
     needs:
-      - "buildSlang"
-      - "run_tests"
+      - "build-slang"
+      - "run-tests"
     if: "!cancelled()"
     steps:
       - name: "Checkout Repository"
@@ -147,7 +149,7 @@ jobs:
           name: "solidity_testing_sourcify"
 
       - name: "Output shards results"
-        run: "echo '${{ toJSON(needs.singleShard.outputs) }}' > __SLANG_SOURCIFY_MATRIX_RESULTS__.json"
+        run: "echo '${{ toJSON(needs.run-tests.outputs) }}' > __SLANG_SOURCIFY_MATRIX_RESULTS__.json"
 
       - name: "Show combined results"
         run: |
