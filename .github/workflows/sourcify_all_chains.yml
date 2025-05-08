@@ -34,6 +34,7 @@ jobs:
           retention-days: 1
           include-hidden-files: true
   run_tests:
+    runs-on: "ubuntu-22.04" # _SLANG_DEV_CONTAINER_BASE_IMAGE_ (keep in sync)
     strategy:
       fail-fast: false
       matrix:
