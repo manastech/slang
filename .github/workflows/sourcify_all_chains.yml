@@ -111,6 +111,10 @@ jobs:
       __SLANG_SOURCIFY_SHARD_RESULTS__30: "${{ steps.output-shard-results.outputs.__SLANG_SOURCIFY_SHARD_RESULTS__30 }}"
       __SLANG_SOURCIFY_SHARD_RESULTS__31: "${{ steps.output-shard-results.outputs.__SLANG_SOURCIFY_SHARD_RESULTS__31 }}"
     steps:
+      - name: "Checkout Repository"
+        uses: "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683"
+      - name: "Restore Cache"
+        uses: "./.github/actions/cache/restore"
       - name: "Run Tests"
         uses: "./.github/actions/sourcify/run"
         id: "run-test"
