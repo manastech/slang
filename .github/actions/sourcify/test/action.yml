@@ -27,6 +27,7 @@ runs:
       with:
         name: "solidity_testing_sourcify"
     - name: "Run Tests"
+      shell: "bash"
       run: |
         chmod +x solidity_testing_sourcify
         ./scripts/bin/with-hermit ./solidity_testing_sourcify test \
@@ -36,6 +37,7 @@ runs:
           ${{ inputs.check_bindings == true && '--check-bindings' || '' }} \
           ${{ inputs.check_infer_version == true && '--check-infer-version' || '' }} \
     - name: "Write shard results to output"
+      shell: "bash"
       if: "!cancelled()"
       id: "output-shard-results"
       run: 'echo "shard_results=$(cat target/__SLANG_SOURCIFY_SHARD_RESULTS__.json)" >> "$GITHUB_OUTPUT"'
