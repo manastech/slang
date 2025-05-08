@@ -116,7 +116,7 @@ jobs:
       - name: "Restore Cache"
         uses: "./.github/actions/cache/restore"
       - name: "Run Tests"
-        uses: "./.github/actions/sourcify/run"
+        uses: "./.github/actions/sourcify/test"
         id: "run-test"
         with:
           chain_id: "${{ matrix.chain_id }}"
