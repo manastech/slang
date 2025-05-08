@@ -1,0 +1,41 @@
+name: "run_sourcify"
+inputs:
+  chain_id:
+    description: "The chain to run against."
+    required: true
+  shard_count:
+    description: "The number of shards that this chain is being divided into."
+    required: true
+  shard_index:
+    description: "The index of the shard to be tested."
+    required: true
+  check_bindings:
+    description: "Whether to run the bindings tests."
+    required: true
+  check_infer_version:
+    description: "Whether to run the version inferrence tests."
+    required: true
+outputs:
+  shard_results:
+    description: "A JSON file with a summary of the test results for this shard."
+    value: "${{ steps.output-shard-results.outputs.shard_results }}"
+runs:
+  using: "composite"
+  steps:
+    - name: "Download Test Binary"
+      uses: "actions/download-artifact@v4"
+      with:
+        name: "solidity_testing_sourcify"
+    - name: "Run Tests"
+      run: |
+        chmod +x solidity_testing_sourcify
+        ./scripts/bin/with-hermit ./solidity_testing_sourcify test \
+          --chain-id ${{ inputs.chain_id }}
+          --shard-count ${{ inputs.shard_count }} \
+          --shard-index ${{ matrix.shard_index }} \
+          ${{ inputs.check_bindings == true && '--check-bindings' || '' }} \
+          ${{ inputs.check_infer_version == true && '--check-infer-version' || '' }} \
+    - name: "Write shard results to output"
+      if: "!cancelled()"
+      id: "output-shard-results"
+      run: 'echo "shard_results=$(cat target/__SLANG_SOURCIFY_SHARD_RESULTS__.json)" >> "$GITHUB_OUTPUT"'
