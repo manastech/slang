@@ -127,7 +127,7 @@ jobs:
     runs-on: "ubuntu-22.04" # _SLANG_DEV_CONTAINER_BASE_IMAGE_ (keep in sync)
     needs:
       - "buildSlang"
-      - "singleShard"
+      - "run_tests"
     if: "!cancelled()"
     steps:
       - name: "Checkout Repository"
