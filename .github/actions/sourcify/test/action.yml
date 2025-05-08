@@ -31,7 +31,7 @@ runs:
       run: |
         chmod +x solidity_testing_sourcify
         ./scripts/bin/with-hermit ./solidity_testing_sourcify test \
-          --chain-id ${{ inputs.chain_id }}
+          --chain-id ${{ inputs.chain_id }} \
           --shard-count ${{ inputs.shard_count }} \
           --shard-index ${{ matrix.shard_index }} \
           ${{ inputs.check_bindings == true && '--check-bindings' || '' }} \
