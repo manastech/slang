@@ -12,7 +12,7 @@ inputs:
   check-bindings:
     description: "Whether to run the bindings tests."
     required: true
-  check-infer_version:
+  check-infer-version:
     description: "Whether to run the version inferrence tests."
     required: true
 outputs:
@@ -31,13 +31,13 @@ runs:
       run: |
         chmod +x solidity_testing_sourcify
         ./scripts/bin/with-hermit ./solidity_testing_sourcify test \
-          --chain-id ${{ inputs.chain_id }} \
-          --shard-count ${{ inputs.shard_count }} \
-          --shard-index ${{ matrix.shard_index }} \
-          ${{ inputs.check_bindings == true && '--check-bindings' || '' }} \
-          ${{ inputs.check_infer_version == true && '--check-infer-version' || '' }} \
+          --chain-id ${{ inputs.chain-id }} \
+          --shard-count ${{ inputs.shard-count }} \
+          --shard-index ${{ matrix.shard-index }} \
+          ${{ inputs.check-bindings == true && '--check-bindings' || '' }} \
+          ${{ inputs.check-infer-version == true && '--check-infer-version' || '' }} \
     - name: "Write shard results to output"
       shell: "bash"
       if: "!cancelled()"
       id: "output-shard-results"
-      run: 'echo "shard_results=$(cat target/__SLANG_SOURCIFY_SHARD_RESULTS__.json)" >> "$GITHUB_OUTPUT"'
+      run: 'echo "shard-results=$(cat target/__SLANG_SOURCIFY_SHARD_RESULTS__.json)" >> "$GITHUB_OUTPUT"'
