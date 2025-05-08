@@ -33,7 +33,7 @@ runs:
         ./scripts/bin/with-hermit ./solidity_testing_sourcify test \
           --chain-id ${{ inputs.chain-id }} \
           --shard-count ${{ inputs.shard-count }} \
-          --shard-index ${{ matrix.shard-index }} \
+          --shard-index ${{ inputs.shard-index }} \
           ${{ inputs.check-bindings == true && '--check-bindings' || '' }} \
           ${{ inputs.check-infer-version == true && '--check-infer-version' || '' }} \
     - name: "Write shard results to output"
