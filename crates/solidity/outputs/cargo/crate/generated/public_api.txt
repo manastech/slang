@@ -6962,6 +6962,17 @@ pub type slang_solidity::backend::l2_flat_contracts::YulVariableAssignmentStatem
 pub type slang_solidity::backend::l2_flat_contracts::YulVariableDeclarationStatement = alloc::rc::Rc<slang_solidity::backend::l2_flat_contracts::YulVariableDeclarationStatementStruct>
 pub type slang_solidity::backend::l2_flat_contracts::YulVariableDeclarationValue = alloc::rc::Rc<slang_solidity::backend::l2_flat_contracts::YulVariableDeclarationValueStruct>
 pub type slang_solidity::backend::l2_flat_contracts::YulVariableNames = alloc::vec::Vec<alloc::rc::Rc<slang_solidity::cst::TerminalNode>>
+pub mod slang_solidity::backend::passes
+pub mod slang_solidity::backend::passes::p0_build_ast
+pub struct slang_solidity::backend::passes::p0_build_ast::Output
+pub slang_solidity::backend::passes::p0_build_ast::Output::binding_graph: alloc::rc::Rc<slang_solidity::bindings::BindingGraph>
+pub slang_solidity::backend::passes::p0_build_ast::Output::files: std::collections::hash::map::HashMap<alloc::string::String, slang_solidity::backend::l1_typed_cst::SourceUnit>
+pub fn slang_solidity::backend::passes::p0_build_ast::run(input: &slang_solidity::compilation::CompilationUnit) -> core::result::Result<slang_solidity::backend::passes::p0_build_ast::Output, alloc::string::String>
+pub mod slang_solidity::backend::passes::p1_flatten_contracts
+pub struct slang_solidity::backend::passes::p1_flatten_contracts::Output
+pub slang_solidity::backend::passes::p1_flatten_contracts::Output::binding_graph: alloc::rc::Rc<slang_solidity::bindings::BindingGraph>
+pub slang_solidity::backend::passes::p1_flatten_contracts::Output::files: std::collections::hash::map::HashMap<alloc::string::String, slang_solidity::backend::l2_flat_contracts::SourceUnit>
+pub fn slang_solidity::backend::passes::p1_flatten_contracts::run(input: &slang_solidity::backend::passes::p0_build_ast::Output) -> slang_solidity::backend::passes::p1_flatten_contracts::Output
 pub mod slang_solidity::bindings
 pub use slang_solidity::bindings::BuiltInLocation
 pub use slang_solidity::bindings::PathResolver
