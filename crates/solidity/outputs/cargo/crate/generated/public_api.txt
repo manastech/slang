@@ -6976,6 +6976,7 @@ pub fn slang_solidity::backend::passes::p1_flatten_contracts::run(input: &slang_
 pub mod slang_solidity::backend::passes::p2_collect_definitions
 pub struct slang_solidity::backend::passes::p2_collect_definitions::Definition
 pub slang_solidity::backend::passes::p2_collect_definitions::Definition::definiens_node_id: metaslang_cst::nodes::NodeId
+pub slang_solidity::backend::passes::p2_collect_definitions::Definition::name: alloc::string::String
 pub slang_solidity::backend::passes::p2_collect_definitions::Definition::name_node_id: metaslang_cst::nodes::NodeId
 pub struct slang_solidity::backend::passes::p2_collect_definitions::Output
 pub slang_solidity::backend::passes::p2_collect_definitions::Output::definitions: std::collections::hash::map::HashMap<metaslang_cst::nodes::NodeId, slang_solidity::backend::passes::p2_collect_definitions::Definition>
