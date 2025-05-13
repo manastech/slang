@@ -12,6 +12,7 @@ use slang_solidity::parser::{ParseOutput, Parser};
 
 use super::graph::graphviz::render as render_graphviz_graph;
 use super::graph::mermaid::render as render_mermaid_graph;
+use super::new_binder::test_new_binder;
 use super::renderer::render_bindings;
 use crate::generated::VERSION_BREAKS;
 use crate::multi_part_file::{split_multi_file, Part};
@@ -74,6 +75,8 @@ pub fn run(group_name: &str, test_name: &str) -> Result<()> {
         } else {
             "failure"
         };
+
+        test_new_binder(group_name, test_name, version, &parsed_parts)?;
 
         // Render graph outputs only if the __SLANG_BINDINGS_RENDER_GRAPHS__
         // environment variable is set.
