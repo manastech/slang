@@ -32,6 +32,7 @@ pub struct Definition {
 }
 
 struct Scope {
+    #[allow(dead_code)]
     parent: Option<Rc<RefCell<Scope>>>,
     definitions: HashMap<String, NodeId>,
 }
@@ -231,7 +232,8 @@ impl Visitor for Pass {
         node: &input_ir::StateVariableDefinition,
     ) -> bool {
         self.insert_definition(node.node_id, &node.name);
-        false
+        // need to visit to gather possible mapping key/value names
+        true
     }
 
     fn enter_enum_definition(&mut self, node: &input_ir::EnumDefinition) -> bool {
