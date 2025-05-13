@@ -6973,6 +6973,14 @@ pub struct slang_solidity::backend::passes::p1_flatten_contracts::Output
 pub slang_solidity::backend::passes::p1_flatten_contracts::Output::binding_graph: alloc::rc::Rc<slang_solidity::bindings::BindingGraph>
 pub slang_solidity::backend::passes::p1_flatten_contracts::Output::files: std::collections::hash::map::HashMap<alloc::string::String, slang_solidity::backend::l2_flat_contracts::SourceUnit>
 pub fn slang_solidity::backend::passes::p1_flatten_contracts::run(input: &slang_solidity::backend::passes::p0_build_ast::Output) -> slang_solidity::backend::passes::p1_flatten_contracts::Output
+pub mod slang_solidity::backend::passes::p2_collect_definitions
+pub struct slang_solidity::backend::passes::p2_collect_definitions::Definition
+pub slang_solidity::backend::passes::p2_collect_definitions::Definition::definiens_node_id: metaslang_cst::nodes::NodeId
+pub slang_solidity::backend::passes::p2_collect_definitions::Definition::name_node_id: metaslang_cst::nodes::NodeId
+pub struct slang_solidity::backend::passes::p2_collect_definitions::Output
+pub slang_solidity::backend::passes::p2_collect_definitions::Output::definitions: std::collections::hash::map::HashMap<metaslang_cst::nodes::NodeId, slang_solidity::backend::passes::p2_collect_definitions::Definition>
+pub slang_solidity::backend::passes::p2_collect_definitions::Output::files: std::collections::hash::map::HashMap<alloc::string::String, slang_solidity::backend::l2_flat_contracts::SourceUnit>
+pub fn slang_solidity::backend::passes::p2_collect_definitions::run(input: &slang_solidity::backend::passes::p1_flatten_contracts::Output) -> slang_solidity::backend::passes::p2_collect_definitions::Output
 pub mod slang_solidity::backend::types
 pub enum slang_solidity::backend::types::DataLocation
 pub slang_solidity::backend::types::DataLocation::Calldata
