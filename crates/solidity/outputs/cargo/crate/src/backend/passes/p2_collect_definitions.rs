@@ -6,11 +6,11 @@ use metaslang_cst::nodes::NodeId;
 
 use super::p1_flatten_contracts::Output as Input;
 use crate::backend::l2_flat_contracts::visitor::Visitor;
-use crate::backend::l2_flat_contracts::{self as input_ir, SourceUnit};
+use crate::backend::l2_flat_contracts::{self as input_ir};
 use crate::cst::TerminalNode;
 
 pub struct Output {
-    pub files: HashMap<String, SourceUnit>,
+    pub files: HashMap<String, input_ir::SourceUnit>,
     pub definitions: HashMap<NodeId, Definition>,
     pub scopes: HashMap<NodeId, Rc<RefCell<Scope>>>,
 }
@@ -55,6 +55,17 @@ impl Scope {
             parent: Some(Rc::clone(parent)),
             definitions: HashMap::new(),
         }))
+    }
+
+    pub fn resolve(&self, name: &str) -> Option<NodeId> {
+        if let Some(definition) = self.definitions.get(name) {
+            return Some(*definition);
+        }
+        if let Some(parent_scope) = &self.parent {
+            parent_scope.borrow().resolve(name)
+        } else {
+            None
+        }
     }
 }
 
@@ -114,14 +125,14 @@ impl Pass {
 }
 
 impl Visitor for Pass {
-    fn enter_source_unit(&mut self, node: &SourceUnit) -> bool {
+    fn enter_source_unit(&mut self, node: &input_ir::SourceUnit) -> bool {
         assert!(self.scope_stack.is_empty());
 
         self.push_scope(node.node_id);
         true
     }
 
-    fn leave_source_unit(&mut self, _node: &SourceUnit) {
+    fn leave_source_unit(&mut self, _node: &input_ir::SourceUnit) {
         self.pop_scope();
     }
 
