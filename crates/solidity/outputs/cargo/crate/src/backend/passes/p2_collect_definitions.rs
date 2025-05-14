@@ -5,24 +5,30 @@ use std::rc::Rc;
 use metaslang_cst::nodes::NodeId;
 
 use super::p1_flatten_contracts::Output as Input;
-use crate::backend::l2_flat_contracts::{self as input_ir};
-use crate::backend::l2_flat_contracts::{visitor::Visitor, SourceUnit};
+use crate::backend::l2_flat_contracts::visitor::Visitor;
+use crate::backend::l2_flat_contracts::{self as input_ir, SourceUnit};
 use crate::cst::TerminalNode;
 
 pub struct Output {
     pub files: HashMap<String, SourceUnit>,
     pub definitions: HashMap<NodeId, Definition>,
+    pub scopes: HashMap<NodeId, Rc<RefCell<Scope>>>,
 }
 
-pub fn run(input: &Input) -> Output {
-    let files = input.files.clone();
+pub fn run(input: Input) -> Output {
+    let files = input.files;
     let mut pass = Pass::new();
-    for (file_id, source_unit) in files.iter() {
+    for (file_id, source_unit) in &files {
         pass.visit_file(file_id, source_unit);
     }
     let definitions = pass.definitions;
+    let scopes = pass.scopes;
 
-    Output { files, definitions }
+    Output {
+        files,
+        definitions,
+        scopes,
+    }
 }
 
 pub struct Definition {
@@ -31,10 +37,9 @@ pub struct Definition {
     pub definiens_node_id: NodeId,
 }
 
-struct Scope {
-    #[allow(dead_code)]
-    parent: Option<Rc<RefCell<Scope>>>,
-    definitions: HashMap<String, NodeId>,
+pub struct Scope {
+    pub parent: Option<Rc<RefCell<Scope>>>,
+    pub definitions: HashMap<String, NodeId>,
 }
 
 impl Scope {
