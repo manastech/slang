@@ -3,13 +3,12 @@ use std::rc::Rc;
 use anyhow::{anyhow, Result};
 use metaslang_bindings::PathResolver;
 use semver::Version;
-use slang_solidity::{
-    backend::passes, bindings::BindingLocation, compilation::InternalCompilationBuilder,
-};
-
-use crate::resolver::TestsPathResolver;
+use slang_solidity::backend::passes;
+use slang_solidity::bindings::BindingLocation;
+use slang_solidity::compilation::InternalCompilationBuilder;
 
 use super::runner::ParsedPart;
+use crate::resolver::TestsPathResolver;
 
 pub(crate) fn test_new_binder(
     group_name: &str,
@@ -52,8 +51,8 @@ pub(crate) fn test_new_binder(
     let binding_graph = Rc::clone(compilation_unit.binding_graph());
 
     let data = passes::p0_build_ast::run(&compilation_unit).map_err(|s| anyhow!(s))?;
-    let data = passes::p1_flatten_contracts::run(&data);
-    let data = passes::p2_collect_definitions::run(&data);
+    let data = passes::p1_flatten_contracts::run(data);
+    let data = passes::p2_collect_definitions::run(data);
 
     let mut user_definitions = 0;
     for definition in binding_graph.all_definitions() {
