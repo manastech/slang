@@ -64,10 +64,10 @@ pub(crate) fn test_new_binder(
 
         if let Some(new_definition) = data.definitions.get(&definition_id) {
             if new_definition.name_node_id != definition.get_cursor().node().id() {
-                println!("[{test_id}] Definition {definition} differs in name node ID");
+                println!("[{test_id}] {definition} differs in name node ID");
             }
         } else {
-            println!("[{test_id}] Definition {definition} not found with new binder");
+            println!("[{test_id}] {definition} not found with new binder");
         }
         user_definitions += 1;
     }
@@ -82,10 +82,21 @@ pub(crate) fn test_new_binder(
         }
         let reference_id = reference.id();
 
-        if data.references.contains_key(&reference_id) {
-            // TODO: test the definition this resolves to
+        if let Some(new_reference) = data.references.get(&reference_id) {
+            let definitions = reference.definitions();
+            if let Some(new_definition) = new_reference.definition_id {
+                match definitions.len() {
+                    0 => println!("[{test_id}] {reference} didn't resolve, but now does to {new_definition:?}"),
+                    1 => if definitions[0].id() != new_definition {
+                        println!("[{test_id}] {reference} resolved to a different definition");
+                    },
+                    _ => println!("[{test_id}] {reference} resolved to multiple definitions {definitions:?}"),
+                }
+            } else if !definitions.is_empty() {
+                println!("[{test_id}] {reference} not resolved in new binder, previously resolved to {definitions:?}");
+            }
         } else {
-            println!("[{test_id}] Reference {reference} not found with new binder");
+            println!("[{test_id}] {reference} not found with new binder");
         }
         user_references += 1;
     }
