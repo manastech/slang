@@ -53,6 +53,7 @@ pub(crate) fn test_new_binder(
     let data = passes::p0_build_ast::run(&compilation_unit).map_err(|s| anyhow!(s))?;
     let data = passes::p1_flatten_contracts::run(data);
     let data = passes::p2_collect_definitions::run(data);
+    let data = passes::p3_resolve_references::run(data);
 
     let mut user_definitions = 0;
     for definition in binding_graph.all_definitions() {
@@ -63,15 +64,33 @@ pub(crate) fn test_new_binder(
 
         if let Some(new_definition) = data.definitions.get(&definition_id) {
             if new_definition.name_node_id != definition.get_cursor().node().id() {
-                println!("[{test_id}] Definition {definition:?} differs in name node ID");
+                println!("[{test_id}] Definition {definition} differs in name node ID");
             }
         } else {
-            println!("[{test_id}] Definition {definition:?} not found with new binder");
+            println!("[{test_id}] Definition {definition} not found with new binder");
         }
         user_definitions += 1;
     }
     if user_definitions != data.definitions.len() {
         println!("[{test_id}] Number of definitions mismatch: binding graph = {user_definitions}, new_binder = {new_len}", new_len = data.definitions.len());
+    }
+
+    let mut user_references = 0;
+    for reference in binding_graph.all_references() {
+        if matches!(reference.location(), BindingLocation::BuiltIn(_)) {
+            continue;
+        }
+        let reference_id = reference.id();
+
+        if data.references.contains_key(&reference_id) {
+            // TODO: test the definition this resolves to
+        } else {
+            println!("[{test_id}] Reference {reference} not found with new binder");
+        }
+        user_references += 1;
+    }
+    if user_references != data.references.len() {
+        println!("[{test_id}] Number of references mismatch: binding_graph = {user_references}, new_binder = {new_len}", new_len = data.references.len());
     }
 
     Ok(())

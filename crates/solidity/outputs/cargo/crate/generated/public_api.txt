@@ -6993,6 +6993,7 @@ pub slang_solidity::backend::passes::p3_resolve_references::Output::files: std::
 pub slang_solidity::backend::passes::p3_resolve_references::Output::references: std::collections::hash::map::HashMap<metaslang_cst::nodes::NodeId, slang_solidity::backend::passes::p3_resolve_references::Reference>
 pub struct slang_solidity::backend::passes::p3_resolve_references::Reference
 pub slang_solidity::backend::passes::p3_resolve_references::Reference::definition_id: core::option::Option<metaslang_cst::nodes::NodeId>
+pub slang_solidity::backend::passes::p3_resolve_references::Reference::name: alloc::string::String
 pub slang_solidity::backend::passes::p3_resolve_references::Reference::node_id: metaslang_cst::nodes::NodeId
 pub fn slang_solidity::backend::passes::p3_resolve_references::run(input: slang_solidity::backend::passes::p2_collect_definitions::Output) -> slang_solidity::backend::passes::p3_resolve_references::Output
 pub mod slang_solidity::backend::types
