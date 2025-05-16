@@ -1,18 +1,15 @@
-use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use metaslang_cst::nodes::NodeId;
-
 use super::p1_flatten_contracts::Output as Input;
+use crate::backend::binder::{Binder, ScopeId};
 use crate::backend::l2_flat_contracts::visitor::Visitor;
 use crate::backend::l2_flat_contracts::{self as input_ir};
-use crate::cst::TerminalNode;
+use crate::cst::{NodeId, TerminalNode};
 
 pub struct Output {
     pub files: HashMap<String, input_ir::SourceUnit>,
-    pub definitions: HashMap<NodeId, Definition>,
-    pub scopes: HashMap<NodeId, Rc<RefCell<Scope>>>,
+    pub binder: Binder,
 }
 
 pub fn run(input: Input) -> Output {
@@ -21,84 +18,22 @@ pub fn run(input: Input) -> Output {
     for (file_id, source_unit) in &files {
         pass.visit_file(file_id, source_unit);
     }
-    let definitions = pass.definitions;
-    let scopes = pass.scopes;
+    let binder = pass.binder;
 
-    Output {
-        files,
-        definitions,
-        scopes,
-    }
-}
-
-pub struct Definition {
-    pub name: String,
-    pub name_node_id: NodeId,
-    pub definiens_node_id: NodeId,
-}
-
-pub struct Scope {
-    pub parent: Option<Rc<RefCell<Scope>>>,
-    pub definitions: HashMap<String, NodeId>,
-}
-
-impl Scope {
-    fn new_root() -> Rc<RefCell<Self>> {
-        Rc::new(RefCell::new(Self {
-            parent: None,
-            definitions: HashMap::new(),
-        }))
-    }
-
-    fn new(parent: &Rc<RefCell<Scope>>) -> Rc<RefCell<Self>> {
-        Rc::new(RefCell::new(Self {
-            parent: Some(Rc::clone(parent)),
-            definitions: HashMap::new(),
-        }))
-    }
-
-    pub fn resolve(&self, name: &str) -> Option<NodeId> {
-        if let Some(definition) = self.definitions.get(name) {
-            return Some(*definition);
-        }
-        if let Some(parent_scope) = &self.parent {
-            parent_scope.borrow().resolve(name)
-        } else {
-            None
-        }
-    }
+    Output { files, binder }
 }
 
 struct Pass {
-    definitions: HashMap<NodeId, Definition>,
-    scopes: HashMap<NodeId, Rc<RefCell<Scope>>>,
-    scope_stack: Vec<Rc<RefCell<Scope>>>,
+    binder: Binder,
+    scope_stack: Vec<ScopeId>,
 }
 
 impl Pass {
     fn new() -> Self {
         Self {
-            definitions: HashMap::new(),
-            scopes: HashMap::new(),
+            binder: Binder::default(),
             scope_stack: Vec::new(),
         }
-    }
-
-    fn push_scope(&mut self, node_id: NodeId) {
-        let new_scope = if let Some(parent_scope) = self.scope_stack.last() {
-            Scope::new(parent_scope)
-        } else {
-            Scope::new_root()
-        };
-        self.scopes.insert(node_id, Rc::clone(&new_scope));
-        self.scope_stack.push(new_scope);
-    }
-
-    fn pop_scope(&mut self) -> Rc<RefCell<Scope>> {
-        let Some(scope) = self.scope_stack.pop() else {
-            unreachable!("scope stack empty");
-        };
-        scope
     }
 
     fn visit_file(&mut self, _file_id: &str, source_unit: &input_ir::SourceUnit) {
@@ -106,21 +41,34 @@ impl Pass {
         assert!(self.scope_stack.is_empty());
     }
 
-    fn insert_definition(&mut self, definiens_node_id: NodeId, name_node: &Rc<TerminalNode>) {
-        let definition = Definition {
-            name: name_node.unparse(),
-            name_node_id: name_node.id(),
-            definiens_node_id,
+    fn push_scope(&mut self, node_id: NodeId) {
+        let parent_scope_id = self.scope_stack.last().copied();
+        let new_scope_id = self.binder.insert_scope_at(node_id, parent_scope_id);
+        self.scope_stack.push(new_scope_id);
+    }
+
+    fn pop_scope(&mut self) -> ScopeId {
+        let Some(scope) = self.scope_stack.pop() else {
+            unreachable!("scope stack empty");
         };
-        self.definitions.insert(definiens_node_id, definition);
-        if let Some(current_scope) = self.scope_stack.last() {
-            current_scope
-                .borrow_mut()
-                .definitions
-                .insert(name_node.unparse(), definiens_node_id);
-        } else {
-            unreachable!("attempt to insert a definition without a current scope");
-        }
+        scope
+    }
+
+    fn scope_node(&mut self, node_id: NodeId) {
+        let Some(scope_id) = self.scope_stack.last() else {
+            unreachable!("attempt to scope a node with an empty scope stack");
+        };
+        self.binder.link_node_to_scope(node_id, *scope_id);
+    }
+
+    fn insert_definition(&mut self, definiens_node_id: NodeId, name_node: &Rc<TerminalNode>) {
+        let Some(scope_id) = self.scope_stack.last() else {
+            unreachable!("attempt to insert a definition with an empty scope stack");
+        };
+        let name_node_id = name_node.id();
+        let name = name_node.unparse();
+        self.binder
+            .insert_definition_at_scope(*scope_id, name_node_id, name, definiens_node_id);
     }
 }
 
@@ -157,7 +105,7 @@ impl Visitor for Pass {
         } else {
             self.insert_definition(node.node_id, &node.name);
         }
-        false
+        true
     }
 
     fn enter_contract_definition(&mut self, node: &input_ir::ContractDefinition) -> bool {
@@ -206,7 +154,7 @@ impl Visitor for Pass {
         if let Some(name) = &node.name {
             self.insert_definition(node.node_id, name);
         }
-        false
+        true
     }
 
     fn enter_modifier_definition(&mut self, node: &input_ir::ModifierDefinition) -> bool {
@@ -224,7 +172,7 @@ impl Visitor for Pass {
         node: &input_ir::VariableDeclarationStatement,
     ) -> bool {
         self.insert_definition(node.node_id, &node.name);
-        false
+        true
     }
 
     fn enter_tuple_deconstruction_element(
@@ -240,7 +188,7 @@ impl Visitor for Pass {
             }
             None => {}
         }
-        false
+        true
     }
 
     fn enter_state_variable_definition(
@@ -281,21 +229,21 @@ impl Visitor for Pass {
 
     fn enter_struct_member(&mut self, node: &input_ir::StructMember) -> bool {
         self.insert_definition(node.node_id, &node.name);
-        false
+        true
     }
 
     fn enter_mapping_key(&mut self, node: &input_ir::MappingKey) -> bool {
         if let Some(name) = &node.name {
             self.insert_definition(node.node_id, name);
         }
-        false
+        true
     }
 
     fn enter_mapping_value(&mut self, node: &input_ir::MappingValue) -> bool {
         if let Some(name) = &node.name {
             self.insert_definition(node.node_id, name);
         }
-        false
+        true
     }
 
     fn enter_event_definition(&mut self, node: &input_ir::EventDefinition) -> bool {
@@ -312,7 +260,7 @@ impl Visitor for Pass {
         if let Some(name) = &node.name {
             self.insert_definition(node.node_id, name);
         }
-        false
+        true
     }
 
     fn enter_error_definition(&mut self, node: &input_ir::ErrorDefinition) -> bool {
@@ -329,12 +277,12 @@ impl Visitor for Pass {
         if let Some(name) = &node.name {
             self.insert_definition(node.node_id, name);
         }
-        false
+        true
     }
 
     fn enter_constant_definition(&mut self, node: &input_ir::ConstantDefinition) -> bool {
         self.insert_definition(node.node_id, &node.name);
-        false
+        true
     }
 
     fn enter_user_defined_value_type_definition(
@@ -342,7 +290,7 @@ impl Visitor for Pass {
         node: &input_ir::UserDefinedValueTypeDefinition,
     ) -> bool {
         self.insert_definition(node.node_id, &node.name);
-        false
+        true
     }
 
     fn enter_yul_variable_declaration_statement(
@@ -352,7 +300,7 @@ impl Visitor for Pass {
         for variable in &node.variables {
             self.insert_definition(variable.id(), variable);
         }
-        false
+        true
     }
 
     fn enter_yul_function_definition(&mut self, node: &input_ir::YulFunctionDefinition) -> bool {
@@ -380,5 +328,43 @@ impl Visitor for Pass {
             self.insert_definition(parameter.id(), parameter);
         }
         false
+    }
+
+    // Nodes where references that need to be resolved using lexical scope will appear
+
+    fn leave_import_deconstruction_symbol(&mut self, node: &input_ir::ImportDeconstructionSymbol) {
+        self.scope_node(node.node_id);
+    }
+
+    fn leave_identifier_path(&mut self, items: &input_ir::IdentifierPath) {
+        // we only need to scope the first item's node, the rest will resolve using scope chaining
+        if let Some(first_item) = items.first() {
+            self.scope_node(first_item.id());
+        }
+    }
+
+    fn leave_catch_clause_error(&mut self, node: &input_ir::CatchClauseError) {
+        self.scope_node(node.node_id);
+    }
+
+    fn enter_expression(&mut self, node: &input_ir::Expression) -> bool {
+        match node {
+            input_ir::Expression::Identifier(identifier) => {
+                self.scope_node(identifier.id());
+                false
+            }
+            _ => true,
+        }
+    }
+
+    fn leave_named_argument(&mut self, node: &input_ir::NamedArgument) {
+        self.scope_node(node.node_id);
+    }
+
+    fn leave_yul_path(&mut self, items: &input_ir::YulPath) {
+        // we only need to scope the first item's node, the rest will resolve using scope chaining
+        if let Some(first_item) = items.first() {
+            self.scope_node(first_item.id());
+        }
     }
 }
