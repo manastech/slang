@@ -2,6 +2,38 @@
 
 pub mod slang_solidity
 pub mod slang_solidity::backend
+pub mod slang_solidity::backend::binder
+pub struct slang_solidity::backend::binder::Binder
+pub slang_solidity::backend::binder::Binder::definitions: std::collections::hash::map::HashMap<metaslang_cst::nodes::NodeId, slang_solidity::backend::binder::Definition>
+pub slang_solidity::backend::binder::Binder::references: std::collections::hash::map::HashMap<metaslang_cst::nodes::NodeId, slang_solidity::backend::binder::Reference>
+impl core::default::Default for slang_solidity::backend::binder::Binder
+pub fn slang_solidity::backend::binder::Binder::default() -> Self
+pub struct slang_solidity::backend::binder::Definition
+pub slang_solidity::backend::binder::Definition::definiens_node_id: metaslang_cst::nodes::NodeId
+pub slang_solidity::backend::binder::Definition::name: alloc::string::String
+pub slang_solidity::backend::binder::Definition::name_node_id: metaslang_cst::nodes::NodeId
+pub struct slang_solidity::backend::binder::Reference
+pub slang_solidity::backend::binder::Reference::definition_id: core::option::Option<metaslang_cst::nodes::NodeId>
+pub slang_solidity::backend::binder::Reference::name: alloc::string::String
+pub slang_solidity::backend::binder::Reference::node_id: metaslang_cst::nodes::NodeId
+#[repr(transparent)] pub struct slang_solidity::backend::binder::ScopeId(_)
+impl core::clone::Clone for slang_solidity::backend::binder::ScopeId
+pub fn slang_solidity::backend::binder::ScopeId::clone(&self) -> slang_solidity::backend::binder::ScopeId
+impl core::cmp::Eq for slang_solidity::backend::binder::ScopeId
+impl core::cmp::Ord for slang_solidity::backend::binder::ScopeId
+pub fn slang_solidity::backend::binder::ScopeId::cmp(&self, other: &slang_solidity::backend::binder::ScopeId) -> core::cmp::Ordering
+impl core::cmp::PartialEq for slang_solidity::backend::binder::ScopeId
+pub fn slang_solidity::backend::binder::ScopeId::eq(&self, other: &slang_solidity::backend::binder::ScopeId) -> bool
+impl core::cmp::PartialOrd for slang_solidity::backend::binder::ScopeId
+pub fn slang_solidity::backend::binder::ScopeId::partial_cmp(&self, other: &slang_solidity::backend::binder::ScopeId) -> core::option::Option<core::cmp::Ordering>
+impl core::convert::From<metaslang_cst::nodes::NodeId> for slang_solidity::backend::binder::ScopeId
+pub fn slang_solidity::backend::binder::ScopeId::from(value: metaslang_cst::nodes::NodeId) -> Self
+impl core::fmt::Debug for slang_solidity::backend::binder::ScopeId
+pub fn slang_solidity::backend::binder::ScopeId::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::hash::Hash for slang_solidity::backend::binder::ScopeId
+pub fn slang_solidity::backend::binder::ScopeId::hash<__H: core::hash::Hasher>(&self, state: &mut __H)
+impl core::marker::Copy for slang_solidity::backend::binder::ScopeId
+impl core::marker::StructuralPartialEq for slang_solidity::backend::binder::ScopeId
 pub mod slang_solidity::backend::l1_typed_cst
 pub mod slang_solidity::backend::l1_typed_cst::builder
 pub fn slang_solidity::backend::l1_typed_cst::builder::build_abicoder_pragma(node: &alloc::rc::Rc<slang_solidity::cst::NonterminalNode>) -> core::result::Result<slang_solidity::backend::l1_typed_cst::AbicoderPragma, alloc::string::String>
@@ -6974,29 +7006,14 @@ pub slang_solidity::backend::passes::p1_flatten_contracts::Output::binding_graph
 pub slang_solidity::backend::passes::p1_flatten_contracts::Output::files: std::collections::hash::map::HashMap<alloc::string::String, slang_solidity::backend::l2_flat_contracts::SourceUnit>
 pub fn slang_solidity::backend::passes::p1_flatten_contracts::run(input: slang_solidity::backend::passes::p0_build_ast::Output) -> slang_solidity::backend::passes::p1_flatten_contracts::Output
 pub mod slang_solidity::backend::passes::p2_collect_definitions
-pub struct slang_solidity::backend::passes::p2_collect_definitions::Definition
-pub slang_solidity::backend::passes::p2_collect_definitions::Definition::definiens_node_id: metaslang_cst::nodes::NodeId
-pub slang_solidity::backend::passes::p2_collect_definitions::Definition::name: alloc::string::String
-pub slang_solidity::backend::passes::p2_collect_definitions::Definition::name_node_id: metaslang_cst::nodes::NodeId
 pub struct slang_solidity::backend::passes::p2_collect_definitions::Output
-pub slang_solidity::backend::passes::p2_collect_definitions::Output::definitions: std::collections::hash::map::HashMap<metaslang_cst::nodes::NodeId, slang_solidity::backend::passes::p2_collect_definitions::Definition>
+pub slang_solidity::backend::passes::p2_collect_definitions::Output::binder: slang_solidity::backend::binder::Binder
 pub slang_solidity::backend::passes::p2_collect_definitions::Output::files: std::collections::hash::map::HashMap<alloc::string::String, slang_solidity::backend::l2_flat_contracts::SourceUnit>
-pub slang_solidity::backend::passes::p2_collect_definitions::Output::scopes: std::collections::hash::map::HashMap<metaslang_cst::nodes::NodeId, alloc::rc::Rc<core::cell::RefCell<slang_solidity::backend::passes::p2_collect_definitions::Scope>>>
-pub struct slang_solidity::backend::passes::p2_collect_definitions::Scope
-pub slang_solidity::backend::passes::p2_collect_definitions::Scope::definitions: std::collections::hash::map::HashMap<alloc::string::String, metaslang_cst::nodes::NodeId>
-pub slang_solidity::backend::passes::p2_collect_definitions::Scope::parent: core::option::Option<alloc::rc::Rc<core::cell::RefCell<slang_solidity::backend::passes::p2_collect_definitions::Scope>>>
-impl slang_solidity::backend::passes::p2_collect_definitions::Scope
-pub fn slang_solidity::backend::passes::p2_collect_definitions::Scope::resolve(&self, name: &str) -> core::option::Option<metaslang_cst::nodes::NodeId>
 pub fn slang_solidity::backend::passes::p2_collect_definitions::run(input: slang_solidity::backend::passes::p1_flatten_contracts::Output) -> slang_solidity::backend::passes::p2_collect_definitions::Output
 pub mod slang_solidity::backend::passes::p3_resolve_references
 pub struct slang_solidity::backend::passes::p3_resolve_references::Output
-pub slang_solidity::backend::passes::p3_resolve_references::Output::definitions: std::collections::hash::map::HashMap<metaslang_cst::nodes::NodeId, slang_solidity::backend::passes::p2_collect_definitions::Definition>
+pub slang_solidity::backend::passes::p3_resolve_references::Output::binder: slang_solidity::backend::binder::Binder
 pub slang_solidity::backend::passes::p3_resolve_references::Output::files: std::collections::hash::map::HashMap<alloc::string::String, slang_solidity::backend::l2_flat_contracts::SourceUnit>
-pub slang_solidity::backend::passes::p3_resolve_references::Output::references: std::collections::hash::map::HashMap<metaslang_cst::nodes::NodeId, slang_solidity::backend::passes::p3_resolve_references::Reference>
-pub struct slang_solidity::backend::passes::p3_resolve_references::Reference
-pub slang_solidity::backend::passes::p3_resolve_references::Reference::definition_id: core::option::Option<metaslang_cst::nodes::NodeId>
-pub slang_solidity::backend::passes::p3_resolve_references::Reference::name: alloc::string::String
-pub slang_solidity::backend::passes::p3_resolve_references::Reference::node_id: metaslang_cst::nodes::NodeId
 pub fn slang_solidity::backend::passes::p3_resolve_references::run(input: slang_solidity::backend::passes::p2_collect_definitions::Output) -> slang_solidity::backend::passes::p3_resolve_references::Output
 pub mod slang_solidity::backend::types
 pub enum slang_solidity::backend::types::DataLocation

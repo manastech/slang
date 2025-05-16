@@ -55,6 +55,7 @@ pub(crate) fn test_new_binder(
     let data = passes::p2_collect_definitions::run(data);
     let data = passes::p3_resolve_references::run(data);
 
+    let binder = &data.binder;
     let mut user_definitions = 0;
     for definition in binding_graph.all_definitions() {
         if matches!(definition.definiens_location(), BindingLocation::BuiltIn(_)) {
@@ -62,7 +63,7 @@ pub(crate) fn test_new_binder(
         }
         let definition_id = definition.id();
 
-        if let Some(new_definition) = data.definitions.get(&definition_id) {
+        if let Some(new_definition) = binder.definitions.get(&definition_id) {
             if new_definition.name_node_id != definition.get_cursor().node().id() {
                 println!("[{test_id}] {definition} differs in name node ID");
             }
@@ -71,8 +72,8 @@ pub(crate) fn test_new_binder(
         }
         user_definitions += 1;
     }
-    if user_definitions != data.definitions.len() {
-        println!("[{test_id}] Number of definitions mismatch: binding graph = {user_definitions}, new_binder = {new_len}", new_len = data.definitions.len());
+    if user_definitions != binder.definitions.len() {
+        println!("[{test_id}] Number of definitions mismatch: binding graph = {user_definitions}, new_binder = {new_len}", new_len = binder.definitions.len());
     }
 
     let mut user_references = 0;
@@ -82,7 +83,7 @@ pub(crate) fn test_new_binder(
         }
         let reference_id = reference.id();
 
-        if let Some(new_reference) = data.references.get(&reference_id) {
+        if let Some(new_reference) = binder.references.get(&reference_id) {
             let definitions = reference.definitions();
             if let Some(new_definition) = new_reference.definition_id {
                 match definitions.len() {
@@ -100,8 +101,8 @@ pub(crate) fn test_new_binder(
         }
         user_references += 1;
     }
-    if user_references != data.references.len() {
-        println!("[{test_id}] Number of references mismatch: binding_graph = {user_references}, new_binder = {new_len}", new_len = data.references.len());
+    if user_references != binder.references.len() {
+        println!("[{test_id}] Number of references mismatch: binding_graph = {user_references}, new_binder = {new_len}", new_len = binder.references.len());
     }
 
     Ok(())
