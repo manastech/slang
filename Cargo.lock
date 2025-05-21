@@ -2512,9 +2512,10 @@ name = "solidity_testing_perf"
 version = "1.2.0"
 dependencies = [
  "anyhow",
+ "heck",
  "iai-callgrind",
  "infra_utils",
- "metaslang_bindings",
+ "paste",
  "semver",
  "serde_json",
  "slang_solidity",
@@ -2522,7 +2523,7 @@ dependencies = [
 
 [[package]]
 name = "solidity_testing_perf_npmbenches"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "anyhow",
  "clap",
