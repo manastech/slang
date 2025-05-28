@@ -56,7 +56,8 @@ impl NpmController {
         let input_path = Path::new(&config::WORKING_DIR);
 
         if let Some(hash) = &self.hash {
-            let result = self.run_benchmarks(input_path, hash, self.entrypoint.as_deref())?;
+            let result =
+                self.run_benchmarks(input_path, "custom", hash, self.entrypoint.as_deref())?;
             publish(result.iter())
         } else {
             let file_benchmarks = self.individual_file_benchmarks(input_path, &config.files)?;
@@ -68,6 +69,7 @@ impl NpmController {
     fn run_benchmarks(
         &self,
         input_path: &Path,
+        name: &str,
         hash: &str,
         file: Option<&str>,
     ) -> Result<Vec<Timing>> {
@@ -76,7 +78,7 @@ impl NpmController {
 
         let mut results = vec![];
         for sut in SubjectUT::iter() {
-            let mut sut_result = self.run(&path, file, sut)?;
+            let mut sut_result = self.run(&path, name, file, sut)?;
             results.append(&mut sut_result);
         }
 
@@ -100,11 +102,12 @@ impl NpmController {
 
         let pattern_regex = self.compute_regex()?;
         for file in files {
-            if !pattern_regex.is_match(&file.file) {
+            if !pattern_regex.is_match(&file.name) {
                 continue;
             }
 
-            let mut result = self.run_benchmarks(input_path, &file.hash, Some(&file.file))?;
+            let mut result =
+                self.run_benchmarks(input_path, &file.name, &file.hash, Some(&file.file))?;
             results.append(&mut result);
         }
         Ok(results)
@@ -123,7 +126,7 @@ impl NpmController {
                 continue;
             }
 
-            let mut result = self.run_benchmarks(input_path, &project.hash, None)?;
+            let mut result = self.run_benchmarks(input_path, &project.name, &project.hash, None)?;
             results.append(&mut result);
         }
         Ok(results)
@@ -132,6 +135,7 @@ impl NpmController {
     fn run(
         &self,
         path: &Path,
+        name: &str,
         file: Option<&str>,
         sut: SubjectUT,
     ) -> Result<Vec<Timing>, anyhow::Error> {
@@ -141,7 +145,8 @@ impl NpmController {
             .flag("--trace-uncaught")
             .flag("--expose-gc")
             .arg(perf_crate.join("../npm/src/main.mts").to_str().unwrap())
-            .property("--dir", path.to_string_lossy());
+            .property("--dir", path.to_string_lossy())
+            .property("--name", name);
 
         if let Some(file) = file {
             command = command.property("--file", file);
