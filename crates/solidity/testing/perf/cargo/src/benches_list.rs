@@ -4,7 +4,7 @@
     define_payload_tests!(multicall3_lib, "multicall3_lib");
     define_payload_tests!(create_x_lib, "create_x_lib");
     define_payload_tests!(ui_pool_data_provider_v3_lib, "ui_pool_data_provider_v3_lib");
-    define_payload_tests!(pointer_libraries, "PointerLibraries");
-    define_payload_tests!(one_step_leverage_f, "OneStepLeverage.f");
-    define_payload_tests!(safe_math, "SafeMath");
-    define_payload_tests!(merkle_proof, "MerkleProof");
+    define_payload_tests!(pointer_librarires_largest_file, "pointer_librarires_largest_file");
+    define_payload_tests!(one_step_leverage_f_largest_file_with_trivia, "one_step_leverage_f_largest_file_with_trivia");
+    define_payload_tests!(safe_math_median_file, "safe_math_median_file");
+    define_payload_tests!(merkle_proof_three_quarters_file, "merkle_proof_three_quarters_file");
