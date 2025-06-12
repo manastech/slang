@@ -1,0 +1,17 @@
+// This file is generated automatically by infrastructure scripts. Please don't edit by hand.
+
+use anyhow::Result;
+
+use crate::binder::runner::run;
+
+const T: &str = "arrays";
+
+#[test]
+fn indexing() -> Result<()> {
+    run(T, "indexing")
+}
+
+#[test]
+fn length() -> Result<()> {
+    run(T, "length")
+}
