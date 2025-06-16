@@ -588,7 +588,6 @@ dependencies = [
  "codegen_testing",
  "infra_utils",
  "rayon",
- "semver",
  "solidity_language",
  "testlang_language",
 ]
@@ -3828,7 +3827,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "solidity_testing_perf_npmbenches"
+name = "solidity_testing_perf_npm"
 version = "1.2.0"
 dependencies = [
  "anyhow",

@@ -1,7 +1,7 @@
-import { CompilationBuilder, File } from "@nomicfoundation/slang/compilation";
-import { TerminalKind } from "@nomicfoundation/slang/cst";
+import { CompilationBuilder } from "@nomicfoundation/slang/compilation";
+import { NonterminalKind, TerminalKind } from "@nomicfoundation/slang/cst";
 import assert from "node:assert";
-import { Runner, SolidityProject, Timing } from "../common.mjs";
+import { Subject, SolidityProject, Timings } from "../common.mjs";
 
 function createBuilder(project: SolidityProject): CompilationBuilder {
   const builder = CompilationBuilder.create({
@@ -24,27 +24,16 @@ function createBuilder(project: SolidityProject): CompilationBuilder {
   return builder;
 }
 
-enum BindingsTarget {
-  File,
-  Project,
-}
-
-class SlangRunner implements Runner {
+export class SlangSubject implements Subject {
   public name = "slang";
-  target: BindingsTarget;
 
-  public constructor(target: BindingsTarget) {
-    this.target = target;
-  }
-
-  async test(project: SolidityProject, file: string): Promise<Timing[]> {
+  async test(project: SolidityProject, file: string): Promise<Timings> {
     const startTime = performance.now();
     const builder = createBuilder(project);
 
     await builder.addFile(file);
 
     const unit = builder.build();
-    const mainFile = unit.file(file)!;
     const parsedAllFilesTime = performance.now();
 
     // Validation: there shouldn't be any parsing errors, but if there are, let's print them nicely
@@ -55,19 +44,10 @@ class SlangRunner implements Runner {
     assert(typeof unit.bindingGraph.definitionAt == "function");
     const builtGraphTime = performance.now();
 
-    let files: File[] = [mainFile];
-
-    if (this.target == BindingsTarget.Project) {
-      files = unit.files();
-    }
-
-    // We don't recognize these in `pragma experimental`, so let's ignore them
-    const allowed = ["ABIEncoderV2", "v2"];
-
-    files.forEach((file) => {
+    unit.files().forEach((file) => {
       let cursor = file.createTreeCursor();
       let emptyDefList = [];
-      let neitherDefNorRefSet = new Set<string>();
+      let neitherDefNorRefs = new Array<string>();
 
       while (cursor.goToNextTerminalWithKind(TerminalKind.Identifier)) {
         const definition = unit.bindingGraph.definitionAt(cursor);
@@ -78,38 +58,25 @@ class SlangRunner implements Runner {
         }
 
         if (!(definition || reference)) {
-          neitherDefNorRefSet.add(cursor.node.unparse());
+          const ancestor = cursor.ancestors().next();
+          // Ignore experimental pragma's identifiers
+          if (!ancestor || ancestor.kind != NonterminalKind.ExperimentalFeature) {
+            neitherDefNorRefs.push(cursor.node.unparse());
+          }
         }
       }
 
-      const neitherDefNorRefList = Array.from(neitherDefNorRefSet);
-      assert.deepStrictEqual(
-        neitherDefNorRefList.filter((e) => !allowed.includes(e)),
-        [],
-      );
+      assert.deepStrictEqual(neitherDefNorRefs, []);
       assert.deepStrictEqual(emptyDefList, []);
     });
 
     const resolutionTime = performance.now() - builtGraphTime;
 
-    const timings = [
-      new Timing("slang_parse_all_files_duration", parsedAllFilesTime - startTime),
-      new Timing("slang_init_bindings_graph_duration", builtGraphTime - parsedAllFilesTime),
-      new Timing("slang_resolve_all_bindings_duration", resolutionTime),
-      new Timing("slang_total", performance.now() - startTime),
-    ];
-    return timings;
-  }
-}
-
-export class SlangBindingsFileRunner extends SlangRunner {
-  public constructor() {
-    super(BindingsTarget.File);
-  }
-}
-
-export class SlangBindingsProjectRunner extends SlangRunner {
-  public constructor() {
-    super(BindingsTarget.Project);
+    return new Map([
+      ["slang_parse_all_files_duration", parsedAllFilesTime - startTime],
+      ["slang_init_bindings_graph_duration", builtGraphTime - parsedAllFilesTime],
+      ["slang_resolve_all_bindings_duration", resolutionTime],
+      ["slang_total", performance.now() - startTime],
+    ]);
   }
 }

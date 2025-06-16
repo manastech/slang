@@ -2,7 +2,7 @@ use anyhow::Result;
 use clap::Parser;
 use infra_utils::cargo::CargoWorkspace;
 
-use super::bencher::run_bench;
+use crate::toolchains::bencher::run_bench;
 use crate::utils::DryRun;
 
 #[derive(Clone, Debug, Parser)]
@@ -32,7 +32,7 @@ impl NpmController {
     fn execute_npm_benchmarks(&self) {
         let test_runner = format!(
             "cargo run --package {package} -- --pattern=\"{pattern}\" --cold={cold} --hot={hot}",
-            package = "solidity_testing_perf_npmbenches",
+            package = "solidity_testing_perf_npm",
             pattern = &self.pattern,
             cold = &self.cold,
             hot = &self.hot,

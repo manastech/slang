@@ -24,7 +24,9 @@ export function round2(n: number): number {
   return Math.round(n * 100) / 100;
 }
 
-const verbose = process.argv.includes("--verbose");
+export const verboseOption = "verbose";
+
+const verbose = process.argv.includes(verboseOption);
 
 export function log(what: string) {
   if (verbose) {
@@ -61,6 +63,8 @@ export class SolidityProject {
     const json = JSON.parse(fs.readFileSync(jsonFile, "utf8"));
     let sources = new Map<string, string>();
 
+    // TODO: we should take other information into account too, in particular, the mappings.
+    // This was not necessary for all of the projects we consider, but in the future that might be limiting.
     if (json.sources && typeof json.sources === "object") {
       for (const [file, data] of Object.entries(json.sources)) {
         if (typeof data === "object" && typeof (data as { content?: string }).content === "string") {
@@ -124,15 +128,10 @@ export class SolidityProject {
   }
 }
 
-export class Timing {
-  public constructor(
-    public component: string,
-    public time: number,
-  ) {}
-}
+export type Timings = Map<string, number>;
 
-export interface Runner {
+export interface Subject {
   name: string;
 
-  test(project: SolidityProject, file: string): Promise<Timing[]>;
+  test(project: SolidityProject, file: string): Promise<Timings>;
 }
