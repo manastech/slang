@@ -134,6 +134,8 @@ serde = { version = "1.0.219", features = ["derive", "rc"] }
 serde_json = { version = "1.0.140", features = ["preserve_order"] }
 similar-asserts = { version = "1.7.0" }
 smallvec = { version = "1.15.0", features = ["union"] }
+solar = { version = "=0.1.4", package = "solar-compiler" }
+solar-sema = { version = "=0.1.4" }
 stack-graphs = { git = "https://github.com/NomicFoundation/stack-graphs", branch = "nomic" }
 string-interner = { version = "0.17.0", features = [
     "std",

@@ -5,8 +5,8 @@ use anyhow::{bail, Error, Result};
 use url::Url;
 
 pub struct ImportResolver {
-    import_remaps: Vec<ImportRemap>,
-    source_maps: Vec<SourceMap>,
+    pub import_remaps: Vec<ImportRemap>,
+    pub source_maps: Vec<SourceMap>,
 }
 
 impl ImportResolver {
@@ -86,14 +86,14 @@ impl ImportResolver {
     }
 }
 
-struct SourceMap {
+pub struct SourceMap {
     /// The actual filename for the source file, as found in the archive. This name can
     /// be used to read the content of a source file.
-    source_id: String,
+    pub source_id: String,
     /// The path to the source file in the contract's "virtual filesystem". This is the
     /// path to the source file as the contract was originally constructed. This value
     /// should be used when resolving imports to the real source files.
-    virtual_path: String,
+    pub virtual_path: String,
 }
 
 impl SourceMap {
@@ -106,17 +106,17 @@ impl SourceMap {
     }
 }
 
-struct ImportRemap {
+pub struct ImportRemap {
     /// If provided, then this remap only applies to imports inside source files
     /// whose paths begin with this string.
-    context: Option<String>,
+    pub context: Option<String>,
     /// The prefix value which will be found in the import path and replaced by
     /// `target`.
-    prefix: String,
+    pub prefix: String,
     /// The target virtual path. Replacing `prefix` with `target` in the import
     /// path from a source file should give you a path that can be looked up
     /// in `Metadata::sources`.
-    target: String,
+    pub target: String,
 }
 
 impl ImportRemap {

@@ -7,6 +7,7 @@ use slang_solidity::utils::LanguageFacts;
 
 use crate::command::TestOptions;
 use crate::events::{Events, TestOutcome};
+use crate::solar_parser;
 use crate::sourcify::{Contract, ContractArchive, Manifest};
 
 pub fn test_single_contract(
@@ -86,6 +87,8 @@ fn run_test(contract: &Contract, events: &Events, opts: &TestOptions) {
 
     events.inc_files_processed(sources_count);
     events.test(test_outcome);
+
+    run_solar_test(contract, events);
 }
 
 fn run_parser_check(contract: &Contract, unit: &CompilationUnit, events: &Events) -> TestOutcome {
@@ -287,4 +290,17 @@ impl Diagnostic for BindingError {
             }
         }
     }
+}
+
+fn run_solar_test(contract: &Contract, events: &Events) {
+    if contract.version.minor < 8 {
+        return;
+    }
+
+    let outcome = if solar_parser::run(contract) == contract.sources_count() {
+        TestOutcome::Passed
+    } else {
+        TestOutcome::Failed
+    };
+    events.solar_test(outcome);
 }

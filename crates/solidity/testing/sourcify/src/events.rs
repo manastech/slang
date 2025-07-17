@@ -29,6 +29,10 @@ pub struct Events {
     failed: ProgressBar,
     unresolved: ProgressBar,
     incompatible: ProgressBar,
+
+    version8: ProgressBar,
+    solar_passed: ProgressBar,
+    solar_failed: ProgressBar,
 }
 
 impl Events {
@@ -51,6 +55,9 @@ impl Events {
         let failed = reporter.add_counter("❌ Failed", Color::Red, 0);
         let unresolved = reporter.add_counter("❔ Unresolved", Color::White, 0);
         let incompatible = reporter.add_counter("❕ Incompatible", Color::White, 0);
+        let version8 = reporter.add_counter("#0.8 Version 0.8", Color::White, 0);
+        let solar_passed = reporter.add_counter("☀︎✅ Solar passed", Color::Color256(10), 0);
+        let solar_failed = reporter.add_counter("☀︎❌ Solar failed", Color::Color256(13), 0);
 
         reporter.add_blank();
 
@@ -66,6 +73,10 @@ impl Events {
             failed,
             unresolved,
             incompatible,
+
+            version8,
+            solar_passed,
+            solar_failed,
         }
     }
 
@@ -112,6 +123,19 @@ impl Events {
             TestOutcome::Failed => self.failed.inc(1),
             TestOutcome::Unresolved => self.unresolved.inc(1),
             TestOutcome::Incompatible => self.incompatible.inc(1),
+        }
+    }
+
+    pub fn solar_test(&self, outcome: TestOutcome) {
+        self.version8.inc_length(1);
+        self.version8.inc(1);
+        self.solar_passed.inc_length(1);
+        self.solar_failed.inc_length(1);
+
+        match outcome {
+            TestOutcome::Passed => self.solar_passed.inc(1),
+            TestOutcome::Failed => self.solar_failed.inc(1),
+            _ => panic!("Unexpected outcome for solar"),
         }
     }
 

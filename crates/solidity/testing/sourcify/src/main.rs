@@ -5,6 +5,7 @@ mod import_resolver;
 mod reporting;
 mod results;
 mod run;
+mod solar_parser;
 mod sourcify;
 
 use std::path::PathBuf;

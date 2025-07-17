@@ -189,6 +189,17 @@ pub struct ContractArchive {
 
 impl ContractArchive {
     pub fn fetch(desc: &ArchiveDescriptor) -> Result<ContractArchive> {
+        let archive_dir = desc.archive_dir();
+        let contracts_dir = desc.contracts_dir();
+
+        let result = ContractArchive {
+            contracts_path: contracts_dir.clone(),
+        };
+
+        if contracts_dir.exists() {
+            return Ok(result);
+        }
+
         let client = Client::new();
         let res = client.get(&desc.url).send()?;
 
@@ -197,14 +208,10 @@ impl ContractArchive {
             bail!("Could not fetch source tarball");
         }
 
-        let archive_dir = desc.archive_dir();
-
         let mut archive = Archive::new(res);
         archive.unpack(&archive_dir)?;
 
-        Ok(ContractArchive {
-            contracts_path: desc.contracts_dir(),
-        })
+        Ok(result)
     }
 
     pub fn contracts(&self) -> impl Iterator<Item = Contract> {
