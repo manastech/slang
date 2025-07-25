@@ -1,7 +1,7 @@
 use semver::Version;
 
 use super::binder::{Binder, Definition, Typing};
-use super::types::{Type, TypeId, TypeRegistry};
+use super::types::{FunctionType, Type, TypeId, TypeRegistry};
 use crate::cst::NodeId;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -523,7 +523,7 @@ impl<'a> BuiltInsResolver<'a> {
             }
             Type::Enum { .. } => None,
             Type::FixedPointNumber { .. } => None,
-            Type::Function { external, .. } => {
+            Type::Function(FunctionType { external, .. }) => {
                 if *external {
                     match symbol {
                         "address" => Some(BuiltIn::Address),
