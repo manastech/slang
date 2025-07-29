@@ -198,6 +198,11 @@ impl Binder {
         self.definitions.get_mut(&node_id).unwrap()
     }
 
+    #[cfg(feature = "__private_backend_api")]
+    pub fn definitions(&self) -> &HashMap<NodeId, Definition> {
+        &self.definitions
+    }
+
     pub(crate) fn insert_linearised_bases(
         &mut self,
         node_id: NodeId,
@@ -234,6 +239,11 @@ impl Binder {
 
     pub fn find_reference_by_identifier_node_id(&self, node_id: NodeId) -> Option<&Reference> {
         self.references.get(&node_id)
+    }
+
+    #[cfg(feature = "__private_backend_api")]
+    pub fn references(&self) -> &HashMap<NodeId, Reference> {
+        &self.references
     }
 
     pub(crate) fn insert_using_directive_in_scope(
