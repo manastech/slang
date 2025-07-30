@@ -57,6 +57,11 @@ fn funcalls_simple_overload() -> Result<()> {
 }
 
 #[test]
+fn funcalls_simple_overload_this() -> Result<()> {
+    run(T, "funcalls_simple_overload_this")
+}
+
+#[test]
 fn legacy_call_options() -> Result<()> {
     run(T, "legacy_call_options")
 }
