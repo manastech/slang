@@ -1,0 +1,66 @@
+# This file is generated automatically by infrastructure scripts. Please don't edit by hand.
+
+Definitions (8):
+- Def: #1 ["Other" @ input.sol:1:10] (contract)
+- Def: #2 ["overloaded" @ input.sol:2:12] (function, type: function (int256) returns uint256)
+- Def: #3 ["x" @ input.sol:2:27] (parameter, type: int256)
+- Def: #4 ["overloaded" @ input.sol:6:12] (function, type: function () returns uint256)
+- Def: #5 ["Test" @ input.sol:11:10] (contract)
+- Def: #6 ["someFunc" @ input.sol:12:12] (function, type: function (Other, int256) returns void)
+- Def: #7 ["x" @ input.sol:12:27] (parameter, type: Other)
+- Def: #8 ["y" @ input.sol:12:34] (parameter, type: int256)
+
+------------------------------------------------------------------------
+
+References (1):
+- Ref: ["Other" @ input.sol:12:21] -> #1
+
+------------------------------------------------------------------------
+
+Unbound identifiers (4):
+- ???: ["x" @ input.sol:13:5]
+- ???: ["overloaded" @ input.sol:13:7]
+- ???: ["x" @ input.sol:14:5]
+- ???: ["overloaded" @ input.sol:14:7]
+
+------------------------------------------------------------------------
+
+Bindings: 
+    ╭─[input.sol:1:1]
+    │
+  1 │ contract Other {
+    │          ──┬──  
+    │            ╰──── name: 1
+  2 │   function overloaded(int x) public payable returns (uint) {
+    │            ─────┬────     ┬  
+    │                 ╰──────────── name: 2
+    │                           │  
+    │                           ╰── name: 3
+    │ 
+  6 │   function overloaded() payable returns (uint) {
+    │            ─────┬────  
+    │                 ╰────── name: 4
+    │ 
+ 11 │ contract Test {
+    │          ──┬─  
+    │            ╰─── name: 5
+ 12 │   function someFunc(Other x, int y) {
+    │            ────┬─── ──┬── ┬      ┬  
+    │                ╰──────────────────── name: 6
+    │                       │   │      │  
+    │                       ╰───────────── ref: 1
+    │                           │      │  
+    │                           ╰───────── name: 7
+    │                                  │  
+    │                                  ╰── name: 8
+ 13 │     x.overloaded{ value: 10, gas: 1000 }();
+    │     ┬ ─────┬────  
+    │     ╰───────────── ???
+    │            │      
+    │            ╰────── ???
+ 14 │     x.overloaded{ value: 10, gas: 1000 }(y);
+    │     ┬ ─────┬────  
+    │     ╰───────────── ???
+    │            │      
+    │            ╰────── ???
+────╯
