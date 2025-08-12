@@ -4,6 +4,8 @@
   "include": ["./**/*"],
 
   "compilerOptions": {
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     /* Projects */
     "composite": true,
     "incremental": true,

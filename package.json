@@ -8,5 +8,15 @@
     "crates/solidity/outputs/npm/tests",
     "crates/solidity/testing/perf",
     "documentation/public/user-guide"
-  ]
+  ],
+  "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "eslint-plugin-jest": "^29.0.1",
+    "@typescript-eslint/eslint-plugin": "^8.39.1",
+    "@typescript-eslint/parser": "^8.39.1",
+    "eslint": "^9.33.0",
+    "globals": "^16.3.0",
+    "jiti": "^2.5.1",
+    "typescript-eslint": "^8.39.1"
+  }
 }
