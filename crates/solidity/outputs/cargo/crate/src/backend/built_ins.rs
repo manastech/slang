@@ -189,6 +189,7 @@ const VERSION_0_6_7: Version = Version::new(0, 6, 7);
 const VERSION_0_6_8: Version = Version::new(0, 6, 8);
 const VERSION_0_7_0: Version = Version::new(0, 7, 0);
 const VERSION_0_8_0: Version = Version::new(0, 8, 0);
+const VERSION_0_8_2: Version = Version::new(0, 8, 2);
 const VERSION_0_8_4: Version = Version::new(0, 8, 4);
 const VERSION_0_8_7: Version = Version::new(0, 8, 7);
 const VERSION_0_8_8: Version = Version::new(0, 8, 8);
@@ -542,9 +543,12 @@ impl<'a> BuiltInsResolver<'a> {
             Type::Enum { .. } => None,
             Type::FixedPointNumber { .. } => None,
             Type::Function(FunctionType { external, .. }) => {
-                if *external {
+                // Solidity < 0.5.0 didn't require explicit visibility attributes
+                if *external || self.language_version < VERSION_0_5_0 {
                     match symbol {
-                        "address" => Some(BuiltIn::Address),
+                        "address" if self.language_version >= VERSION_0_8_2 => {
+                            Some(BuiltIn::Address)
+                        }
                         "selector" => Some(BuiltIn::Selector),
                         "gas" if self.language_version < VERSION_0_7_0 => {
                             Some(BuiltIn::LegacyCallOptionGas(LegacyCall::User(type_id)))
