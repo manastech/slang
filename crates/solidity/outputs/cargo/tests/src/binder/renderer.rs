@@ -6,7 +6,7 @@ use anyhow::Result;
 use ariadne::{Color, Config, Label, Report, ReportBuilder, ReportKind, Source};
 use slang_solidity::backend::binder::{Definition, Resolution, Typing};
 use slang_solidity::backend::passes::p5_resolve_references::Output;
-use slang_solidity::backend::types::{DataLocation, FunctionType, Type, TypeId};
+use slang_solidity::backend::types::{DataLocation, FunctionType, LiteralKind, Type, TypeId};
 use slang_solidity::compilation::File;
 use slang_solidity::cst::{Cursor, NodeId, NodeKind, TerminalKindExtensions};
 
@@ -563,7 +563,15 @@ impl CollectedDefinitionDisplay<'_> {
                     value = self.type_display(*value_type_id)
                 )
             }
-            Type::Rational => "rational".to_string(),
+            Type::Literal(kind) => match kind {
+                LiteralKind::Zero => "lit-zero".to_string(),
+                LiteralKind::Rational => "rational".to_string(),
+                LiteralKind::DecimalInteger => "lit-integer".to_string(),
+                LiteralKind::HexInteger { bytes } => format!("lit-hex({bytes})"),
+                LiteralKind::HexString { bytes } => format!("lit-hexstring({bytes})"),
+                LiteralKind::String { bytes } => format!("lit-string({bytes})"),
+                LiteralKind::Address => "lit-address".to_string(),
+            },
             Type::String { location } => {
                 format!(
                     "string {location}",

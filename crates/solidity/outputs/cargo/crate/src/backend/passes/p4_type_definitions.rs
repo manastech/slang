@@ -545,7 +545,7 @@ impl Pass {
                 }
 
                 // invalid types
-                Type::Rational | Type::Tuple { .. } | Type::Void => {
+                Type::Literal(_) | Type::Tuple { .. } | Type::Void => {
                     unreachable!("cannot compute the getter type for {type_id:?}")
                 }
             }
