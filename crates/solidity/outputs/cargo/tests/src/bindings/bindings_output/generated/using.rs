@@ -27,6 +27,11 @@ fn built_ins_results() -> Result<()> {
 }
 
 #[test]
+fn can_override_built_ins() -> Result<()> {
+    run(T, "can_override_built_ins")
+}
+
+#[test]
 fn casting() -> Result<()> {
     run(T, "casting")
 }
@@ -137,8 +142,18 @@ fn on_super_calls() -> Result<()> {
 }
 
 #[test]
+fn overloaded_functions_attached() -> Result<()> {
+    run(T, "overloaded_functions_attached")
+}
+
+#[test]
 fn qualified_type() -> Result<()> {
     run(T, "qualified_type")
+}
+
+#[test]
+fn receiver_implicit_conversion() -> Result<()> {
+    run(T, "receiver_implicit_conversion")
 }
 
 #[test]

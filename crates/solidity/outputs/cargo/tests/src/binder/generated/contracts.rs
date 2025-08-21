@@ -62,6 +62,11 @@ fn inheritance_with_arguments() -> Result<()> {
 }
 
 #[test]
+fn inherited_legacy_constructor() -> Result<()> {
+    run(T, "inherited_legacy_constructor")
+}
+
+#[test]
 fn inherited_state_vars() -> Result<()> {
     run(T, "inherited_state_vars")
 }
@@ -87,6 +92,11 @@ fn multi_inheritance() -> Result<()> {
 }
 
 #[test]
+fn overload_disambiguation_with_this() -> Result<()> {
+    run(T, "overload_disambiguation_with_this")
+}
+
+#[test]
 fn public_array_getters() -> Result<()> {
     run(T, "public_array_getters")
 }
@@ -99,6 +109,11 @@ fn public_getter_functions() -> Result<()> {
 #[test]
 fn public_getter_members() -> Result<()> {
     run(T, "public_getter_members")
+}
+
+#[test]
+fn public_getter_selector() -> Result<()> {
+    run(T, "public_getter_selector")
 }
 
 #[test]

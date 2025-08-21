@@ -11,7 +11,9 @@ use crate::backend::binder::{
 use crate::backend::built_ins::BuiltIn;
 use crate::backend::l2_flat_contracts::visitor::Visitor;
 use crate::backend::l2_flat_contracts::{self as input_ir};
-use crate::backend::types::{DataLocation, FunctionTypeKind, Type, TypeId, TypeRegistry};
+use crate::backend::types::{
+    DataLocation, FunctionType, FunctionTypeKind, Type, TypeId, TypeRegistry,
+};
 use crate::compilation::CompilationUnit;
 use crate::cst::{NodeId, TerminalKind};
 
@@ -202,7 +204,7 @@ impl Pass {
                 } else {
                     self.types.void()
                 };
-                let mut kind = FunctionTypeKind::Pure;
+                let mut kind = FunctionTypeKind::NonPayable;
                 let mut external = false;
                 for attribute in &function_type.attributes {
                     match attribute {
@@ -220,13 +222,13 @@ impl Pass {
                         _ => {}
                     }
                 }
-                Some(self.types.register_type(Type::Function {
+                Some(self.types.register_type(Type::Function(FunctionType {
                     definition_id: None,
                     parameter_types,
                     return_type,
                     external,
                     kind,
-                }))
+                })))
             }
             input_ir::TypeName::MappingType(mapping_type) => {
                 let data_location = Some(DataLocation::Storage);
@@ -385,7 +387,7 @@ impl Pass {
         } else {
             self.types.void()
         };
-        let mut kind = FunctionTypeKind::Pure;
+        let mut kind = FunctionTypeKind::NonPayable;
         let mut external = false;
         for attribute in &function_definition.attributes {
             match attribute {
@@ -403,13 +405,13 @@ impl Pass {
                 _ => {}
             }
         }
-        Some(self.types.register_type(Type::Function {
+        Some(self.types.register_type(Type::Function(FunctionType {
             definition_id: Some(function_definition.node_id),
             parameter_types,
             return_type,
             external,
             kind,
-        }))
+        })))
     }
 
     fn find_library_scope_id_for_identifier_path(
@@ -493,12 +495,11 @@ impl Pass {
                 | Type::UserDefinedValue { .. } => break,
 
                 Type::Struct { definition_id, .. } => {
-                    // For structs there is a special case: if it has a single
-                    // member, the getter will return the value of that field.
-                    // This special case is the reason why we cannot type
-                    // getters concurrently with the state variables.
+                    // For structs the getter will return a tuple with all value
+                    // type and string/bytes fields. It won't return nested
+                    // structs or arrays.
 
-                    // To retrieve that field we need to go through the
+                    // To retrieve the fields we need to go through the
                     // scope associated to the struct...
                     let scope_id = self
                         .binder
@@ -507,17 +508,26 @@ impl Pass {
                     let Scope::Struct(struct_scope) = self.binder.get_scope_by_id(scope_id) else {
                         unreachable!("definition in struct type has no invalid scope");
                     };
-                    if struct_scope.definitions.len() == 1 {
-                        let member_definition_id =
-                            struct_scope.definitions.values().next().unwrap();
-                        if let Some(member_type_id) =
-                            self.binder.node_typing(*member_definition_id).as_type_id()
-                        {
-                            return_type = member_type_id;
-                        } else {
+                    let mut types = Vec::new();
+                    for member_id in struct_scope.definitions.values() {
+                        let Some(member_type_id) = self.binder.node_typing(*member_id).as_type_id()
+                        else {
+                            // member type cannot be resolved
                             return None;
+                        };
+                        if self
+                            .types
+                            .get_type_by_id(member_type_id)
+                            .can_return_from_getter()
+                        {
+                            types.push(member_type_id);
                         }
                     }
+                    return_type = match types.len() {
+                        0 => return None,
+                        1 => types[0],
+                        _ => self.types.register_type(Type::Tuple { types }),
+                    };
                     break;
                 }
 
@@ -535,19 +545,19 @@ impl Pass {
                 }
 
                 // invalid types
-                Type::Rational | Type::Tuple { .. } | Type::Void => {
+                Type::Literal(_) | Type::Tuple { .. } | Type::Void => {
                     unreachable!("cannot compute the getter type for {type_id:?}")
                 }
             }
         }
 
-        let getter_type = Type::Function {
+        let getter_type = Type::Function(FunctionType {
             definition_id: Some(definition_id),
             parameter_types,
             return_type,
             external: true,
             kind: FunctionTypeKind::View,
-        };
+        });
         Some(self.types.register_type(getter_type))
     }
 
@@ -568,6 +578,29 @@ impl Pass {
             self.binder.set_node_type(parameter.node_id, type_id);
         }
     }
+
+    fn register_super_types(&mut self, type_id: TypeId, bases: &[NodeId]) {
+        // register super types in the type registry
+        let super_types = bases
+            .iter()
+            .filter_map(|base_id| {
+                let Some(base) = self.binder.find_definition_by_id(*base_id) else {
+                    unreachable!("base for {base_id:?} does not exist");
+                };
+                let base_type = match base {
+                    Definition::Contract(_) => Type::Contract {
+                        definition_id: *base_id,
+                    },
+                    Definition::Interface(_) => Type::Interface {
+                        definition_id: *base_id,
+                    },
+                    _ => return None,
+                };
+                Some(self.types.register_type(base_type))
+            })
+            .collect();
+        self.types.register_super_types(type_id, super_types);
+    }
 }
 
 impl Visitor for Pass {
@@ -583,6 +616,15 @@ impl Visitor for Pass {
     fn enter_contract_definition(&mut self, node: &input_ir::ContractDefinition) -> bool {
         self.enter_scope_for_node_id(node.node_id);
 
+        if let Some(bases) = self.binder.get_linearised_bases(node.node_id) {
+            if !bases.is_empty() {
+                let type_id = self.types.register_type(Type::Contract {
+                    definition_id: node.node_id,
+                });
+                self.register_super_types(type_id, &bases.clone());
+            }
+        }
+
         true
     }
 
@@ -594,6 +636,15 @@ impl Visitor for Pass {
 
     fn enter_interface_definition(&mut self, node: &input_ir::InterfaceDefinition) -> bool {
         self.enter_scope_for_node_id(node.node_id);
+
+        if let Some(bases) = self.binder.get_linearised_bases(node.node_id) {
+            if !bases.is_empty() {
+                let type_id = self.types.register_type(Type::Interface {
+                    definition_id: node.node_id,
+                });
+                self.register_super_types(type_id, &bases.clone());
+            }
+        }
 
         true
     }
@@ -755,6 +806,20 @@ impl Visitor for Pass {
 
     fn leave_event_definition(&mut self, node: &input_ir::EventDefinition) {
         self.binder.mark_user_meta_type_node(node.node_id);
+
+        let parameter_types: Vec<_> = node
+            .parameters
+            .parameters
+            .iter()
+            .filter_map(|parameter| self.binder.node_typing(parameter.node_id).as_type_id())
+            .collect();
+        if parameter_types.len() == node.parameters.parameters.len() {
+            let Definition::Event(event_definition) = self.binder.get_definition_mut(node.node_id)
+            else {
+                unreachable!("definition in EventDefinition node is not an event");
+            };
+            event_definition.parameter_types = parameter_types;
+        }
     }
 
     fn leave_event_parameter(&mut self, node: &input_ir::EventParameter) {
@@ -810,8 +875,8 @@ impl Visitor for Pass {
                         }),
                 )
             } else {
-                // this is for `var` variables (in Solidity < 0.5.0)
-                // we cannot resolve the type at this point
+                // this is for `var` variables (in Solidity < 0.5.0) we cannot
+                // resolve the type at this point (will fixup in p5)
                 None
             };
         self.binder.set_node_type(node.node_id, type_id);
@@ -848,9 +913,9 @@ impl Visitor for Pass {
                 continue;
             };
             if let input_ir::TupleMember::UntypedTupleMember(untyped_tuple_member) = member {
-                // TODO: the variables cannot be typed at this point, but we
-                // should be able to infer their type in p4 after computing the
-                // value type
+                // the variable types cannot be typed at this point, but we
+                // should be able to infer it after typing the initialization
+                // value
                 self.binder
                     .set_node_type(untyped_tuple_member.node_id, None);
             }

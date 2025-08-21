@@ -169,6 +169,10 @@ impl Binder {
         }
     }
 
+    pub(crate) fn get_linearised_bases(&self, node_id: NodeId) -> Option<&Vec<NodeId>> {
+        self.linearisations.get(&node_id)
+    }
+
     #[cfg(feature = "__private_backend_api")]
     pub fn linearisations(&self) -> &HashMap<NodeId, Vec<NodeId>> {
         &self.linearisations
@@ -177,6 +181,11 @@ impl Binder {
     pub(crate) fn insert_reference(&mut self, reference: Reference) {
         let node_id = reference.node_id();
         self.references.insert(node_id, reference);
+    }
+
+    pub(crate) fn fixup_reference(&mut self, node_id: NodeId, resolution: Resolution) {
+        let reference = self.references.get_mut(&node_id).unwrap();
+        reference.resolution = resolution;
     }
 
     pub fn find_reference_by_identifier_node_id(&self, node_id: NodeId) -> Option<&Reference> {
@@ -251,6 +260,14 @@ impl Binder {
         if previous_typing.is_some() {
             unreachable!("typing information for node {node_id:?} already set");
         }
+    }
+
+    pub(crate) fn fixup_node_typing(&mut self, node_id: NodeId, typing: Typing) {
+        assert!(
+            self.node_typing.contains_key(&node_id),
+            "typing information for node {node_id:?} not set"
+        );
+        self.node_typing.insert(node_id, typing);
     }
 
     // File scope resolution context

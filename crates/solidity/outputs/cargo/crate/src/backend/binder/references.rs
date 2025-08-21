@@ -10,6 +10,8 @@ use crate::cst::{NodeId, TerminalNode};
 pub enum Resolution {
     Unresolved,
     Definition(NodeId),
+    // TODO: this can't model cases where the ambiguity happens between an
+    // attached function and a built-in
     Ambiguous(Vec<NodeId>),
     BuiltIn(BuiltIn),
 }
