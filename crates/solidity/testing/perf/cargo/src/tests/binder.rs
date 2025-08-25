@@ -1,5 +1,6 @@
 use slang_solidity::backend::binder::Resolution;
 use slang_solidity::backend::passes;
+use slang_solidity::backend::passes::p5_resolve_references::Output;
 use slang_solidity::compilation::CompilationUnit;
 use slang_solidity::cst::{NodeKind, TerminalKindExtensions};
 
@@ -9,14 +10,21 @@ pub fn setup(project: &str) -> CompilationUnit {
     create_compilation_unit(super::setup::setup(project)).unwrap()
 }
 
-pub fn run(unit: CompilationUnit) -> CompilationUnit {
+fn build(unit: CompilationUnit) -> Output {
     let data = passes::p0_build_ast::run(unit);
     let data = passes::p1_flatten_contracts::run(data);
     let data = passes::p2_collect_definitions::run(data);
     let data = passes::p3_linearise_contracts::run(data);
     let data = passes::p4_type_definitions::run(data);
-    let data = passes::p5_resolve_references::run(data);
+    std::hint::black_box(passes::p5_resolve_references::run(data))
+}
 
+pub fn setup_for_cleanup(project: &str) -> Output {
+    build(create_compilation_unit(super::setup::setup(project)).unwrap())
+}
+
+pub fn run(unit: CompilationUnit) -> Output {
+    let data = build(unit);
     let mut ids = 0;
 
     for file in data.compilation_unit.files() {
@@ -50,5 +58,5 @@ pub fn run(unit: CompilationUnit) -> CompilationUnit {
     }
     assert_ne!(ids, 0);
 
-    data.compilation_unit
+    data
 }
