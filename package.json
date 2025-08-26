@@ -8,6 +8,7 @@
     "crates/solidity/outputs/npm/tests",
     "crates/solidity/testing/perf",
     "crates/solidity/testing/perf/npm",
+    "crates/solidity/testing/sourcify",
     "documentation/public/user-guide"
   ],
   "devDependencies": {
