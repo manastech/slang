@@ -1,0 +1,13 @@
+{
+  "name": "@slang-private/solidity-testing-sourcify",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@nomicfoundation/slang": "file:../../outputs/npm/package/",
+    "solc": "^0.8.29",
+    "solidity-ast": "^0.4.60"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.17"
+  }
+}
