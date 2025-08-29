@@ -10,7 +10,9 @@ use std::path::PathBuf;
 
 use anyhow::{bail, Result};
 use clap::Parser;
-use command::{ArchiveOptions, Commands, ReferencesCommand, ShardingOptions, ShowCombinedResultsCommand};
+use command::{
+    ArchiveOptions, Commands, ReferencesCommand, ShardingOptions, ShowCombinedResultsCommand,
+};
 use events::Events;
 use infra_utils::github::GitHub;
 use infra_utils::paths::PathExtensions;
@@ -26,7 +28,7 @@ fn main() -> Result<()> {
         Commands::ShowCombinedResults(results_command) => {
             run_show_combined_results_command(results_command)
         }
-        Commands::References(references_command) => run_references_command(references_command),
+        Commands::References(references_command) => run_references_command(&references_command),
     }
 }
 
@@ -111,7 +113,7 @@ fn run_show_combined_results_command(command: ShowCombinedResultsCommand) -> Res
     Ok(())
 }
 
-fn run_references_command(command: ReferencesCommand) -> Result<()> {
+fn run_references_command(command: &ReferencesCommand) -> Result<()> {
     let sharding_options = ShardingOptions {
         shard_count: None,
         shard_index: None,
@@ -125,7 +127,10 @@ fn run_references_command(command: ReferencesCommand) -> Result<()> {
         .inspect_err(|e| eprintln!("Error fetching chain manifest: {e}"))?;
 
     let Some(contract) = manifest.fetch_contract(&command.contract) else {
-        bail!("Contract {contract_id} not found", contract_id = command.contract);
+        bail!(
+            "Contract {contract_id} not found",
+            contract_id = command.contract
+        );
     };
 
     print_contract_references(&contract)
