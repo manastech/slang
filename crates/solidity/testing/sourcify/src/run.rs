@@ -270,17 +270,21 @@ fn run_old_binder_check(
     TestOutcome::Passed
 }
 
-fn run_new_binder_check(
-    contract: &Contract,
-    compilation_unit: CompilationUnit,
-    events: &Events,
-) -> TestOutcome {
+fn bind_and_resolve(compilation_unit: CompilationUnit) -> Output {
     let data = passes::p0_build_ast::run(compilation_unit);
     let data = passes::p1_flatten_contracts::run(data);
     let data = passes::p2_collect_definitions::run(data);
     let data = passes::p3_linearise_contracts::run(data);
     let data = passes::p4_type_definitions::run(data);
-    let data = passes::p5_resolve_references::run(data);
+    passes::p5_resolve_references::run(data)
+}
+
+fn run_new_binder_check(
+    contract: &Contract,
+    compilation_unit: CompilationUnit,
+    events: &Events,
+) -> TestOutcome {
+    let data = bind_and_resolve(compilation_unit);
 
     let mut test_outcome = TestOutcome::Passed;
 
@@ -347,12 +351,7 @@ fn run_compare_binders(
     compilation_unit: CompilationUnit,
     events: &Events,
 ) -> TestOutcome {
-    let data = passes::p0_build_ast::run(compilation_unit);
-    let data = passes::p1_flatten_contracts::run(data);
-    let data = passes::p2_collect_definitions::run(data);
-    let data = passes::p3_linearise_contracts::run(data);
-    let data = passes::p4_type_definitions::run(data);
-    let data = passes::p5_resolve_references::run(data);
+    let data = bind_and_resolve(compilation_unit);
     let binder = data.binder;
 
     let binding_graph = data.compilation_unit.binding_graph();
@@ -502,6 +501,82 @@ impl Diagnostic for BindingError {
     }
 }
 
+// Advances the cursor to point to the next identifier terminal that contains a
+// reference to compare against `solc`'s output. We return the identifier string
+// to handle `IdentifierPath` references, for which we want to resolve only the
+// last element in the path. Returns `None` when the cursor is complete.
+fn next_reference_identifier(cursor: &mut Cursor) -> Option<String> {
+    while cursor.go_to_next() {
+        if cursor
+            .node()
+            .is_nonterminal_with_kind(NonterminalKind::NamedArgument)
+        {
+            // skip over identifiers used as names in named
+            // arguments or import deconstruction symbols, as `solc`
+            // doesn't resolve them
+            assert!(cursor.go_to_next_terminal_with_kind(TerminalKind::Identifier));
+            continue;
+        } else if cursor
+            .node()
+            .is_nonterminal_with_kind(NonterminalKind::CatchClauseError)
+        {
+            // solc will not report `Error`/`Panic` in catch clauses
+            assert!(cursor.go_to_last_child());
+            continue;
+        } else if cursor
+            .node()
+            .is_nonterminal_with_kind(NonterminalKind::IdentifierPath)
+        {
+            // to make our output comparable to `solc`, for
+            // `IdentifierPath` we want to output the full path as
+            // the name, but resolve the reference from the last
+            // child
+
+            // exception: error types in `revert` and event types in
+            // `emit` statements, which are parsed more like
+            // function calls by `solc`
+            let mut parent_cursor = cursor.clone();
+            assert!(parent_cursor.go_to_parent());
+            if parent_cursor.node().is_nonterminal_with_kinds(&[
+                NonterminalKind::RevertStatement,
+                NonterminalKind::EmitStatement,
+            ]) {
+                continue;
+            }
+
+            let identifier_cursor = cursor.spawn();
+            let identifier = identifier_cursor
+                .descendants()
+                .filter_map(|edge| {
+                    if edge.is_terminal_with_kind(TerminalKind::Identifier) {
+                        Some(edge.node.unparse())
+                    } else {
+                        None
+                    }
+                })
+                .collect::<Vec<_>>()
+                .join(".");
+
+            // position the cursor in the last `Identifier` of the path
+            assert!(cursor.go_to_last_child());
+            while !cursor
+                .node()
+                .is_terminal_with_kind(TerminalKind::Identifier)
+            {
+                assert!(cursor.go_to_previous_sibling());
+            }
+            return Some(identifier);
+        } else if cursor
+            .node()
+            .is_terminal_with_kind(TerminalKind::Identifier)
+        {
+            // for normal identifiers, the name is the identifier itself
+            return Some(cursor.node().unparse());
+        }
+    }
+    None
+}
+
 pub(crate) fn print_contract_references(contract: &Contract) -> Result<()> {
     if uses_exotic_parser_bug(contract) {
         bail!(
@@ -512,94 +587,18 @@ pub(crate) fn print_contract_references(contract: &Contract) -> Result<()> {
 
     match contract.create_compilation_unit() {
         Ok(compilation_unit) => {
-            let data = passes::p0_build_ast::run(compilation_unit);
-            let data = passes::p1_flatten_contracts::run(data);
-            let data = passes::p2_collect_definitions::run(data);
-            let data = passes::p3_linearise_contracts::run(data);
-            let data = passes::p4_type_definitions::run(data);
-            let data = passes::p5_resolve_references::run(data);
+            let data = bind_and_resolve(compilation_unit);
 
             let cursors = cache_definitions_and_references_cursors(&data);
 
             for file in data.compilation_unit.files() {
                 let mut cursor = file.create_tree_cursor();
-                while cursor.go_to_next() {
-                    let identifier;
-                    if cursor
-                        .node()
-                        .is_nonterminal_with_kind(NonterminalKind::NamedArgument)
-                    {
-                        // skip over identifiers used as names in named
-                        // arguments or import deconstruction symbols, as `solc`
-                        // doesn't resolve them
-                        assert!(cursor.go_to_next_terminal_with_kind(TerminalKind::Identifier));
-                        continue;
-                    } else if cursor
-                        .node()
-                        .is_nonterminal_with_kind(NonterminalKind::CatchClauseError)
-                    {
-                        // solc will not report `Error`/`Panic` in catch clauses
-                        assert!(cursor.go_to_last_child());
-                        continue;
-                    } else if cursor
-                        .node()
-                        .is_nonterminal_with_kind(NonterminalKind::IdentifierPath)
-                    {
-                        // to make our output comparable to `solc`, for
-                        // `IdentifierPath` we want to output the full path as
-                        // the name, but resolve the reference from the last
-                        // child
-
-                        // exception: error types in `revert` and event types in
-                        // `emit` statements, which are parsed more like
-                        // function calls by `solc`
-                        let mut parent_cursor = cursor.clone();
-                        assert!(parent_cursor.go_to_parent());
-                        if parent_cursor.node().is_nonterminal_with_kinds(&[
-                            NonterminalKind::RevertStatement,
-                            NonterminalKind::EmitStatement,
-                        ]) {
-                            continue;
-                        }
-
-                        let identifier_cursor = cursor.spawn();
-                        identifier = identifier_cursor
-                            .descendants()
-                            .filter_map(|edge| {
-                                if edge.is_terminal_with_kind(TerminalKind::Identifier) {
-                                    Some(edge.node.unparse())
-                                } else {
-                                    None
-                                }
-                            })
-                            .collect::<Vec<_>>()
-                            .join(".");
-
-                        // position the cursor in the last `Identifier` of the path
-                        assert!(cursor.go_to_last_child());
-                        while !cursor
-                            .node()
-                            .is_terminal_with_kind(TerminalKind::Identifier)
-                        {
-                            assert!(cursor.go_to_previous_sibling());
-                        }
-                    } else if cursor
-                        .node()
-                        .is_terminal_with_kind(TerminalKind::Identifier)
-                    {
-                        // for normal identifiers, the name is the identifier itself
-                        identifier = cursor.node().unparse();
-                    } else {
-                        // skip any other node, which will never produce a reference
-                        continue;
-                    }
-
+                while let Some(identifier) = next_reference_identifier(&mut cursor) {
                     let node_id = cursor.node().id();
                     let Some(reference) = data.binder.find_reference_by_identifier_node_id(node_id)
                     else {
                         continue;
                     };
-
                     let resolution = match reference.resolution {
                         Resolution::Unresolved => "unresolved".to_string(),
                         Resolution::Definition(node_id) => {
@@ -620,7 +619,7 @@ pub(crate) fn print_contract_references(contract: &Contract) -> Result<()> {
 
                             format!(
                                 "@ {file}:{line}",
-                                file = contract.import_resolver.get_virtual_path(&file).unwrap(),
+                                file = contract.import_resolver.get_virtual_path(file).unwrap(),
                                 line = line_cursor.text_offset().line + 1,
                             )
                         }
@@ -652,13 +651,12 @@ pub(crate) fn print_contract_references(contract: &Contract) -> Result<()> {
                     "Contract {contract} is incompatible",
                     contract = contract.name
                 );
-            } else {
-                bail!(
-                    "Failed to compile contract {}: {e}\n{}",
-                    contract.name,
-                    e.backtrace()
-                );
             }
+            bail!(
+                "Failed to compile contract {}: {e}\n{}",
+                contract.name,
+                e.backtrace()
+            );
         }
     }
 
