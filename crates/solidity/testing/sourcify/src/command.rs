@@ -15,6 +15,7 @@ pub struct Cli {
 pub enum Commands {
     Test(TestCommand),
     ShowCombinedResults(ShowCombinedResultsCommand),
+    References(ReferencesCommand),
 }
 
 #[derive(Debug, Parser)]
@@ -46,6 +47,18 @@ pub struct TestCommand {
 #[derive(Debug, Parser)]
 pub struct ShowCombinedResultsCommand {
     pub results_file: PathBuf,
+}
+
+#[derive(Debug, Parser)]
+pub struct ReferencesCommand {
+    /// Chain to pull contracts from. See <https://docs.sourcify.dev/docs/chains/> to get a list of valid chain IDs.
+    /// Defaults to Ethereum Mainnet.
+    #[arg(long, default_value_t = ChainId(1))]
+    pub chain_id: ChainId,
+
+    /// Specify a single contract to test using the contract address.
+    #[arg(long)]
+    pub contract: String,
 }
 
 #[allow(clippy::struct_excessive_bools)]
