@@ -1,12 +1,16 @@
+use std::collections::HashMap;
 use std::rc::Rc;
 
 use anyhow::{bail, Result};
 use rayon::iter::{ParallelBridge, ParallelIterator};
 use slang_solidity::backend::binder::Resolution;
+use slang_solidity::backend::built_ins::BuiltIn;
 use slang_solidity::backend::passes;
+use slang_solidity::backend::passes::p5_resolve_references::Output;
 use slang_solidity::compilation::{CompilationInitializationError, CompilationUnit};
 use slang_solidity::cst::{
-    Cursor, NodeKind, TerminalKind, TerminalKindExtensions, TerminalNode, TextRange,
+    Cursor, NodeId, NodeKind, NonterminalKind, TerminalKind, TerminalKindExtensions, TerminalNode,
+    TextRange,
 };
 use slang_solidity::diagnostic::{Diagnostic, Severity};
 use slang_solidity::utils::LanguageFacts;
@@ -496,4 +500,188 @@ impl Diagnostic for BindingError {
             }
         }
     }
+}
+
+pub(crate) fn print_contract_references(contract: &Contract) -> Result<()> {
+    if uses_exotic_parser_bug(contract) {
+        bail!(
+            "Contract {contract} is incompatible",
+            contract = contract.name
+        );
+    }
+
+    match contract.create_compilation_unit() {
+        Ok(compilation_unit) => {
+            let data = passes::p0_build_ast::run(compilation_unit);
+            let data = passes::p1_flatten_contracts::run(data);
+            let data = passes::p2_collect_definitions::run(data);
+            let data = passes::p3_linearise_contracts::run(data);
+            let data = passes::p4_type_definitions::run(data);
+            let data = passes::p5_resolve_references::run(data);
+
+            let cursors = cache_definitions_and_references_cursors(&data);
+
+            for file in data.compilation_unit.files() {
+                let mut cursor = file.create_tree_cursor();
+                while cursor.go_to_next() {
+                    let identifier;
+                    if cursor
+                        .node()
+                        .is_nonterminal_with_kind(NonterminalKind::NamedArgument)
+                    {
+                        // skip over identifiers used as names in named
+                        // arguments or import deconstruction symbols, as `solc`
+                        // doesn't resolve them
+                        assert!(cursor.go_to_next_terminal_with_kind(TerminalKind::Identifier));
+                        continue;
+                    } else if cursor
+                        .node()
+                        .is_nonterminal_with_kind(NonterminalKind::CatchClauseError)
+                    {
+                        // solc will not report `Error`/`Panic` in catch clauses
+                        assert!(cursor.go_to_last_child());
+                        continue;
+                    } else if cursor
+                        .node()
+                        .is_nonterminal_with_kind(NonterminalKind::IdentifierPath)
+                    {
+                        // to make our output comparable to `solc`, for
+                        // `IdentifierPath` we want to output the full path as
+                        // the name, but resolve the reference from the last
+                        // child
+
+                        // exception: error types in `revert` and event types in
+                        // `emit` statements, which are parsed more like
+                        // function calls by `solc`
+                        let mut parent_cursor = cursor.clone();
+                        assert!(parent_cursor.go_to_parent());
+                        if parent_cursor.node().is_nonterminal_with_kinds(&[
+                            NonterminalKind::RevertStatement,
+                            NonterminalKind::EmitStatement,
+                        ]) {
+                            continue;
+                        }
+
+                        let identifier_cursor = cursor.spawn();
+                        identifier = identifier_cursor
+                            .descendants()
+                            .filter_map(|edge| {
+                                if edge.is_terminal_with_kind(TerminalKind::Identifier) {
+                                    Some(edge.node.unparse())
+                                } else {
+                                    None
+                                }
+                            })
+                            .collect::<Vec<_>>()
+                            .join(".");
+
+                        // position the cursor in the last `Identifier` of the path
+                        assert!(cursor.go_to_last_child());
+                        while !cursor
+                            .node()
+                            .is_terminal_with_kind(TerminalKind::Identifier)
+                        {
+                            assert!(cursor.go_to_previous_sibling());
+                        }
+                    } else if cursor
+                        .node()
+                        .is_terminal_with_kind(TerminalKind::Identifier)
+                    {
+                        // for normal identifiers, the name is the identifier itself
+                        identifier = cursor.node().unparse();
+                    } else {
+                        // skip any other node, which will never produce a reference
+                        continue;
+                    }
+
+                    let node_id = cursor.node().id();
+                    let Some(reference) = data.binder.find_reference_by_identifier_node_id(node_id)
+                    else {
+                        continue;
+                    };
+
+                    let resolution = match reference.resolution {
+                        Resolution::Unresolved => "unresolved".to_string(),
+                        Resolution::Definition(node_id) => {
+                            let (cursor, file) = cursors.get(&node_id).unwrap();
+
+                            // the definition may contain leading trivia; we
+                            // need to skip it to obtain the real text offset
+                            // where the definition starts
+                            let mut line_cursor = cursor.spawn();
+                            if !line_cursor.node().is_terminal() {
+                                assert!(line_cursor.go_to_next_terminal());
+                            }
+                            while line_cursor.node().is_trivia() {
+                                if !line_cursor.go_to_next_terminal() {
+                                    break;
+                                }
+                            }
+
+                            format!(
+                                "@ {file}:{line}",
+                                file = contract.import_resolver.get_virtual_path(&file).unwrap(),
+                                line = line_cursor.text_offset().line + 1,
+                            )
+                        }
+                        Resolution::Ambiguous(_) => "ambiguous".to_string(),
+                        Resolution::BuiltIn(built_in) => {
+                            match built_in {
+                                // we know some built-ins are never resolved by `solc`
+                                BuiltIn::ModifierUnderscore => continue,
+                                _ => "built-in".to_string(),
+                            }
+                        }
+                    };
+                    println!(
+                        "'{identifier}' @ {file}:{line} -> {resolution}",
+                        file = contract
+                            .import_resolver
+                            .get_virtual_path(file.id())
+                            .unwrap(),
+                        line = cursor.text_offset().line + 1,
+                    );
+                }
+            }
+        }
+        Err(e) => {
+            if let Some(CompilationInitializationError::UnsupportedLanguageVersion(_)) =
+                e.downcast_ref::<CompilationInitializationError>()
+            {
+                bail!(
+                    "Contract {contract} is incompatible",
+                    contract = contract.name
+                );
+            } else {
+                bail!(
+                    "Failed to compile contract {}: {e}\n{}",
+                    contract.name,
+                    e.backtrace()
+                );
+            }
+        }
+    }
+
+    Ok(())
+}
+
+// Create a hashmap of node ID to (cursor, file_id) for all nodes that index a
+// definition or a reference
+fn cache_definitions_and_references_cursors(output: &Output) -> HashMap<NodeId, (Cursor, String)> {
+    let mut cursors = HashMap::new();
+    for file in &output.compilation_unit.files() {
+        let mut cursor = file.create_tree_cursor();
+        while cursor.go_to_next() {
+            let node_id = cursor.node().id();
+            if output.binder.find_definition_by_id(node_id).is_some()
+                || output
+                    .binder
+                    .find_reference_by_identifier_node_id(node_id)
+                    .is_some()
+            {
+                cursors.insert(node_id, (cursor.clone(), file.id().to_string()));
+            }
+        }
+    }
+    cursors
 }

@@ -6,6 +6,7 @@ import { promisify } from "node:util";
 import * as solc from "solc";
 import { isNodeType, findAll, astDereferencer, srcDecoder } from "solidity-ast/utils.js";
 import type { SolcInput, SolcOutput } from "solidity-ast/solc.js";
+import { Identifier, IdentifierPath, MemberAccess } from "solidity-ast";
 
 function printReferences(input: SolcInput, output: SolcOutput) {
   const decoder = srcDecoder(input, output);
@@ -14,23 +15,66 @@ function printReferences(input: SolcInput, output: SolcOutput) {
     const sourceUnit = source.ast;
     assert(isNodeType("SourceUnit", sourceUnit));
 
-    for (const ident of findAll(["Identifier", "IdentifierPath"], sourceUnit)) {
-      if (ident.name === "this" || ident.name === "super") continue;
-
-      const reference = `'${ident.name}' @ ${decoder(ident)}`;
-      let definition;
-      if (ident.referencedDeclaration) {
-        if (ident.referencedDeclaration > 0x80000000) {
-          definition = "built-in";
-        } else {
-          let refedDef = deref("*", ident.referencedDeclaration);
-          definition = `${refedDef.nodeType} @ ${decoder(refedDef)}`;
-        }
+    for (const node of findAll(["Identifier", "IdentifierPath", "MemberAccess", "UsingForDirective"], sourceUnit)) {
+      if (isNodeType("UsingForDirective", node)) {
+        node.functionList?.forEach((fn: any) => {
+          // not sure why this case is not handled properly by `findAll`, but it's not
+          // this is using with user defined operators
+          const identifierPath = fn.definition;
+          if (identifierPath) {
+            printReference(identifierPath);
+          }
+        });
       } else {
-        definition = "unresolved";
+        printReference(node);
       }
-      console.log(`${reference} -> ${definition}`);
     }
+  }
+
+  function printReference(node: Identifier | IdentifierPath | MemberAccess) {
+    let reference;
+    if (isNodeType("Identifier", node) || isNodeType("IdentifierPath", node)) {
+      // `this` and `super` are keywords in Slang
+      if (node.name === "this" || node.name === "super") return;
+
+      reference = node.name;
+    } else if (isNodeType("MemberAccess", node)) {
+      reference = node.memberName;
+    } else {
+      return;
+    }
+
+    let definition;
+    if (node.referencedDeclaration) {
+      if (node.referencedDeclaration > 0x80000000) {
+        definition = "built-in";
+      } else {
+        let refedDef = deref("*", node.referencedDeclaration);
+        // definition = `${refedDef.nodeType} @ ${decoder(refedDef)}`;
+        definition = `@ ${decoder(refedDef)}`;
+      }
+    } else {
+      if (isNodeType("MemberAccess", node)) {
+        // solc will not resolve built-in members
+        definition = "built-in";
+      } else {
+        // this can happen in import deconstruction symbols, when there are
+        // multiple overloads available
+        definition = "ambiguous";
+      }
+    }
+
+    // special case: `revert` is a statement and `type` is a special expression type in Slang
+    if ((reference === "revert" || reference === "type") && definition === "built-in") return;
+
+    // compute the reference location from the node, except for member
+    // accesses, for which we want the location of the member itself
+    let refLocation = node.src;
+    if (isNodeType("MemberAccess", node)) {
+      refLocation = node.memberLocation ?? node.src;
+    }
+
+    console.log(`'${reference}' @ ${decoder({ src: refLocation })} -> ${definition}`);
   }
 }
 
@@ -49,6 +93,7 @@ function buildSolcInput(projectPath: string): { input: SolcInput; compilerVersio
 
   const compilerVersion = metadata.compiler.version;
   const remappings = metadata.settings.remappings;
+  const evmVersion = metadata.settings.evmVersion;
   const sources = Object.fromEntries(
     Object.entries(metadata.sources).map(([name, source]: [string, any]) => {
       const contents = fs.readFileSync(path.join(projectPath, "sources", source.keccak256), "utf8");
@@ -60,6 +105,7 @@ function buildSolcInput(projectPath: string): { input: SolcInput; compilerVersio
     sources,
     settings: {
       remappings,
+      evmVersion,
       outputSelection: {
         "*": {
           "": ["ast"],
@@ -74,15 +120,22 @@ const projectPath = process.argv[2];
 
 if (!projectPath) {
   console.error("Usage: tsx get-solc-references.mts <path-to-project>");
-  console.error("The path-to-project is the contract/project folder downloaded from Sourcify that contains the metadata.json file.");
+  console.error(
+    "The path-to-project is the contract/project folder downloaded from Sourcify that contains the metadata.json file.",
+  );
   process.exit(1);
 }
 
 try {
   const { input, compilerVersion } = buildSolcInput(projectPath);
   await loadRemoteVersion(`v${compilerVersion}`).then((snapshot) => {
-    const output = snapshot.compile(JSON.stringify(input), {});
-    printReferences(input, JSON.parse(output));
+    const output = JSON.parse(snapshot.compile(JSON.stringify(input), {}));
+    const errors = output.errors?.filter((error: any) => error.severity === "error");
+    if (errors?.length ?? 0 > 0) {
+      errors.forEach((error: any) => console.error(error.formattedMessage));
+      return;
+    }
+    printReferences(input, output);
   });
 } catch (err: any) {
   console.error("Failed to read or compile contract: ", err.message);
