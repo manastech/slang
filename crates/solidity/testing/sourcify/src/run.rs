@@ -591,6 +591,29 @@ pub(crate) fn print_contract_references(contract: &Contract) -> Result<()> {
 
             let cursors = cache_definitions_and_references_cursors(&data);
 
+            let definition_location = |node_id| {
+                let (cursor, file) = cursors.get(&node_id).unwrap();
+
+                // the definition may contain leading trivia; we
+                // need to skip it to obtain the real text offset
+                // where the definition starts
+                let mut line_cursor = cursor.spawn();
+                if !line_cursor.node().is_terminal() {
+                    assert!(line_cursor.go_to_next_terminal());
+                }
+                while line_cursor.node().is_trivia() {
+                    if !line_cursor.go_to_next_terminal() {
+                        break;
+                    }
+                }
+
+                format!(
+                    "@ {file}:{line}",
+                    file = contract.import_resolver.get_virtual_path(file).unwrap(),
+                    line = line_cursor.text_offset().line + 1,
+                )
+            };
+
             for file in data.compilation_unit.files() {
                 let mut cursor = file.create_tree_cursor();
                 while let Some(identifier) = next_reference_identifier(&mut cursor) {
@@ -599,31 +622,19 @@ pub(crate) fn print_contract_references(contract: &Contract) -> Result<()> {
                     else {
                         continue;
                     };
-                    let resolution = match reference.resolution {
+                    let resolution = match &reference.resolution {
                         Resolution::Unresolved => "unresolved".to_string(),
-                        Resolution::Definition(node_id) => {
-                            let (cursor, file) = cursors.get(&node_id).unwrap();
-
-                            // the definition may contain leading trivia; we
-                            // need to skip it to obtain the real text offset
-                            // where the definition starts
-                            let mut line_cursor = cursor.spawn();
-                            if !line_cursor.node().is_terminal() {
-                                assert!(line_cursor.go_to_next_terminal());
-                            }
-                            while line_cursor.node().is_trivia() {
-                                if !line_cursor.go_to_next_terminal() {
-                                    break;
-                                }
-                            }
-
+                        Resolution::Definition(node_id) => definition_location(*node_id),
+                        Resolution::Ambiguous(node_ids) => {
                             format!(
-                                "@ {file}:{line}",
-                                file = contract.import_resolver.get_virtual_path(file).unwrap(),
-                                line = line_cursor.text_offset().line + 1,
+                                "ambiguous: {:?}",
+                                node_ids
+                                    .iter()
+                                    .copied()
+                                    .map(definition_location)
+                                    .collect::<Vec<_>>()
                             )
                         }
-                        Resolution::Ambiguous(_) => "ambiguous".to_string(),
                         Resolution::BuiltIn(built_in) => {
                             match built_in {
                                 // we know some built-ins are never resolved by `solc`
