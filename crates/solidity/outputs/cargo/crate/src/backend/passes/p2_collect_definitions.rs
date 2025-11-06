@@ -23,6 +23,7 @@ pub struct Output {
 /// instantiates a `Binder` object which will store all this information as well
 /// as references and typing information for the nodes, to be resolved in later
 /// passes.
+#[inline(never)]
 pub fn run(input: Input) -> Output {
     let files = input.files;
     let compilation_unit = input.compilation_unit;

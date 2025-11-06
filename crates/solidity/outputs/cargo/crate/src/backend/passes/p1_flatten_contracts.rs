@@ -19,6 +19,7 @@ pub struct Output {
 /// it easier to use. For now, it will only flatten contract specifiers:
 /// inheritance and storage layout specifiers. In the future, more
 /// transformations will be added.
+#[inline(never)]
 pub fn run(input: Input) -> Output {
     let mut pass = Pass {
         language_version: input.compilation_unit.language_version().clone(),

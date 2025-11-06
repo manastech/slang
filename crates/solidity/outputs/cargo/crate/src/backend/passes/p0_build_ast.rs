@@ -8,6 +8,7 @@ pub struct Output {
     pub files: HashMap<String, SourceUnit>,
 }
 
+#[inline(never)]
 pub fn run(input: CompilationUnit) -> Output {
     let mut files = HashMap::new();
     for file in &input.files() {

@@ -29,6 +29,7 @@ pub struct Output {
 /// Finally, public state variables will be assigned an equivalent getter
 /// function type. This happens after the main typing pass to ensure all types
 /// are already registered.
+#[inline(never)]
 pub fn run(input: Input) -> Output {
     let files = input.files;
     let compilation_unit = input.compilation_unit;
