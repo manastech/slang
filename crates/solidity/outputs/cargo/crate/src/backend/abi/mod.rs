@@ -1,5 +1,6 @@
 use crate::cst::NodeId;
 
+#[derive(Debug)]
 pub struct ContractAbi {
     pub node_id: NodeId,
     pub name: String,
@@ -8,6 +9,7 @@ pub struct ContractAbi {
     pub storage_layout: Vec<Slot>,
 }
 
+#[derive(Debug)]
 pub struct FunctionAbi {
     pub node_id: NodeId,
     pub name: Option<String>,
@@ -17,6 +19,7 @@ pub struct FunctionAbi {
     pub state_mutability: FunctionAbiMutability,
 }
 
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum FunctionAbiType {
     Function,
     Constructor,
@@ -24,6 +27,7 @@ pub enum FunctionAbiType {
     Fallback,
 }
 
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum FunctionAbiMutability {
     NonPayable,
     Payable,
@@ -31,6 +35,7 @@ pub enum FunctionAbiMutability {
     Pure,
 }
 
+#[derive(Debug)]
 pub struct FunctionInputOutput {
     pub node_id: NodeId,
     pub name: Option<String>,
@@ -38,6 +43,7 @@ pub struct FunctionInputOutput {
     pub internal_type: String,
 }
 
+#[derive(Debug)]
 pub struct Slot {
     pub node_id: NodeId,
     pub label: String,

@@ -91,6 +91,7 @@ impl BackendContext {
         &self,
         contract_definition: &output_ir::ContractDefinition,
     ) -> Vec<abi::FunctionAbi> {
+        _ = self; // TODO
         let mut functions = Vec::new();
         for member in &contract_definition.members {
             match member {
