@@ -40,7 +40,6 @@ pub struct FunctionInputOutput {
     pub node_id: NodeId,
     pub name: Option<String>,
     pub r#type: String,
-    pub internal_type: String,
 }
 
 #[derive(Debug)]

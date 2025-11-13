@@ -2,12 +2,13 @@
 
 use std::collections::HashMap;
 
+use abi::ContractAbi;
 use binder::Binder;
-use types::TypeRegistry;
+use ir::ir2_flat_contracts as output_ir;
+use types::{Type, TypeId, TypeRegistry};
 
-use self::abi::ContractAbi;
-use crate::backend::ir::ir2_flat_contracts as output_ir;
 use crate::compilation::CompilationUnit;
+use crate::cst::NodeId;
 
 pub mod abi;
 pub mod binder;
@@ -66,5 +67,69 @@ impl BackendContext {
 
     pub fn contracts(&self) -> &[ContractAbi] {
         &self.contracts
+    }
+}
+
+impl BackendContext {
+    pub fn definition_canonical_name(&self, definition_id: NodeId) -> String {
+        self.binder
+            .find_definition_by_id(definition_id)
+            .unwrap()
+            .identifier()
+            .unparse()
+    }
+
+    pub fn type_canonical_name(&self, type_id: TypeId) -> String {
+        match self.types.get_type_by_id(type_id) {
+            Type::Address { .. } => "address".to_string(),
+            Type::Array { element_type, .. } => {
+                format!(
+                    "{element}[]",
+                    element = self.type_canonical_name(*element_type)
+                )
+            }
+            Type::Boolean => "bool".to_string(),
+            Type::ByteArray { width } => format!("bytes{width}"),
+            Type::Bytes { .. } => "bytes".to_string(),
+            Type::FixedPointNumber {
+                signed,
+                bits,
+                precision_bits,
+            } => format!(
+                "{prefix}{bits}x{precision_bits}",
+                prefix = if *signed { "fixed" } else { "ufixed" },
+            ),
+            Type::Function(_) => "function".to_string(),
+            Type::Integer { signed, bits } => format!(
+                "{prefix}{bits}",
+                prefix = if *signed { "int" } else { "uint" }
+            ),
+            Type::Literal(_) => "literal".to_string(),
+            Type::Mapping {
+                key_type_id,
+                value_type_id,
+            } => format!(
+                "mapping({key_type} => {value_type})",
+                key_type = self.type_canonical_name(*key_type_id),
+                value_type = self.type_canonical_name(*value_type_id)
+            ),
+            Type::String { .. } => "string".to_string(),
+            Type::Tuple { types } => format!(
+                "({types})",
+                types = types
+                    .iter()
+                    .map(|type_id| self.type_canonical_name(*type_id))
+                    .collect::<Vec<_>>()
+                    .join(",")
+            ),
+            Type::Contract { definition_id }
+            | Type::Enum { definition_id }
+            | Type::Interface { definition_id }
+            | Type::Struct { definition_id, .. }
+            | Type::UserDefinedValue { definition_id } => {
+                self.definition_canonical_name(*definition_id)
+            }
+            Type::Void => "void".to_string(),
+        }
     }
 }
