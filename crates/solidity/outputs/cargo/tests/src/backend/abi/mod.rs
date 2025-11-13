@@ -1,11 +1,9 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
-use slang_solidity::{
-    backend::BackendContext,
-    compilation::{CompilationBuilder, CompilationBuilderConfig},
-    utils::LanguageFacts,
-};
+use slang_solidity::backend::BackendContext;
+use slang_solidity::compilation::{CompilationBuilder, CompilationBuilderConfig};
+use slang_solidity::utils::LanguageFacts;
 
 #[test]
 fn test_get_contracts() -> Result<()> {
@@ -16,7 +14,7 @@ fn test_get_contracts() -> Result<()> {
     compilation_builder.add_file("main.sol")?;
     let compilation_unit = compilation_builder.build();
     let backend_context = BackendContext::build(compilation_unit);
-    let contracts = backend_context.get_contracts();
+    let contracts = backend_context.contracts();
     assert_eq!(1, contracts.len());
     assert_eq!("Counter", contracts[0].name);
     assert_eq!("main.sol", contracts[0].file_id);
