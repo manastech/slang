@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use slang_solidity::backend::binder::Resolution;
-use slang_solidity::backend::build_binder_output;
+use slang_solidity::backend::build_context;
 use slang_solidity::compilation::CompilationUnit;
 use slang_solidity::cst::{Cursor, NodeId, TerminalKind, TerminalNode};
 
@@ -15,15 +15,15 @@ pub(super) fn run(
     compilation_unit: CompilationUnit,
     events: &Events,
 ) -> TestOutcome {
-    let data = build_binder_output(compilation_unit);
+    let backend_context = build_context(compilation_unit);
 
     let mut test_outcome = TestOutcome::Passed;
     let mut cursor_cache: HashMap<NodeId, (Cursor, String)> = HashMap::new();
 
-    events.inc_definitions(data.binder.definitions().len());
+    events.inc_definitions(backend_context.binder().definitions().len());
     let mut references = 0;
     let mut unresolved = 0;
-    for reference in data.binder.references().values() {
+    for reference in backend_context.binder().references().values() {
         references += 1;
         if !matches!(reference.resolution, Resolution::Unresolved) {
             continue;
@@ -33,7 +33,7 @@ pub(super) fn run(
 
         let (cursor, ref_file_id) = find_cursor_for_identifier(
             &mut cursor_cache,
-            &data.compilation_unit,
+            backend_context.compilation_unit(),
             &reference.identifier,
         )
         .unwrap_or_else(|| {

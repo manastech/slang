@@ -1,5 +1,6 @@
+use crate::backend::abi;
 use crate::backend::ir::ir2_flat_contracts as output_ir;
-use crate::backend::{abi, BinderOutput};
+use crate::backend::passes::p5_resolve_references::Output as BinderOutput;
 
 pub fn run(binder_output: &BinderOutput) -> Vec<abi::ContractAbi> {
     let mut contracts = Vec::new();

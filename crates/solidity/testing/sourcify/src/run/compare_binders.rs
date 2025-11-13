@@ -1,4 +1,4 @@
-use slang_solidity::backend::build_binder_output;
+use slang_solidity::backend::build_context;
 use slang_solidity::compilation::CompilationUnit;
 
 use super::BindingError;
@@ -10,10 +10,10 @@ pub(super) fn run(
     compilation_unit: CompilationUnit,
     events: &Events,
 ) -> TestOutcome {
-    let data = build_binder_output(compilation_unit);
-    let binder = data.binder;
+    let backend_context = build_context(compilation_unit);
+    let binder = backend_context.binder();
 
-    let binding_graph = data.compilation_unit.binding_graph();
+    let binding_graph = backend_context.compilation_unit().binding_graph();
 
     let mut outcome = TestOutcome::Passed;
 

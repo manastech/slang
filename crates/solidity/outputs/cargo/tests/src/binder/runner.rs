@@ -2,7 +2,7 @@ use anyhow::Result;
 use infra_utils::cargo::CargoWorkspace;
 use infra_utils::codegen::CodegenFileSystem;
 use infra_utils::paths::PathExtensions;
-use slang_solidity::backend::build_binder_output;
+use slang_solidity::backend::build_context;
 
 use super::diff_report::binding_graph_diff_report;
 use super::report::binder_report;
@@ -32,8 +32,8 @@ pub(crate) fn run(group_name: &str, test_name: &str) -> Result<()> {
             .iter()
             .any(|file| !file.errors().is_empty());
 
-        let binder_output = build_binder_output(compilation_unit);
-        let report_data = ReportData::prepare(&binder_output);
+        let backend_context = build_context(compilation_unit);
+        let report_data = ReportData::prepare(&backend_context);
         let all_resolved = report_data.all_resolved();
         let status = if has_parse_errors || !all_resolved {
             "failure"

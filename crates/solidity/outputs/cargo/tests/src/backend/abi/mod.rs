@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
-use slang_solidity::backend::BackendContext;
+use slang_solidity::backend::build_context;
 use slang_solidity::compilation::{CompilationBuilder, CompilationBuilderConfig};
 use slang_solidity::utils::LanguageFacts;
 
@@ -13,7 +13,7 @@ fn test_get_contracts() -> Result<()> {
         CompilationBuilder::create(LanguageFacts::LATEST_VERSION, Config::create())?;
     compilation_builder.add_file("main.sol")?;
     let compilation_unit = compilation_builder.build();
-    let backend_context = BackendContext::build(compilation_unit);
+    let backend_context = build_context(compilation_unit);
     let contracts = backend_context.contracts();
     assert_eq!(1, contracts.len());
     assert_eq!("Counter", contracts[0].name);

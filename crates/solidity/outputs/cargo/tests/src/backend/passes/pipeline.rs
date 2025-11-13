@@ -1,5 +1,5 @@
 use anyhow::Result;
-use slang_solidity::backend::build_binder_output;
+use slang_solidity::backend::build_context;
 use slang_solidity::compilation::{CompilationBuilder, CompilationBuilderConfig, CompilationUnit};
 use slang_solidity::utils::LanguageFacts;
 
@@ -95,8 +95,8 @@ fn build_compilation_unit() -> Result<CompilationUnit> {
 #[test]
 fn test_backend_pipeline() -> Result<()> {
     let unit = build_compilation_unit()?;
-    let data = build_binder_output(unit);
-    assert_eq!(2, data.files.len());
+    let backend_context = build_context(unit);
+    assert_eq!(2, backend_context.files().len());
 
     Ok(())
 }
