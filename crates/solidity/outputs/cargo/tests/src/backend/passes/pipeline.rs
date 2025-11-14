@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use anyhow::Result;
 use slang_solidity::backend::build_context;
 use slang_solidity::compilation::{CompilationBuilder, CompilationBuilderConfig, CompilationUnit};
@@ -84,12 +86,12 @@ impl CompilationBuilderConfig for Config {
     }
 }
 
-fn build_compilation_unit() -> Result<CompilationUnit> {
+fn build_compilation_unit() -> Result<Rc<CompilationUnit>> {
     let mut builder = CompilationBuilder::create(LanguageFacts::LATEST_VERSION, Config {})?;
 
     builder.add_file(MAIN_ID)?;
 
-    Ok(builder.build())
+    Ok(Rc::new(builder.build()))
 }
 
 #[test]

@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::rc::Rc;
 
 use super::abi::ContractAbi;
 use super::binder::Binder;
@@ -9,7 +10,7 @@ use crate::compilation::CompilationUnit;
 use crate::cst::NodeId;
 
 pub struct BackendContext {
-    pub(crate) compilation_unit: CompilationUnit,
+    pub(crate) compilation_unit: Rc<CompilationUnit>,
     pub(crate) files: HashMap<String, output_ir::SourceUnit>,
     pub(crate) binder: Binder,
     pub(crate) types: TypeRegistry,
@@ -17,7 +18,7 @@ pub struct BackendContext {
 }
 
 impl BackendContext {
-    pub(crate) fn build(compilation_unit: CompilationUnit) -> Self {
+    pub(crate) fn build(compilation_unit: Rc<CompilationUnit>) -> Self {
         let data = passes::p0_build_ast::run(compilation_unit);
         let data = passes::p1_flatten_contracts::run(data);
         let data = passes::p2_collect_definitions::run(data);

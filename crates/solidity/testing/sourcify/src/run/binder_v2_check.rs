@@ -12,7 +12,7 @@ use crate::sourcify::Contract;
 
 pub(super) fn run(
     contract: &Contract,
-    compilation_unit: CompilationUnit,
+    compilation_unit: Rc<CompilationUnit>,
     events: &Events,
 ) -> TestOutcome {
     let backend_context = build_context(compilation_unit);

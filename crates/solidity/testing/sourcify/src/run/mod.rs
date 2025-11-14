@@ -76,7 +76,7 @@ fn run_test(contract: &Contract, events: &Events, opts: &TestOptions) {
             if test_outcome == TestOutcome::Passed {
                 match opts.check_binder {
                     Some(CheckBinderMode::V1) => {
-                        test_outcome = binder_v1_check::run(contract, &unit, events);
+                        test_outcome = binder_v1_check::run(contract, unit.as_ref(), events);
                     }
                     Some(CheckBinderMode::V2) => {
                         test_outcome = binder_v2_check::run(contract, unit, events);

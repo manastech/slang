@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::rc::Rc;
 
 use anyhow::{Ok, Result};
 use slang_solidity::backend::binder::Binder;
@@ -7,7 +8,7 @@ use slang_solidity::backend::passes::p3_linearise_contracts::Output;
 use slang_solidity::compilation::{CompilationBuilder, CompilationBuilderConfig, CompilationUnit};
 use slang_solidity::utils::LanguageFacts;
 
-fn build_compilation_unit(contents: &str) -> Result<CompilationUnit> {
+fn build_compilation_unit(contents: &str) -> Result<Rc<CompilationUnit>> {
     struct Config<'a> {
         contents: &'a str,
     }
@@ -34,7 +35,7 @@ fn build_compilation_unit(contents: &str) -> Result<CompilationUnit> {
         CompilationBuilder::create(LanguageFacts::LATEST_VERSION, Config { contents })?;
     assert!(builder.add_file("main.sol").is_ok());
     let compilation_unit = builder.build();
-    Ok(compilation_unit)
+    Ok(Rc::new(compilation_unit))
 }
 
 fn build_linearisation_output(contents: &str) -> Result<Output> {

@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use anyhow::Result;
 use slang_solidity::backend::ir::ir2_flat_contracts;
 use slang_solidity::backend::passes::{p0_build_ast, p1_flatten_contracts};
@@ -33,7 +35,7 @@ contract Test is Base layout at 0 {}
 
     let mut builder = CompilationBuilder::create(LanguageFacts::LATEST_VERSION, Config {})?;
     assert!(builder.add_file("main.sol").is_ok());
-    let compilation_unit = builder.build();
+    let compilation_unit = Rc::new(builder.build());
 
     let data = p0_build_ast::run(compilation_unit);
     let data = p1_flatten_contracts::run(data);

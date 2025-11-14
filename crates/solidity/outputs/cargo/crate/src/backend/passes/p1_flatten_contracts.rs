@@ -11,7 +11,7 @@ use crate::cst::TerminalNode;
 use crate::utils::versions::VERSION_0_5_0;
 
 pub struct Output {
-    pub compilation_unit: CompilationUnit,
+    pub compilation_unit: Rc<CompilationUnit>,
     pub files: HashMap<String, SourceUnit>,
 }
 

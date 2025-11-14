@@ -1,5 +1,7 @@
 #![allow(missing_docs)]
 
+use std::rc::Rc;
+
 use crate::compilation::CompilationUnit;
 
 pub mod abi;
@@ -12,6 +14,6 @@ pub mod types;
 
 pub use context::BackendContext;
 
-pub fn build_context(compilation_unit: CompilationUnit) -> BackendContext {
-    BackendContext::build(compilation_unit)
+pub fn build_context(compilation_unit: Rc<CompilationUnit>) -> Rc<BackendContext> {
+    Rc::new(BackendContext::build(compilation_unit))
 }

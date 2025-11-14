@@ -13,7 +13,7 @@ use crate::cst::NodeId;
 mod c3;
 
 pub struct Output {
-    pub compilation_unit: CompilationUnit,
+    pub compilation_unit: Rc<CompilationUnit>,
     pub files: HashMap<String, input_ir::SourceUnit>,
     pub binder: Binder,
 }
@@ -40,12 +40,12 @@ pub fn run(input: Input) -> Output {
 }
 
 pub struct Pass {
-    pub compilation_unit: CompilationUnit,
+    pub compilation_unit: Rc<CompilationUnit>,
     pub binder: Binder,
 }
 
 impl Pass {
-    pub fn new(compilation_unit: CompilationUnit, binder: Binder) -> Self {
+    pub fn new(compilation_unit: Rc<CompilationUnit>, binder: Binder) -> Self {
         Self {
             compilation_unit,
             binder,

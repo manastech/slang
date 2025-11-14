@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::rc::Rc;
 
 use semver::Version;
 
@@ -16,7 +17,7 @@ mod typing;
 mod visitor;
 
 pub struct Output {
-    pub compilation_unit: CompilationUnit,
+    pub compilation_unit: Rc<CompilationUnit>,
     pub files: HashMap<String, input_ir::SourceUnit>,
     pub binder: Binder,
     pub types: TypeRegistry,
