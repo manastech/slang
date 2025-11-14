@@ -1,10 +1,10 @@
 use crate::backend::abi;
+use crate::backend::context::SemanticAnalysis;
 use crate::backend::ir::ir2_flat_contracts as output_ir;
-use crate::backend::passes::p5_resolve_references::Output as BinderOutput;
 
-pub fn run(binder_output: &BinderOutput) -> Vec<abi::ContractAbi> {
+pub fn run(semantic: &SemanticAnalysis) -> Vec<abi::ContractAbi> {
     let mut contracts = Vec::new();
-    for (file_id, source_unit) in &binder_output.files {
+    for (file_id, source_unit) in &semantic.files {
         for member in &source_unit.members {
             let output_ir::SourceUnitMember::ContractDefinition(contract_definition) = member
             else {

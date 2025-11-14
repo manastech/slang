@@ -1,36 +1,30 @@
 use std::collections::HashMap;
 use std::rc::Rc;
 
+pub use semantic::{output_ir, SemanticAnalysis};
+
 use super::abi::ContractAbi;
 use super::binder::Binder;
-use super::ir::ir2_flat_contracts as output_ir;
 use super::passes;
-use super::types::{Type, TypeId, TypeRegistry};
+use super::types::TypeRegistry;
 use crate::compilation::CompilationUnit;
-use crate::cst::NodeId;
+
+pub mod semantic;
 
 pub struct BackendContext {
     pub(crate) compilation_unit: Rc<CompilationUnit>,
-    pub(crate) files: HashMap<String, output_ir::SourceUnit>,
-    pub(crate) binder: Binder,
-    pub(crate) types: TypeRegistry,
+    pub(crate) semantic_analysis: SemanticAnalysis,
     pub(crate) contracts: Vec<ContractAbi>,
 }
 
 impl BackendContext {
     pub(crate) fn build(compilation_unit: Rc<CompilationUnit>) -> Self {
-        let data = passes::p0_build_ast::run(compilation_unit);
-        let data = passes::p1_flatten_contracts::run(data);
-        let data = passes::p2_collect_definitions::run(data);
-        let data = passes::p3_linearise_contracts::run(data);
-        let data = passes::p4_type_definitions::run(data);
-        let output = passes::p5_resolve_references::run(data);
-        let contracts = passes::p6_compute_abi::run(&output);
+        let semantic_analysis = SemanticAnalysis::create(&compilation_unit);
+        let contracts = passes::p6_compute_abi::run(&semantic_analysis);
+
         Self {
-            compilation_unit: output.compilation_unit,
-            files: output.files,
-            binder: output.binder,
-            types: output.types,
+            compilation_unit,
+            semantic_analysis,
             contracts,
         }
     }
@@ -40,86 +34,22 @@ impl BackendContext {
     }
 
     pub fn files(&self) -> &HashMap<String, output_ir::SourceUnit> {
-        &self.files
+        &self.semantic_analysis.files
     }
 
     pub fn get_file_ir(&self, file_id: &str) -> Option<&output_ir::SourceUnit> {
-        self.files.get(file_id)
+        self.semantic_analysis.files.get(file_id)
     }
 
     pub fn binder(&self) -> &Binder {
-        &self.binder
+        &self.semantic_analysis.binder
     }
 
     pub fn types(&self) -> &TypeRegistry {
-        &self.types
+        &self.semantic_analysis.types
     }
 
     pub fn contracts(&self) -> &[ContractAbi] {
         &self.contracts
-    }
-}
-
-impl BackendContext {
-    pub fn definition_canonical_name(&self, definition_id: NodeId) -> String {
-        self.binder
-            .find_definition_by_id(definition_id)
-            .unwrap()
-            .identifier()
-            .unparse()
-    }
-
-    pub fn type_canonical_name(&self, type_id: TypeId) -> String {
-        match self.types.get_type_by_id(type_id) {
-            Type::Address { .. } => "address".to_string(),
-            Type::Array { element_type, .. } => {
-                format!(
-                    "{element}[]",
-                    element = self.type_canonical_name(*element_type)
-                )
-            }
-            Type::Boolean => "bool".to_string(),
-            Type::ByteArray { width } => format!("bytes{width}"),
-            Type::Bytes { .. } => "bytes".to_string(),
-            Type::FixedPointNumber {
-                signed,
-                bits,
-                precision_bits,
-            } => format!(
-                "{prefix}{bits}x{precision_bits}",
-                prefix = if *signed { "fixed" } else { "ufixed" },
-            ),
-            Type::Function(_) => "function".to_string(),
-            Type::Integer { signed, bits } => format!(
-                "{prefix}{bits}",
-                prefix = if *signed { "int" } else { "uint" }
-            ),
-            Type::Literal(_) => "literal".to_string(),
-            Type::Mapping {
-                key_type_id,
-                value_type_id,
-            } => format!(
-                "mapping({key_type} => {value_type})",
-                key_type = self.type_canonical_name(*key_type_id),
-                value_type = self.type_canonical_name(*value_type_id)
-            ),
-            Type::String { .. } => "string".to_string(),
-            Type::Tuple { types } => format!(
-                "({types})",
-                types = types
-                    .iter()
-                    .map(|type_id| self.type_canonical_name(*type_id))
-                    .collect::<Vec<_>>()
-                    .join(",")
-            ),
-            Type::Contract { definition_id }
-            | Type::Enum { definition_id }
-            | Type::Interface { definition_id }
-            | Type::Struct { definition_id, .. }
-            | Type::UserDefinedValue { definition_id } => {
-                self.definition_canonical_name(*definition_id)
-            }
-            Type::Void => "void".to_string(),
-        }
     }
 }

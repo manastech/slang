@@ -1,51 +1,39 @@
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use super::p2_collect_definitions::Output as Input;
 use crate::backend::binder::{
     Binder, ContractDefinition, Definition, ImportDefinition, InterfaceDefinition,
     LibraryDefinition, Reference, Resolution, ScopeId,
 };
+use crate::backend::context::SemanticAnalysis;
 use crate::backend::ir::ir2_flat_contracts::{self as input_ir};
 use crate::compilation::CompilationUnit;
 use crate::cst::NodeId;
 
 mod c3;
 
-pub struct Output {
-    pub compilation_unit: Rc<CompilationUnit>,
-    pub files: HashMap<String, input_ir::SourceUnit>,
-    pub binder: Binder,
-}
-
 /// In this pass we collect all bases of contracts and interfaces and then
 /// compute the linearisation for each of them.
-pub fn run(input: Input) -> Output {
-    let files = input.files;
-    let mut pass = Pass::new(input.compilation_unit, input.binder);
-    for source_unit in files.values() {
+pub fn run(semantic_analysis: &mut SemanticAnalysis) {
+    let mut pass = Pass::new(
+        Rc::clone(&semantic_analysis.compilation_unit),
+        &mut semantic_analysis.binder,
+    );
+    for source_unit in semantic_analysis.files.values() {
         pass.visit_file_collect_bases(source_unit);
     }
-    for source_unit in files.values() {
+    for source_unit in semantic_analysis.files.values() {
         pass.visit_file_linearise_contracts(source_unit);
     }
-
-    let compilation_unit = pass.compilation_unit;
-    let binder = pass.binder;
-    Output {
-        compilation_unit,
-        files,
-        binder,
-    }
 }
 
-pub struct Pass {
+pub struct Pass<'a> {
     pub compilation_unit: Rc<CompilationUnit>,
-    pub binder: Binder,
+    pub binder: &'a mut Binder,
 }
 
-impl Pass {
-    pub fn new(compilation_unit: Rc<CompilationUnit>, binder: Binder) -> Self {
+impl<'a> Pass<'a> {
+    pub fn new(compilation_unit: Rc<CompilationUnit>, binder: &'a mut Binder) -> Self {
         Self {
             compilation_unit,
             binder,

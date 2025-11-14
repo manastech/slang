@@ -3,8 +3,8 @@ use std::rc::Rc;
 
 use anyhow::{Ok, Result};
 use slang_solidity::backend::binder::Binder;
-use slang_solidity::backend::passes;
-use slang_solidity::backend::passes::p3_linearise_contracts::Output;
+use slang_solidity::backend::build_context;
+use slang_solidity::backend::context::BackendContext;
 use slang_solidity::compilation::{CompilationBuilder, CompilationBuilderConfig, CompilationUnit};
 use slang_solidity::utils::LanguageFacts;
 
@@ -38,15 +38,9 @@ fn build_compilation_unit(contents: &str) -> Result<Rc<CompilationUnit>> {
     Ok(Rc::new(compilation_unit))
 }
 
-fn build_linearisation_output(contents: &str) -> Result<Output> {
+fn build_linearisation_output(contents: &str) -> Result<Rc<BackendContext>> {
     let compilation_unit = build_compilation_unit(contents)?;
-
-    let data = passes::p0_build_ast::run(compilation_unit);
-    let data = passes::p1_flatten_contracts::run(data);
-    let data = passes::p2_collect_definitions::run(data);
-    let data = passes::p3_linearise_contracts::run(data);
-
-    Ok(data)
+    Ok(build_context(compilation_unit))
 }
 
 fn get_contract_to_bases_map(binder: &Binder) -> HashMap<String, Vec<String>> {
@@ -88,9 +82,9 @@ interface A is C {}
 
 #[test]
 fn test_valid_linearisations() -> Result<()> {
-    let data = build_linearisation_output(VALID_CONTENTS)?;
+    let context = build_linearisation_output(VALID_CONTENTS)?;
 
-    let contract_to_bases = get_contract_to_bases_map(&data.binder);
+    let contract_to_bases = get_contract_to_bases_map(context.binder());
 
     let mut expected = HashMap::new();
     expected.insert(
@@ -124,9 +118,9 @@ contract Test is Base, Foo { // Base should resolve to the contract, not the var
 
 #[test]
 fn test_linearise_with_invalid_input() -> Result<()> {
-    let data = build_linearisation_output(INVALID_CONTENTS)?;
+    let context = build_linearisation_output(INVALID_CONTENTS)?;
 
-    let contract_to_bases = get_contract_to_bases_map(&data.binder);
+    let contract_to_bases = get_contract_to_bases_map(context.binder());
 
     let mut expected = HashMap::new();
     expected.insert("Base".to_string(), vec!["Base".to_string()]);
