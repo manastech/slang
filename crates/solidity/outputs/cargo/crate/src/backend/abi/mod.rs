@@ -37,7 +37,7 @@ pub enum FunctionAbiMutability {
 
 #[derive(Debug)]
 pub struct FunctionInputOutput {
-    pub node_id: NodeId,
+    pub node_id: Option<NodeId>, // will be `None` if the function is a generated getter
     pub name: Option<String>,
     pub r#type: String,
 }

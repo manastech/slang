@@ -27,8 +27,8 @@ fn test_get_contracts() -> Result<()> {
         .map(|function| (function.kind, function.name.clone()))
         .collect::<Vec<_>>();
     let expected_functions = &[
+        (FType::Function, Some("count".to_string())), // public getter
         (FType::Constructor, None),
-        (FType::Function, Some("count".to_string())),
         (FType::Function, Some("increment".to_string())),
         (FType::Function, Some("enable".to_string())),
         (FType::Function, Some("disable".to_string())),
@@ -52,18 +52,15 @@ contract Counter is Ownable {
     enum State { DISABLED, ENABLED }
 
     State _state;
-    uint _count;
+    uint public count;
     mapping (address => uint) _clickers;
 
     constructor(uint initial) Ownable() {
-        _count = initial;
+        count = initial;
         _state = State.DISABLED;
     }
-    function count() public view returns (uint) {
-        return _count;
-    }
     function increment(uint delta) public onlyOwner returns (uint) {
-        _count += delta;
+        count += delta;
         return _count;
     }
     function enable() public onlyOwner {
@@ -74,7 +71,7 @@ contract Counter is Ownable {
     }
     function click() public returns (uint) {
         require(_state == State.ENABLED, "counter is disabled");
-        _count += 1;
+        count += 1;
         _clickers[msg.sender] += 1;
         return _clickers[msg.sender];
     }
