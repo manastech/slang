@@ -3,7 +3,7 @@ use std::rc::Rc;
 
 use semver::Version;
 
-use crate::backend::binder::Binder;
+use crate::backend::binder::{Binder, Definition};
 pub use crate::backend::ir::ir2_flat_contracts as output_ir;
 use crate::backend::passes;
 use crate::backend::types::{Type, TypeId, TypeRegistry};
@@ -16,6 +16,8 @@ pub struct SemanticAnalysis {
     pub(crate) binder: Binder,
     pub(crate) types: TypeRegistry,
 }
+
+const SLOT_SIZE: usize = 32;
 
 impl SemanticAnalysis {
     pub(crate) fn create(compilation_unit: &Rc<CompilationUnit>) -> Self {
@@ -112,6 +114,66 @@ impl SemanticAnalysis {
                 self.definition_canonical_name(*definition_id)
             }
             Type::Void => "void".to_string(),
+        }
+    }
+
+    pub fn storage_size_of_type_id(&self, type_id: TypeId) -> Option<usize> {
+        match self.types.get_type_by_id(type_id) {
+            Type::Address { .. } | Type::Contract { .. } | Type::Interface { .. } => Some(20),
+            Type::Boolean => Some(1),
+            Type::FixedPointNumber { bits, .. } | Type::Integer { bits, .. } => {
+                Some((bits.div_ceil(8)).try_into().unwrap())
+            }
+            Type::ByteArray { width } => Some((*width).try_into().unwrap()),
+            Type::Enum { .. } => Some(1),
+            Type::Bytes { .. } | Type::String { .. } => Some(SLOT_SIZE),
+            Type::Mapping { .. } => Some(SLOT_SIZE),
+
+            // FIXME: we need to support statically sized arrays properly
+            Type::Array { .. } => Some(SLOT_SIZE),
+
+            Type::Function(function_type) => {
+                if function_type.external {
+                    Some(24)
+                } else {
+                    // NOTE: an internal function ref type is 8 bytes long, it's
+                    // opaque and its meaning not documented
+                    Some(8)
+                }
+            }
+            Type::Struct { definition_id, .. } => {
+                let Definition::Struct(struct_definition) =
+                    self.binder.find_definition_by_id(*definition_id)?
+                else {
+                    return None;
+                };
+                let mut ptr: usize = 0;
+                for member in &struct_definition.ir_node.members {
+                    let member_type_id = self.binder.node_typing(member.node_id).as_type_id()?;
+                    let member_size = self.storage_size_of_type_id(member_type_id)?;
+                    let remaining_bytes = SLOT_SIZE - (ptr % SLOT_SIZE);
+                    if member_size >= remaining_bytes {
+                        ptr += remaining_bytes;
+                    }
+                    ptr += member_size;
+                }
+                // round up the final allocation to a full slot, because the
+                // next variable needs to start at the next slot anyway
+                ptr = ptr.div_ceil(SLOT_SIZE) * SLOT_SIZE;
+                Some(ptr)
+            }
+            Type::UserDefinedValue { definition_id } => {
+                let Definition::UserDefinedValueType(user_defined_value) =
+                    self.binder.find_definition_by_id(*definition_id)?
+                else {
+                    return None;
+                };
+                self.storage_size_of_type_id(user_defined_value.target_type_id?)
+            }
+
+            Type::Literal(_) => None,
+            Type::Tuple { .. } => None,
+            Type::Void => None,
         }
     }
 }
