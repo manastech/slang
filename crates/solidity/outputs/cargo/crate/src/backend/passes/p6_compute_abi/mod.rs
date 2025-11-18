@@ -1,7 +1,10 @@
+use std::ops::Div;
+
 use crate::backend::abi::{
-    ContractAbi, FunctionAbi, FunctionAbiMutability, FunctionAbiType, FunctionInputOutput,
+    ContractAbi, FunctionAbi, FunctionAbiMutability, FunctionAbiType, FunctionInputOutput, Slot,
 };
 use crate::backend::binder::Definition;
+use crate::backend::context::semantic::SLOT_SIZE;
 use crate::backend::context::SemanticAnalysis;
 use crate::backend::ir::ir2_flat_contracts as output_ir;
 use crate::backend::types::{Type, TypeId};
@@ -49,12 +52,13 @@ impl<'a> Pass<'a> {
 
         let name = contract_definition.name.unparse();
         let functions = self.visit_contract_members(&contract_definition.members);
+        let storage_layout = self.compute_storage_layout(&contract_definition.members)?;
         Some(ContractAbi {
             node_id: contract_definition.node_id,
             name,
             file_id: file_id.to_string(),
             functions,
-            storage_layout: Vec::new(), // TODO
+            storage_layout,
         })
     }
 
@@ -75,6 +79,53 @@ impl<'a> Pass<'a> {
             }
         }
         functions
+    }
+
+    fn compute_storage_layout(&self, members: &output_ir::ContractMembers) -> Option<Vec<Slot>> {
+        let mut storage_layout = Vec::new();
+        let mut ptr: usize = 0;
+        for member in members {
+            let output_ir::ContractMember::StateVariableDefinition(state_variable_definition) =
+                member
+            else {
+                continue;
+            };
+            let node_id = state_variable_definition.node_id;
+            // skip constants and immutable variables, since they are not placed in storage
+            // TODO: also, transient storage is laid out separately and we need
+            // to support that as well
+            if !matches!(
+                state_variable_definition.mutability,
+                output_ir::StateVariableMutability::Mutable
+            ) {
+                continue;
+            }
+
+            let variable_type_id = self.semantic.binder.node_typing(node_id).as_type_id()?;
+            let variable_size = self.semantic.storage_size_of_type_id(variable_type_id)?;
+
+            // check if we can pack the variable in the previous slot
+            let remaining_bytes = SLOT_SIZE - (ptr % SLOT_SIZE);
+            if variable_size >= remaining_bytes {
+                ptr += remaining_bytes;
+            }
+
+            let label = state_variable_definition.name.unparse();
+            let slot = ptr.div(SLOT_SIZE);
+            let offset = ptr % SLOT_SIZE;
+            let r#type = self.semantic.type_canonical_name(variable_type_id);
+            storage_layout.push(Slot {
+                node_id,
+                label,
+                slot,
+                offset,
+                r#type,
+            });
+
+            // ready pointer for the next variable
+            ptr += variable_size;
+        }
+        Some(storage_layout)
     }
 
     fn visit_function_definition(

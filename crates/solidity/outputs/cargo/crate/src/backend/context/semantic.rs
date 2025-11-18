@@ -17,7 +17,7 @@ pub struct SemanticAnalysis {
     pub(crate) types: TypeRegistry,
 }
 
-const SLOT_SIZE: usize = 32;
+pub const SLOT_SIZE: usize = 32;
 
 impl SemanticAnalysis {
     pub(crate) fn create(compilation_unit: &Rc<CompilationUnit>) -> Self {
