@@ -1,0 +1,3 @@
+{%- import "src/backend/ir/common/_ast_nodes.rs.jinja2" as nodes -%}
+#![allow(unused)]
+{{ nodes::render_ast_nodes(language='ir2_flat_contracts') }}
