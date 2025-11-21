@@ -191,32 +191,6 @@ impl VersionTermStruct {
     }
 }
 
-pub type ImportDirective = Rc<ImportDirectiveStruct>;
-
-pub struct ImportDirectiveStruct {
-    ir_node: input_ir::ImportDirective,
-    semantic: Rc<SemanticAnalysis>,
-}
-
-impl ImportDirectiveStruct {
-    pub(crate) fn create(
-        ir_node: &input_ir::ImportDirective,
-        semantic: &Rc<SemanticAnalysis>,
-    ) -> Self {
-        Self {
-            ir_node: Rc::clone(ir_node),
-            semantic: Rc::clone(semantic),
-        }
-    }
-
-    pub fn clause(&self) -> ImportClause {
-        Rc::new(ImportClauseStruct::create(
-            &self.ir_node.clause,
-            &self.semantic,
-        ))
-    }
-}
-
 pub type PathImport = Rc<PathImportStruct>;
 
 pub struct PathImportStruct {
@@ -3276,21 +3250,6 @@ impl SourceUnitMemberStruct {
         }
     }
 
-    pub fn is_import_directive(&self) -> bool {
-        matches!(self.ir_node, input_ir::SourceUnitMember::ImportDirective(_))
-    }
-
-    pub fn as_import_directive(&self) -> Option<ImportDirective> {
-        if let input_ir::SourceUnitMember::ImportDirective(variant) = &self.ir_node {
-            Some(Rc::new(ImportDirectiveStruct::create(
-                variant,
-                &self.semantic,
-            )))
-        } else {
-            None
-        }
-    }
-
     pub fn is_contract_definition(&self) -> bool {
         matches!(
             self.ir_node,
@@ -3472,6 +3431,18 @@ impl SourceUnitMemberStruct {
                 variant,
                 &self.semantic,
             )))
+        } else {
+            None
+        }
+    }
+
+    pub fn is_import_clause(&self) -> bool {
+        matches!(self.ir_node, input_ir::SourceUnitMember::ImportClause(_))
+    }
+
+    pub fn as_import_clause(&self) -> Option<ImportClause> {
+        if let input_ir::SourceUnitMember::ImportClause(variant) = &self.ir_node {
+            Some(Rc::new(ImportClauseStruct::create(variant, &self.semantic)))
         } else {
             None
         }
