@@ -59,7 +59,7 @@ impl Transformer for Pass {
             input::ImportClause::NamedImport(named_import) => {
                 output::ImportClause::PathImport(self.transform_named_import(named_import))
             }
-            _ => self.default_transform_import_clause(source)
+            _ => self.default_transform_import_clause(source),
         }
     }
 
