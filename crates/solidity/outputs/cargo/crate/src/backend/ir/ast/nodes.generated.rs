@@ -215,30 +215,6 @@ impl PathImportStruct {
     }
 }
 
-pub type NamedImport = Rc<NamedImportStruct>;
-
-pub struct NamedImportStruct {
-    ir_node: input_ir::NamedImport,
-    semantic: Rc<SemanticAnalysis>,
-}
-
-impl NamedImportStruct {
-    pub(crate) fn create(ir_node: &input_ir::NamedImport, semantic: &Rc<SemanticAnalysis>) -> Self {
-        Self {
-            ir_node: Rc::clone(ir_node),
-            semantic: Rc::clone(semantic),
-        }
-    }
-
-    pub fn alias(&self) -> Rc<TerminalNode> {
-        Rc::clone(&self.ir_node.alias)
-    }
-
-    pub fn path(&self) -> Rc<TerminalNode> {
-        Rc::clone(&self.ir_node.path)
-    }
-}
-
 pub type ImportDeconstruction = Rc<ImportDeconstructionStruct>;
 
 pub struct ImportDeconstructionStruct {
@@ -3742,18 +3718,6 @@ impl ImportClauseStruct {
     pub fn as_path_import(&self) -> Option<PathImport> {
         if let input_ir::ImportClause::PathImport(variant) = &self.ir_node {
             Some(Rc::new(PathImportStruct::create(variant, &self.semantic)))
-        } else {
-            None
-        }
-    }
-
-    pub fn is_named_import(&self) -> bool {
-        matches!(self.ir_node, input_ir::ImportClause::NamedImport(_))
-    }
-
-    pub fn as_named_import(&self) -> Option<NamedImport> {
-        if let input_ir::ImportClause::NamedImport(variant) = &self.ir_node {
-            Some(Rc::new(NamedImportStruct::create(variant, &self.semantic)))
         } else {
             None
         }
