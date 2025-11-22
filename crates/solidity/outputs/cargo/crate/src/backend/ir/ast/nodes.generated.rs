@@ -623,11 +623,20 @@ impl ConstantDefinitionStruct {
         Rc::clone(&self.ir_node.name)
     }
 
-    pub fn value(&self) -> Expression {
-        Rc::new(ExpressionStruct::create(
-            &self.ir_node.value,
-            &self.semantic,
-        ))
+    pub fn visibility(&self) -> Option<StateVariableVisibility> {
+        self.ir_node.visibility.as_ref().map(|ir_node| {
+            Rc::new(StateVariableVisibilityStruct::create(
+                ir_node,
+                &self.semantic,
+            ))
+        })
+    }
+
+    pub fn value(&self) -> Option<Expression> {
+        self.ir_node
+            .value
+            .as_ref()
+            .map(|ir_node| Rc::new(ExpressionStruct::create(ir_node, &self.semantic)))
     }
 }
 
@@ -4035,6 +4044,24 @@ impl ContractMemberStruct {
     pub fn as_state_variable_definition(&self) -> Option<StateVariableDefinition> {
         if let input_ir::ContractMember::StateVariableDefinition(variant) = &self.ir_node {
             Some(Rc::new(StateVariableDefinitionStruct::create(
+                variant,
+                &self.semantic,
+            )))
+        } else {
+            None
+        }
+    }
+
+    pub fn is_constant_definition(&self) -> bool {
+        matches!(
+            self.ir_node,
+            input_ir::ContractMember::ConstantDefinition(_)
+        )
+    }
+
+    pub fn as_constant_definition(&self) -> Option<ConstantDefinition> {
+        if let input_ir::ContractMember::ConstantDefinition(variant) = &self.ir_node {
+            Some(Rc::new(ConstantDefinitionStruct::create(
                 variant,
                 &self.semantic,
             )))

@@ -173,6 +173,18 @@ impl Transformer for Pass {
                     self.transform_modifier_definition(modifier_definition),
                 )
             }
+            input::ContractMember::StateVariableDefinition(state_variable_definition) => {
+                let output = self.transform_state_variable_definition(state_variable_definition);
+                if matches!(output.mutability, output::StateVariableMutability::Constant)
+                    && !matches!(output.visibility, output::StateVariableVisibility::Public)
+                {
+                    output::ContractMember::ConstantDefinition(
+                        Self::state_variable_definition_as_constant_definition(&output),
+                    )
+                } else {
+                    output::ContractMember::StateVariableDefinition(output)
+                }
+            }
             _ => self.default_transform_contract_member(source),
         }
     }
@@ -240,6 +252,25 @@ impl Transformer for Pass {
                 )
             }
         }
+    }
+
+    fn transform_constant_definition(
+        &mut self,
+        source: &input::ConstantDefinition,
+    ) -> output::ConstantDefinition {
+        let node_id = source.node_id;
+        let type_name = self.transform_type_name(&source.type_name);
+        let name = Rc::clone(&source.name);
+        let visibility = None;
+        let value = Some(self.transform_expression(&source.value));
+
+        Rc::new(output::ConstantDefinitionStruct {
+            node_id,
+            type_name,
+            name,
+            visibility,
+            value,
+        })
     }
 
     fn transform_state_variable_definition(
@@ -952,6 +983,24 @@ impl Pass {
             } else {
                 None
             }
+        })
+    }
+
+    fn state_variable_definition_as_constant_definition(
+        state_variable_definition: &output::StateVariableDefinition,
+    ) -> output::ConstantDefinition {
+        let node_id = state_variable_definition.node_id;
+        let type_name = state_variable_definition.type_name.clone();
+        let name = Rc::clone(&state_variable_definition.name);
+        let value = state_variable_definition.value.clone();
+        let visibility = Some(state_variable_definition.visibility.clone());
+
+        Rc::new(output::ConstantDefinitionStruct {
+            node_id,
+            type_name,
+            name,
+            visibility,
+            value,
         })
     }
 
