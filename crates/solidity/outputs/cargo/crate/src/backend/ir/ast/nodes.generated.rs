@@ -1302,117 +1302,20 @@ impl TupleDeconstructionStatementStruct {
         }
     }
 
-    pub fn var_keyword(&self) -> bool {
-        self.ir_node.var_keyword
-    }
-
-    pub fn elements(&self) -> impl Iterator<Item = TupleDeconstructionElement> + use<'_> {
-        self.ir_node.elements.iter().map(|child| {
-            Rc::new(TupleDeconstructionElementStruct::create(
-                child,
-                &self.semantic,
-            ))
-        })
-    }
-
     pub fn expression(&self) -> Expression {
         Rc::new(ExpressionStruct::create(
             &self.ir_node.expression,
             &self.semantic,
         ))
     }
-}
 
-pub type TupleDeconstructionElement = Rc<TupleDeconstructionElementStruct>;
-
-pub struct TupleDeconstructionElementStruct {
-    ir_node: input_ir::TupleDeconstructionElement,
-    semantic: Rc<SemanticAnalysis>,
-}
-
-impl TupleDeconstructionElementStruct {
-    pub(crate) fn create(
-        ir_node: &input_ir::TupleDeconstructionElement,
-        semantic: &Rc<SemanticAnalysis>,
-    ) -> Self {
-        Self {
-            ir_node: Rc::clone(ir_node),
-            semantic: Rc::clone(semantic),
-        }
-    }
-
-    pub fn member(&self) -> Option<TupleMember> {
-        self.ir_node
-            .member
-            .as_ref()
-            .map(|ir_node| Rc::new(TupleMemberStruct::create(ir_node, &self.semantic)))
-    }
-}
-
-pub type TypedTupleMember = Rc<TypedTupleMemberStruct>;
-
-pub struct TypedTupleMemberStruct {
-    ir_node: input_ir::TypedTupleMember,
-    semantic: Rc<SemanticAnalysis>,
-}
-
-impl TypedTupleMemberStruct {
-    pub(crate) fn create(
-        ir_node: &input_ir::TypedTupleMember,
-        semantic: &Rc<SemanticAnalysis>,
-    ) -> Self {
-        Self {
-            ir_node: Rc::clone(ir_node),
-            semantic: Rc::clone(semantic),
-        }
-    }
-
-    pub fn type_name(&self) -> TypeName {
-        Rc::new(TypeNameStruct::create(
-            &self.ir_node.type_name,
-            &self.semantic,
-        ))
-    }
-
-    pub fn storage_location(&self) -> Option<StorageLocation> {
-        self.ir_node
-            .storage_location
-            .as_ref()
-            .map(|ir_node| Rc::new(StorageLocationStruct::create(ir_node, &self.semantic)))
-    }
-
-    pub fn name(&self) -> Rc<TerminalNode> {
-        Rc::clone(&self.ir_node.name)
-    }
-}
-
-pub type UntypedTupleMember = Rc<UntypedTupleMemberStruct>;
-
-pub struct UntypedTupleMemberStruct {
-    ir_node: input_ir::UntypedTupleMember,
-    semantic: Rc<SemanticAnalysis>,
-}
-
-impl UntypedTupleMemberStruct {
-    pub(crate) fn create(
-        ir_node: &input_ir::UntypedTupleMember,
-        semantic: &Rc<SemanticAnalysis>,
-    ) -> Self {
-        Self {
-            ir_node: Rc::clone(ir_node),
-            semantic: Rc::clone(semantic),
-        }
-    }
-
-    pub fn storage_location(&self) -> Option<StorageLocation> {
-        self.ir_node
-            .storage_location
-            .as_ref()
-            .map(|ir_node| Rc::new(StorageLocationStruct::create(ir_node, &self.semantic)))
-    }
-
-    pub fn name(&self) -> Rc<TerminalNode> {
-        Rc::clone(&self.ir_node.name)
+    pub fn members(&self) -> impl Iterator<Item = TupleDeconstructionMember> + use<'_> {
+        self.ir_node.members.iter().map(|child| {
+            Rc::new(TupleDeconstructionMemberStruct::create(
+                child,
+                &self.semantic,
+            ))
+        })
     }
 }
 
@@ -4527,52 +4430,6 @@ impl StatementStruct {
     }
 }
 
-pub type TupleMember = Rc<TupleMemberStruct>;
-
-pub struct TupleMemberStruct {
-    ir_node: input_ir::TupleMember,
-    semantic: Rc<SemanticAnalysis>,
-}
-
-impl TupleMemberStruct {
-    pub(crate) fn create(ir_node: &input_ir::TupleMember, semantic: &Rc<SemanticAnalysis>) -> Self {
-        Self {
-            ir_node: ir_node.clone(),
-            semantic: Rc::clone(semantic),
-        }
-    }
-
-    pub fn is_typed_tuple_member(&self) -> bool {
-        matches!(self.ir_node, input_ir::TupleMember::TypedTupleMember(_))
-    }
-
-    pub fn as_typed_tuple_member(&self) -> Option<TypedTupleMember> {
-        if let input_ir::TupleMember::TypedTupleMember(variant) = &self.ir_node {
-            Some(Rc::new(TypedTupleMemberStruct::create(
-                variant,
-                &self.semantic,
-            )))
-        } else {
-            None
-        }
-    }
-
-    pub fn is_untyped_tuple_member(&self) -> bool {
-        matches!(self.ir_node, input_ir::TupleMember::UntypedTupleMember(_))
-    }
-
-    pub fn as_untyped_tuple_member(&self) -> Option<UntypedTupleMember> {
-        if let input_ir::TupleMember::UntypedTupleMember(variant) = &self.ir_node {
-            Some(Rc::new(UntypedTupleMemberStruct::create(
-                variant,
-                &self.semantic,
-            )))
-        } else {
-            None
-        }
-    }
-}
-
 pub type StorageLocation = Rc<StorageLocationStruct>;
 
 pub struct StorageLocationStruct {
@@ -5989,5 +5846,55 @@ impl StateVariableMutabilityStruct {
 
     pub fn is_transient(&self) -> bool {
         matches!(self.ir_node, input_ir::StateVariableMutability::Transient)
+    }
+}
+
+pub type TupleDeconstructionMember = Rc<TupleDeconstructionMemberStruct>;
+
+pub struct TupleDeconstructionMemberStruct {
+    ir_node: input_ir::TupleDeconstructionMember,
+    semantic: Rc<SemanticAnalysis>,
+}
+
+impl TupleDeconstructionMemberStruct {
+    pub(crate) fn create(
+        ir_node: &input_ir::TupleDeconstructionMember,
+        semantic: &Rc<SemanticAnalysis>,
+    ) -> Self {
+        Self {
+            ir_node: ir_node.clone(),
+            semantic: Rc::clone(semantic),
+        }
+    }
+
+    pub fn is_none(&self) -> bool {
+        matches!(self.ir_node, input_ir::TupleDeconstructionMember::None)
+    }
+
+    pub fn is_identifier(&self) -> bool {
+        matches!(
+            self.ir_node,
+            input_ir::TupleDeconstructionMember::Identifier(_)
+        )
+    }
+
+    pub fn is_variable_declaration_statement(&self) -> bool {
+        matches!(
+            self.ir_node,
+            input_ir::TupleDeconstructionMember::VariableDeclarationStatement(_)
+        )
+    }
+
+    pub fn as_variable_declaration_statement(&self) -> Option<VariableDeclarationStatement> {
+        if let input_ir::TupleDeconstructionMember::VariableDeclarationStatement(variant) =
+            &self.ir_node
+        {
+            Some(Rc::new(VariableDeclarationStatementStruct::create(
+                variant,
+                &self.semantic,
+            )))
+        } else {
+            None
+        }
     }
 }
