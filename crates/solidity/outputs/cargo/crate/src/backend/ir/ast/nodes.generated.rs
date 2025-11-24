@@ -1434,13 +1434,6 @@ impl VariableDeclarationStatementStruct {
         }
     }
 
-    pub fn variable_type(&self) -> VariableDeclarationType {
-        Rc::new(VariableDeclarationTypeStruct::create(
-            &self.ir_node.variable_type,
-            &self.semantic,
-        ))
-    }
-
     pub fn storage_location(&self) -> Option<StorageLocation> {
         self.ir_node
             .storage_location
@@ -1457,6 +1450,13 @@ impl VariableDeclarationStatementStruct {
             .value
             .as_ref()
             .map(|ir_node| Rc::new(ExpressionStruct::create(ir_node, &self.semantic)))
+    }
+
+    pub fn type_name(&self) -> Option<TypeName> {
+        self.ir_node
+            .type_name
+            .as_ref()
+            .map(|ir_node| Rc::new(TypeNameStruct::create(ir_node, &self.semantic)))
     }
 }
 
@@ -4570,41 +4570,6 @@ impl TupleMemberStruct {
         } else {
             None
         }
-    }
-}
-
-pub type VariableDeclarationType = Rc<VariableDeclarationTypeStruct>;
-
-pub struct VariableDeclarationTypeStruct {
-    ir_node: input_ir::VariableDeclarationType,
-    semantic: Rc<SemanticAnalysis>,
-}
-
-impl VariableDeclarationTypeStruct {
-    pub(crate) fn create(
-        ir_node: &input_ir::VariableDeclarationType,
-        semantic: &Rc<SemanticAnalysis>,
-    ) -> Self {
-        Self {
-            ir_node: ir_node.clone(),
-            semantic: Rc::clone(semantic),
-        }
-    }
-
-    pub fn is_type_name(&self) -> bool {
-        matches!(self.ir_node, input_ir::VariableDeclarationType::TypeName(_))
-    }
-
-    pub fn as_type_name(&self) -> Option<TypeName> {
-        if let input_ir::VariableDeclarationType::TypeName(variant) = &self.ir_node {
-            Some(Rc::new(TypeNameStruct::create(variant, &self.semantic)))
-        } else {
-            None
-        }
-    }
-
-    pub fn is_var_keyword(&self) -> bool {
-        matches!(self.ir_node, input_ir::VariableDeclarationType::VarKeyword)
     }
 }
 

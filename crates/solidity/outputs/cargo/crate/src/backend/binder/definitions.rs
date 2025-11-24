@@ -245,7 +245,7 @@ impl Definition {
                 } else {
                     &symbol_definition.ir_node.name
                 }
-            },
+            }
             Self::Interface(interface_definition) => &interface_definition.ir_node.name,
             Self::Library(library_definition) => &library_definition.ir_node.name,
             Self::Modifier(modifier_definition) => {
