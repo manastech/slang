@@ -1029,75 +1029,18 @@ impl MappingTypeStruct {
         }
     }
 
-    pub fn key_type(&self) -> MappingKey {
-        Rc::new(MappingKeyStruct::create(
+    pub fn key_type(&self) -> Parameter {
+        Rc::new(ParameterStruct::create(
             &self.ir_node.key_type,
             &self.semantic,
         ))
     }
 
-    pub fn value_type(&self) -> MappingValue {
-        Rc::new(MappingValueStruct::create(
+    pub fn value_type(&self) -> Parameter {
+        Rc::new(ParameterStruct::create(
             &self.ir_node.value_type,
             &self.semantic,
         ))
-    }
-}
-
-pub type MappingKey = Rc<MappingKeyStruct>;
-
-pub struct MappingKeyStruct {
-    ir_node: input_ir::MappingKey,
-    semantic: Rc<SemanticAnalysis>,
-}
-
-impl MappingKeyStruct {
-    pub(crate) fn create(ir_node: &input_ir::MappingKey, semantic: &Rc<SemanticAnalysis>) -> Self {
-        Self {
-            ir_node: Rc::clone(ir_node),
-            semantic: Rc::clone(semantic),
-        }
-    }
-
-    pub fn key_type(&self) -> MappingKeyType {
-        Rc::new(MappingKeyTypeStruct::create(
-            &self.ir_node.key_type,
-            &self.semantic,
-        ))
-    }
-
-    pub fn name(&self) -> Option<Rc<TerminalNode>> {
-        self.ir_node.name.as_ref().map(Rc::clone)
-    }
-}
-
-pub type MappingValue = Rc<MappingValueStruct>;
-
-pub struct MappingValueStruct {
-    ir_node: input_ir::MappingValue,
-    semantic: Rc<SemanticAnalysis>,
-}
-
-impl MappingValueStruct {
-    pub(crate) fn create(
-        ir_node: &input_ir::MappingValue,
-        semantic: &Rc<SemanticAnalysis>,
-    ) -> Self {
-        Self {
-            ir_node: Rc::clone(ir_node),
-            semantic: Rc::clone(semantic),
-        }
-    }
-
-    pub fn type_name(&self) -> TypeName {
-        Rc::new(TypeNameStruct::create(
-            &self.ir_node.type_name,
-            &self.semantic,
-        ))
-    }
-
-    pub fn name(&self) -> Option<Rc<TerminalNode>> {
-        self.ir_node.name.as_ref().map(Rc::clone)
     }
 }
 
@@ -3989,52 +3932,6 @@ impl TypeNameStruct {
 
     pub fn as_identifier_path(&self) -> Option<impl Iterator<Item = Rc<TerminalNode>> + use<'_>> {
         if let input_ir::TypeName::IdentifierPath(variant) = &self.ir_node {
-            Some(variant.iter().map(Rc::clone))
-        } else {
-            None
-        }
-    }
-}
-
-pub type MappingKeyType = Rc<MappingKeyTypeStruct>;
-
-pub struct MappingKeyTypeStruct {
-    ir_node: input_ir::MappingKeyType,
-    semantic: Rc<SemanticAnalysis>,
-}
-
-impl MappingKeyTypeStruct {
-    pub(crate) fn create(
-        ir_node: &input_ir::MappingKeyType,
-        semantic: &Rc<SemanticAnalysis>,
-    ) -> Self {
-        Self {
-            ir_node: ir_node.clone(),
-            semantic: Rc::clone(semantic),
-        }
-    }
-
-    pub fn is_elementary_type(&self) -> bool {
-        matches!(self.ir_node, input_ir::MappingKeyType::ElementaryType(_))
-    }
-
-    pub fn as_elementary_type(&self) -> Option<ElementaryType> {
-        if let input_ir::MappingKeyType::ElementaryType(variant) = &self.ir_node {
-            Some(Rc::new(ElementaryTypeStruct::create(
-                variant,
-                &self.semantic,
-            )))
-        } else {
-            None
-        }
-    }
-
-    pub fn is_identifier_path(&self) -> bool {
-        matches!(self.ir_node, input_ir::MappingKeyType::IdentifierPath(_))
-    }
-
-    pub fn as_identifier_path(&self) -> Option<impl Iterator<Item = Rc<TerminalNode>> + use<'_>> {
-        if let input_ir::MappingKeyType::IdentifierPath(variant) = &self.ir_node {
             Some(variant.iter().map(Rc::clone))
         } else {
             None
