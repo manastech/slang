@@ -792,6 +792,10 @@ impl ParameterStruct {
     pub fn name(&self) -> Option<Rc<TerminalNode>> {
         self.ir_node.name.as_ref().map(Rc::clone)
     }
+
+    pub fn indexed(&self) -> bool {
+        self.ir_node.indexed
+    }
 }
 
 pub type OverrideSpecifier = Rc<OverrideSpecifierStruct>;
@@ -865,49 +869,15 @@ impl EventDefinitionStruct {
         Rc::clone(&self.ir_node.name)
     }
 
-    pub fn parameters(&self) -> impl Iterator<Item = EventParameter> + use<'_> {
-        self.ir_node
-            .parameters
-            .iter()
-            .map(|child| Rc::new(EventParameterStruct::create(child, &self.semantic)))
-    }
-
     pub fn anonymous_keyword(&self) -> bool {
         self.ir_node.anonymous_keyword
     }
-}
 
-pub type EventParameter = Rc<EventParameterStruct>;
-
-pub struct EventParameterStruct {
-    ir_node: input_ir::EventParameter,
-    semantic: Rc<SemanticAnalysis>,
-}
-
-impl EventParameterStruct {
-    pub(crate) fn create(
-        ir_node: &input_ir::EventParameter,
-        semantic: &Rc<SemanticAnalysis>,
-    ) -> Self {
-        Self {
-            ir_node: Rc::clone(ir_node),
-            semantic: Rc::clone(semantic),
-        }
-    }
-
-    pub fn type_name(&self) -> TypeName {
-        Rc::new(TypeNameStruct::create(
-            &self.ir_node.type_name,
-            &self.semantic,
-        ))
-    }
-
-    pub fn indexed_keyword(&self) -> bool {
-        self.ir_node.indexed_keyword
-    }
-
-    pub fn name(&self) -> Option<Rc<TerminalNode>> {
-        self.ir_node.name.as_ref().map(Rc::clone)
+    pub fn parameters(&self) -> impl Iterator<Item = Parameter> + use<'_> {
+        self.ir_node
+            .parameters
+            .iter()
+            .map(|child| Rc::new(ParameterStruct::create(child, &self.semantic)))
     }
 }
 
@@ -963,41 +933,11 @@ impl ErrorDefinitionStruct {
         Rc::clone(&self.ir_node.name)
     }
 
-    pub fn members(&self) -> impl Iterator<Item = ErrorParameter> + use<'_> {
+    pub fn parameters(&self) -> impl Iterator<Item = Parameter> + use<'_> {
         self.ir_node
-            .members
+            .parameters
             .iter()
-            .map(|child| Rc::new(ErrorParameterStruct::create(child, &self.semantic)))
-    }
-}
-
-pub type ErrorParameter = Rc<ErrorParameterStruct>;
-
-pub struct ErrorParameterStruct {
-    ir_node: input_ir::ErrorParameter,
-    semantic: Rc<SemanticAnalysis>,
-}
-
-impl ErrorParameterStruct {
-    pub(crate) fn create(
-        ir_node: &input_ir::ErrorParameter,
-        semantic: &Rc<SemanticAnalysis>,
-    ) -> Self {
-        Self {
-            ir_node: Rc::clone(ir_node),
-            semantic: Rc::clone(semantic),
-        }
-    }
-
-    pub fn type_name(&self) -> TypeName {
-        Rc::new(TypeNameStruct::create(
-            &self.ir_node.type_name,
-            &self.semantic,
-        ))
-    }
-
-    pub fn name(&self) -> Option<Rc<TerminalNode>> {
-        self.ir_node.name.as_ref().map(Rc::clone)
+            .map(|child| Rc::new(ParameterStruct::create(child, &self.semantic)))
     }
 }
 
