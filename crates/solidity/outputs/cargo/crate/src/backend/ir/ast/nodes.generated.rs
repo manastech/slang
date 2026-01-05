@@ -3914,6 +3914,12 @@ impl SourceUnitMembersStruct {
             .iter()
             .map(|ir_node| create_source_unit_member(ir_node, &self.semantic))
     }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
+    }
 }
 
 pub type VersionExpressionSets = Rc<VersionExpressionSetsStruct>;
@@ -3938,6 +3944,12 @@ impl VersionExpressionSetsStruct {
         self.ir_nodes
             .iter()
             .map(|ir_node| create_version_expression_set(ir_node, &self.semantic))
+    }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
     }
 }
 
@@ -3964,6 +3976,12 @@ impl VersionExpressionSetStruct {
             .iter()
             .map(|ir_node| create_version_expression(ir_node, &self.semantic))
     }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
+    }
 }
 
 pub type ImportDeconstructionSymbols = Rc<ImportDeconstructionSymbolsStruct>;
@@ -3988,6 +4006,12 @@ impl ImportDeconstructionSymbolsStruct {
         self.ir_nodes
             .iter()
             .map(|ir_node| create_import_deconstruction_symbol(ir_node, &self.semantic))
+    }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
     }
 }
 
@@ -4014,6 +4038,12 @@ impl UsingDeconstructionSymbolsStruct {
             .iter()
             .map(|ir_node| create_using_deconstruction_symbol(ir_node, &self.semantic))
     }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
+    }
 }
 
 pub type InheritanceTypes = Rc<InheritanceTypesStruct>;
@@ -4038,6 +4068,12 @@ impl InheritanceTypesStruct {
         self.ir_nodes
             .iter()
             .map(|ir_node| create_inheritance_type(ir_node, &self.semantic))
+    }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
     }
 }
 
@@ -4064,6 +4100,12 @@ impl ContractMembersStruct {
             .iter()
             .map(|ir_node| create_contract_member(ir_node, &self.semantic))
     }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
+    }
 }
 
 pub type InterfaceMembers = Rc<InterfaceMembersStruct>;
@@ -4088,6 +4130,12 @@ impl InterfaceMembersStruct {
         self.ir_nodes
             .iter()
             .map(|ir_node| create_contract_member(ir_node, &self.semantic))
+    }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
     }
 }
 
@@ -4114,6 +4162,12 @@ impl LibraryMembersStruct {
             .iter()
             .map(|ir_node| create_contract_member(ir_node, &self.semantic))
     }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
+    }
 }
 
 pub type StructMembers = Rc<StructMembersStruct>;
@@ -4138,6 +4192,12 @@ impl StructMembersStruct {
         self.ir_nodes
             .iter()
             .map(|ir_node| create_struct_member(ir_node, &self.semantic))
+    }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
     }
 }
 
@@ -4164,6 +4224,12 @@ impl EnumMembersStruct {
             .iter()
             .map(|ir_node| create_identifier(ir_node, &self.semantic))
     }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
+    }
 }
 
 pub type Parameters = Rc<ParametersStruct>;
@@ -4188,6 +4254,12 @@ impl ParametersStruct {
         self.ir_nodes
             .iter()
             .map(|ir_node| create_parameter(ir_node, &self.semantic))
+    }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
     }
 }
 
@@ -4214,6 +4286,12 @@ impl OverridePathsStruct {
             .iter()
             .map(|ir_node| create_identifier_path(ir_node, &self.semantic))
     }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
+    }
 }
 
 pub type Statements = Rc<StatementsStruct>;
@@ -4238,6 +4316,12 @@ impl StatementsStruct {
         self.ir_nodes
             .iter()
             .map(|ir_node| create_statement(ir_node, &self.semantic))
+    }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
     }
 }
 
@@ -4264,6 +4348,12 @@ impl CatchClausesStruct {
             .iter()
             .map(|ir_node| create_catch_clause(ir_node, &self.semantic))
     }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
+    }
 }
 
 pub type PositionalArguments = Rc<PositionalArgumentsStruct>;
@@ -4288,6 +4378,12 @@ impl PositionalArgumentsStruct {
         self.ir_nodes
             .iter()
             .map(|ir_node| create_expression(ir_node, &self.semantic))
+    }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
     }
 }
 
@@ -4314,6 +4410,12 @@ impl NamedArgumentsStruct {
             .iter()
             .map(|ir_node| create_named_argument(ir_node, &self.semantic))
     }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
+    }
 }
 
 pub type CallOptions = Rc<CallOptionsStruct>;
@@ -4338,6 +4440,12 @@ impl CallOptionsStruct {
         self.ir_nodes
             .iter()
             .map(|ir_node| create_named_argument(ir_node, &self.semantic))
+    }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
     }
 }
 
@@ -4364,6 +4472,12 @@ impl TupleValuesStruct {
             .iter()
             .map(|ir_node| create_tuple_value(ir_node, &self.semantic))
     }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
+    }
 }
 
 pub type ArrayValues = Rc<ArrayValuesStruct>;
@@ -4388,6 +4502,12 @@ impl ArrayValuesStruct {
         self.ir_nodes
             .iter()
             .map(|ir_node| create_expression(ir_node, &self.semantic))
+    }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
     }
 }
 
@@ -4414,6 +4534,12 @@ impl IdentifierPathStruct {
             .iter()
             .map(|ir_node| create_identifier(ir_node, &self.semantic))
     }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
+    }
 }
 
 pub type YulStatements = Rc<YulStatementsStruct>;
@@ -4438,6 +4564,12 @@ impl YulStatementsStruct {
         self.ir_nodes
             .iter()
             .map(|ir_node| create_yul_statement(ir_node, &self.semantic))
+    }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
     }
 }
 
@@ -4464,6 +4596,12 @@ impl YulParametersStruct {
             .iter()
             .map(|ir_node| create_yul_identifier(ir_node, &self.semantic))
     }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
+    }
 }
 
 pub type YulVariableNames = Rc<YulVariableNamesStruct>;
@@ -4488,6 +4626,12 @@ impl YulVariableNamesStruct {
         self.ir_nodes
             .iter()
             .map(|ir_node| create_yul_identifier(ir_node, &self.semantic))
+    }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
     }
 }
 
@@ -4514,6 +4658,12 @@ impl YulSwitchCasesStruct {
             .iter()
             .map(|ir_node| create_yul_switch_case(ir_node, &self.semantic))
     }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
+    }
 }
 
 pub type YulArguments = Rc<YulArgumentsStruct>;
@@ -4538,6 +4688,12 @@ impl YulArgumentsStruct {
         self.ir_nodes
             .iter()
             .map(|ir_node| create_yul_expression(ir_node, &self.semantic))
+    }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
     }
 }
 
@@ -4564,6 +4720,12 @@ impl YulPathsStruct {
             .iter()
             .map(|ir_node| create_yul_path(ir_node, &self.semantic))
     }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
+    }
 }
 
 pub type YulPath = Rc<YulPathStruct>;
@@ -4588,6 +4750,12 @@ impl YulPathStruct {
         self.ir_nodes
             .iter()
             .map(|ir_node| create_yul_identifier(ir_node, &self.semantic))
+    }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
     }
 }
 
@@ -4614,6 +4782,12 @@ impl ModifierInvocationsStruct {
             .iter()
             .map(|ir_node| create_modifier_invocation(ir_node, &self.semantic))
     }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
+    }
 }
 
 pub type TupleDeconstructionMembers = Rc<TupleDeconstructionMembersStruct>;
@@ -4638,5 +4812,11 @@ impl TupleDeconstructionMembersStruct {
         self.ir_nodes
             .iter()
             .map(|ir_node| create_tuple_deconstruction_member(ir_node, &self.semantic))
+    }
+    pub fn len(&self) -> usize {
+        self.ir_nodes.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.ir_nodes.is_empty()
     }
 }
