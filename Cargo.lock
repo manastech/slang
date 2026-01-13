@@ -3829,6 +3829,7 @@ dependencies = [
  "language_definition",
  "metaslang_bindings",
  "metaslang_graph_builder",
+ "paste",
  "regex",
  "semver 1.0.26",
  "slang_solidity",

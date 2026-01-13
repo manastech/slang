@@ -45,7 +45,24 @@ impl IdentifierStruct {
         Some(Definition::create(definition_id, &self.semantic))
     }
 
+    /// Returns `true` if the identifier itself is a definition (eg. an enum member)
     pub fn is_definition(&self) -> bool {
+        self.semantic
+            .binder()
+            .find_definition_by_id(self.ir_node.id())
+            .is_some()
+    }
+
+    /// Returns the `Definition` corresponding to this identifier. Panics if the
+    /// identifier is not a definition by itself, ie. this can only be called
+    /// safely if `is_definition()` returns `true`.
+    pub fn as_definition(&self) -> Definition {
+        Definition::create(self.ir_node.id(), &self.semantic)
+    }
+
+    /// Returns `true` if the identifier is a definition itself, or is the name
+    /// identifier of a definition
+    pub fn is_name_of_definition(&self) -> bool {
         self.semantic
             .binder()
             .find_definition_by_identifier_node_id(self.ir_node.id())

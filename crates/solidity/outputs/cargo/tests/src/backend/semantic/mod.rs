@@ -4,6 +4,7 @@ use slang_solidity::backend::ir::ast::{ContractBase, ContractMember, Definition,
 use crate::backend::fixtures;
 
 mod ast;
+mod collect_definitions;
 
 #[test]
 fn test_semantic_analysis_and_ast_tree() -> Result<()> {
