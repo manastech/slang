@@ -5,6 +5,7 @@ use crate::backend::fixtures;
 
 mod ast;
 mod collect_definitions;
+mod find_unused_definitions;
 
 #[test]
 fn test_semantic_analysis_and_ast_tree() -> Result<()> {
