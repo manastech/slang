@@ -136,6 +136,42 @@ impl Definition {
         }
     }
 
+    pub fn node_id(&self) -> NodeId {
+        match self {
+            Definition::Constant(constant_definition) => constant_definition.node_id(),
+            Definition::Contract(contract_definition) => contract_definition.node_id(),
+            Definition::Enum(enum_definition) => enum_definition.node_id(),
+            Definition::EnumMember(identifier) => identifier.node_id(),
+            Definition::Error(error_definition) => error_definition.node_id(),
+            Definition::Event(event_definition) => event_definition.node_id(),
+            Definition::Function(function_definition) => function_definition.node_id(),
+            Definition::Import(path_import) => path_import.node_id(),
+            Definition::ImportedSymbol(import_deconstruction_symbol) => {
+                import_deconstruction_symbol.node_id()
+            }
+            Definition::Interface(interface_definition) => interface_definition.node_id(),
+            Definition::Library(library_definition) => library_definition.node_id(),
+            Definition::Modifier(function_definition) => function_definition.node_id(),
+            Definition::Parameter(parameter) => parameter.node_id(),
+            Definition::StateVariable(state_variable_definition) => {
+                state_variable_definition.node_id()
+            }
+            Definition::Struct(struct_definition) => struct_definition.node_id(),
+            Definition::StructMember(struct_member) => struct_member.node_id(),
+            Definition::TypeParameter(parameter) => parameter.node_id(),
+            Definition::UserDefinedValueType(user_defined_value_type_definition) => {
+                user_defined_value_type_definition.node_id()
+            }
+            Definition::Variable(variable_declaration_statement) => {
+                variable_declaration_statement.node_id()
+            }
+            Definition::YulFunction(yul_function_definition) => yul_function_definition.node_id(),
+            Definition::YulLabel(yul_label) => yul_label.node_id(),
+            Definition::YulParameter(identifier) => identifier.node_id(),
+            Definition::YulVariable(identifier) => identifier.node_id(),
+        }
+    }
+
     pub fn identifier(&self) -> Identifier {
         match self {
             Definition::Constant(constant_definition) => constant_definition.name(),

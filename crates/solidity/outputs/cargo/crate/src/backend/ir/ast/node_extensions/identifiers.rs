@@ -24,6 +24,10 @@ pub struct IdentifierStruct {
 }
 
 impl IdentifierStruct {
+    pub fn node_id(&self) -> NodeId {
+        self.ir_node.id()
+    }
+
     pub fn unparse(&self) -> String {
         self.ir_node.unparse()
     }
