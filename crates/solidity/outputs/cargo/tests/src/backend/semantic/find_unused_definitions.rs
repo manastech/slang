@@ -251,3 +251,23 @@ fn test_no_unused_definitions() -> Result<()> {
 
     Ok(())
 }
+
+#[test]
+fn test_some_unused_member_definitions() -> Result<()> {
+    let unit = fixtures::UnusedMembers::build_compilation_unit()?;
+    let semantic = unit.semantic_analysis();
+
+    let mut unused_definitions = find_unused_definitions_from_contract_name(semantic, "Counter");
+    unused_definitions.sort_by_key(|definition| definition.identifier().unparse());
+
+    assert_eq!(unused_definitions.len(), 4);
+    assert_eq!(unused_definitions[0].identifier().unparse(), "_unused");
+    assert_eq!(unused_definitions[1].identifier().unparse(), "checkOwner");
+    assert_eq!(unused_definitions[2].identifier().unparse(), "multiplier");
+    assert_eq!(
+        unused_definitions[3].identifier().unparse(),
+        "unusedDecrement"
+    );
+
+    Ok(())
+}
