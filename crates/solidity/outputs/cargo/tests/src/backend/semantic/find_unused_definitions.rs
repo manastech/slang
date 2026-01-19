@@ -48,14 +48,6 @@ fn find_unused_definitions_from_contract_name(
             continue;
         }
 
-        // TODO: for now we explicitly remove the imported symbols because any
-        // references in the file would skip them for the actual definition, but
-        // we want to track their usage properly
-        if matches!(to_visit, Definition::ImportedSymbol(_)) {
-            unused_definitions.remove(&to_visit_id);
-            continue;
-        }
-
         let mut visitor = CollectDefinitionsVisitor::default();
         accept_definition(&to_visit, &mut visitor);
         for inner_definition in visitor.finish() {
@@ -84,6 +76,12 @@ fn gather_referenced_definitions_from(definition: &Definition) -> Vec<Definition
             // follow and return any references in function and modifier bodies/signatures
             let mut visitor = FollowReferencesVisitor::default();
             ast::visitor::accept_function_definition(function_definition, &mut visitor);
+            visitor.finish()
+        }
+        Definition::ImportedSymbol(imported_symbol) => {
+            // follow the reference to the imported symbol
+            let mut visitor = FollowReferencesVisitor::default();
+            ast::visitor::accept_import_deconstruction_symbol(imported_symbol, &mut visitor);
             visitor.finish()
         }
         _ => {
@@ -159,7 +157,7 @@ impl FollowReferencesVisitor {
 
 impl ast::visitor::Visitor for FollowReferencesVisitor {
     fn visit_identifier(&mut self, identifier: &ast::Identifier) {
-        if let Some(definition) = identifier.resolve_to_definition() {
+        if let Some(definition) = identifier.resolve_to_immediate_definition() {
             self.add_definition(definition);
         }
     }

@@ -3,7 +3,7 @@ use std::rc::Rc;
 use super::super::IdentifierPathStruct;
 use super::Definition;
 use crate::backend::SemanticAnalysis;
-use crate::cst::{NodeId, TerminalKind, TerminalNode};
+use crate::cst::{NodeId, TerminalKind, TerminalNode, TextIndex};
 
 pub type Identifier = Rc<IdentifierStruct>;
 
@@ -49,6 +49,13 @@ impl IdentifierStruct {
         Some(Definition::create(definition_id, &self.semantic))
     }
 
+    pub fn resolve_to_immediate_definition(&self) -> Option<Definition> {
+        let definition_id = self
+            .semantic
+            .resolve_reference_identifier_to_immediate_definition_id(self.ir_node.id())?;
+        Some(Definition::create(definition_id, &self.semantic))
+    }
+
     /// Returns `true` if the identifier itself is a definition (eg. an enum member)
     pub fn is_definition(&self) -> bool {
         self.semantic
@@ -76,6 +83,12 @@ impl IdentifierStruct {
     // only makes sense if `is_definition()` is true
     pub fn references(&self) -> Vec<Reference> {
         self.semantic.references_binding_to(self.ir_node.id())
+    }
+
+    pub fn text_offset(&self) -> TextIndex {
+        self.semantic
+            .get_text_offset_by_node_id(self.ir_node.id())
+            .unwrap()
     }
 }
 
@@ -134,6 +147,14 @@ impl Reference {
             }
         }
     }
+
+    pub fn resolve_to_immediate_definition(&self) -> Option<Definition> {
+        match self {
+            Reference::Identifier(identifier) | Reference::YulIdentifier(identifier) => {
+                identifier.resolve_to_immediate_definition()
+            }
+        }
+    }
 }
 
 impl SemanticAnalysis {
@@ -158,6 +179,16 @@ impl SemanticAnalysis {
             .follow_symbol_aliases(&reference.resolution)
             .as_definition_id()
     }
+
+    fn resolve_reference_identifier_to_immediate_definition_id(
+        &self,
+        node_id: NodeId,
+    ) -> Option<NodeId> {
+        let reference = self
+            .binder()
+            .find_reference_by_identifier_node_id(node_id)?;
+        reference.resolution.as_definition_id()
+    }
 }
 
 impl IdentifierPathStruct {
@@ -176,6 +207,14 @@ impl IdentifierPathStruct {
         let definition_id = self
             .semantic
             .resolve_reference_identifier_to_definition_id(ir_node.id())?;
+        Some(Definition::create(definition_id, &self.semantic))
+    }
+
+    pub fn resolve_to_immediate_definition(&self) -> Option<Definition> {
+        let ir_node = self.ir_nodes.last()?;
+        let definition_id = self
+            .semantic
+            .resolve_reference_identifier_to_immediate_definition_id(ir_node.id())?;
         Some(Definition::create(definition_id, &self.semantic))
     }
 }
