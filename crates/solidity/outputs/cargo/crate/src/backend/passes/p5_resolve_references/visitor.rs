@@ -632,14 +632,16 @@ impl Visitor for Pass<'_> {
 
     fn leave_revert_statement(&mut self, node: &input_ir::RevertStatement) {
         if let input_ir::ArgumentsDeclaration::NamedArguments(named_arguments) = &node.arguments {
-            let definition_id = node
-                .error
-                .as_ref()
-                .and_then(|error| {
+            let definition_id = self
+                .binder
+                .find_reference_by_identifier_node_id(node.error.last().unwrap().id())
+                .and_then(|reference| {
+                    // Follow symbol aliases as the error type argument to
+                    // revert could be an imported symbol
                     self.binder
-                        .find_reference_by_identifier_node_id(error.last().unwrap().id())
-                })
-                .and_then(|reference| reference.resolution.as_definition_id());
+                        .follow_symbol_aliases(&reference.resolution)
+                        .as_definition_id()
+                });
             self.resolve_named_arguments(named_arguments, definition_id);
         }
     }

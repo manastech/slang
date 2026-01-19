@@ -87,15 +87,22 @@ impl Visitor for Pass<'_> {
 
     fn enter_import_deconstruction(&mut self, node: &input_ir::ImportDeconstruction) -> bool {
         for symbol in &node.symbols {
-            let target_symbol = if let Some(alias) = &symbol.alias {
-                alias
-            } else {
-                &symbol.name
+            // find the associated definition to get the imported file ID
+            let Some(Definition::ImportedSymbol(imported_symbol)) =
+                self.binder.find_definition_by_id(symbol.node_id)
+            else {
+                unreachable!("expected to find definition associated to imported symbol");
             };
-            let resolution = self.binder.resolve_in_scope(
-                self.current_contract_or_file_scope_id(),
-                &target_symbol.unparse(),
-            );
+            // now we can get the target scope ID
+            let scope_id = imported_symbol
+                .resolved_file_id
+                .as_ref()
+                .and_then(|file_id| self.binder.scope_id_for_file_id(file_id));
+
+            let resolution = scope_id.map_or(Resolution::Unresolved, |scope_id| {
+                self.binder
+                    .resolve_in_scope(scope_id, &symbol.name.unparse())
+            });
             let reference = Reference::new(Rc::clone(&symbol.name), resolution);
             self.binder.insert_reference(reference);
         }
@@ -415,17 +422,13 @@ impl Visitor for Pass<'_> {
     }
 
     fn enter_revert_statement(&mut self, node: &input_ir::RevertStatement) -> bool {
-        if let Some(identifier_path) = &node.error {
-            self.resolve_identifier_path(identifier_path);
-        }
+        self.resolve_identifier_path(&node.error);
         true
     }
 
     fn leave_revert_statement(&mut self, node: &input_ir::RevertStatement) {
-        if let Some(identifier_path) = &node.error {
-            let type_id = self.type_of_identifier_path(identifier_path, None);
-            self.binder.set_node_type(node.node_id, type_id);
-        }
+        let type_id = self.type_of_identifier_path(&node.error, None);
+        self.binder.set_node_type(node.node_id, type_id);
     }
 
     fn enter_emit_statement(&mut self, node: &input_ir::EmitStatement) -> bool {

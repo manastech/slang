@@ -2040,11 +2040,8 @@ impl RevertStatementStruct {
         self.ir_node.node_id
     }
 
-    pub fn error(&self) -> Option<IdentifierPath> {
-        self.ir_node
-            .error
-            .as_ref()
-            .map(|ir_node| create_identifier_path(ir_node, &self.semantic))
+    pub fn error(&self) -> IdentifierPath {
+        create_identifier_path(&self.ir_node.error, &self.semantic)
     }
 
     pub fn arguments(&self) -> ArgumentsDeclaration {
