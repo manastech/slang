@@ -1,10 +1,10 @@
-use std::collections::{HashMap, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::rc::Rc;
 
 use anyhow::Result;
 use slang_solidity::backend::semantic::ast::Definition;
 use slang_solidity::backend::semantic::{ast, SemanticAnalysis};
-use slang_solidity::cst::NodeId;
+use slang_solidity::cst::{BaseRewriter, Node, NodeId};
 
 use super::collect_definitions::CollectDefinitionsVisitor;
 use crate::backend::fixtures;
@@ -265,6 +265,82 @@ fn test_some_unused_member_definitions() -> Result<()> {
     assert_eq!(
         unused_definitions[3].identifier().unparse(),
         "unusedDecrement"
+    );
+
+    Ok(())
+}
+
+struct DeadCodeRemover {
+    node_ids_to_remove: HashSet<NodeId>,
+}
+
+impl BaseRewriter for DeadCodeRemover {
+    fn rewrite_node(&mut self, node: &Node) -> Option<Node> {
+        if self.node_ids_to_remove.contains(&node.id()) {
+            None
+        } else {
+            match node {
+                Node::Terminal(node) => self.rewrite_terminal_node(node),
+                Node::Nonterminal(node) => self.rewrite_nonterminal_node(node),
+            }
+        }
+    }
+}
+
+#[test]
+fn test_remove_unused_definitions() -> Result<()> {
+    let unit = fixtures::UnusedMembers::build_compilation_unit()?;
+    let semantic = unit.semantic_analysis();
+
+    let unused_definitions = find_unused_definitions_from_contract_name(semantic, "Counter");
+    let node_ids_to_remove = unused_definitions
+        .iter()
+        .filter_map(|definition| match definition {
+            // parameters cannot be trivially removed, so we keep them for now
+            ast::Definition::Parameter(_)
+            | ast::Definition::TypeParameter(_)
+            | ast::Definition::YulParameter(_) => None,
+            _ => Some(definition.node_id()),
+        })
+        .collect::<HashSet<_>>();
+    let mut rewriter = DeadCodeRemover { node_ids_to_remove };
+
+    let file = unit.file("main.sol").expect("main.sol file is found");
+    let result = rewriter
+        .rewrite_nonterminal_node(file.tree())
+        .expect("CST tree is rewritten");
+    assert_eq!(
+        result.unparse(),
+        r#"
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.29;
+
+abstract contract Ownable {
+  address _owner;
+  constructor() {
+    _owner = msg.sender;
+  }
+  modifier onlyOwner() {
+    require(_owner == msg.sender);
+    _;
+  }
+}
+
+contract Counter is Ownable {
+  uint _count;
+  constructor(uint initialCount) {
+    _count = initialCount;
+  }
+  function count() public view returns (uint) {
+    return _count;
+  }
+  function increment(uint delta, uint multiplier) public onlyOwner returns (uint) {
+    require(delta > 0, "Delta must be positive");
+    _count += delta;
+    return _count;
+  }
+}
+"#
     );
 
     Ok(())
