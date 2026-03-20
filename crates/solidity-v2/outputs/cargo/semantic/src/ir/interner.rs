@@ -20,6 +20,14 @@ impl Interner {
         Symbol(index)
     }
 
+    pub fn intern_check_first(&mut self, text: &str) -> Symbol {
+        if let Some(index) = self.set.get_index_of(text) {
+            return Symbol(index);
+        }
+        let (index, _) = self.set.insert_full(text.to_owned());
+        Symbol(index)
+    }
+
     pub fn resolve(&self, symbol: Symbol) -> &str {
         self.set
             .get_index(symbol.0)

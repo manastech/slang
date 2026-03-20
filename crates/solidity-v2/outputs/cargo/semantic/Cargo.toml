@@ -24,8 +24,13 @@ slang_solidity_v2_cst = { workspace = true }
 
 [dev-dependencies]
 anyhow = { workspace = true }
+criterion = "0.5"
 slang_solidity_v2_common = { workspace = true }
 slang_solidity_v2_parser = { workspace = true }
+
+[[bench]]
+name = "interner"
+harness = false
 
 [lints]
 workspace = true
