@@ -3902,6 +3902,7 @@ dependencies = [
  "anyhow",
  "criterion",
  "indexmap",
+ "rand 0.8.5",
  "slang_solidity_v2_common",
  "slang_solidity_v2_cst",
  "slang_solidity_v2_parser",
